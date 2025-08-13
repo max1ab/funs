@@ -33,13 +33,11 @@
     .left {
       flex: none;
       width: 100%;
-      aspect-ratio: 1;
-      max-height: 60vh;
     }
     
     .left canvas {
-      width: 100% !important;
-      height: 100% !important;
+      max-width: 100%;
+      max-height: 100%;
     }
     
     .controls {
@@ -175,6 +173,9 @@
 (() => {
   const canvas = document.getElementById('c');
   const ctx = canvas.getContext('2d', {alpha:false});
+  
+  // 头像长宽比例，需要在fitCanvasToParent之前声明
+  let avatarAspectRatio = 1; // 默认为1:1
   function resize() {
     const dpr = Math.min(window.devicePixelRatio || 1, 2);
     const rect = canvas.getBoundingClientRect();
@@ -185,9 +186,48 @@
   function fitCanvasToParent(){
     const left = document.querySelector('.left');
     const rect = left.getBoundingClientRect();
-    const size = Math.max(300, Math.min(rect.width, rect.height));
-    canvas.style.width = size + 'px';
-    canvas.style.height = size + 'px';
+    
+    // 检查是否为手机端
+    const isMobile = window.innerWidth <= 768;
+    
+    let canvasWidth, canvasHeight;
+    
+    if (isMobile) {
+      // 手机端：以屏幕宽度为画布宽度，高度根据头像比例计算
+      canvasWidth = window.innerWidth;
+      canvasHeight = canvasWidth / avatarAspectRatio;
+      
+      // 确保高度不超过可视区域高度的80%
+      const maxHeight = window.innerHeight * 0.8;
+      if (canvasHeight > maxHeight) {
+        canvasHeight = maxHeight;
+        canvasWidth = canvasHeight * avatarAspectRatio;
+      }
+    } else {
+      // 桌面端：根据头像长宽比例调整画布尺寸
+      if (avatarAspectRatio > 1) {
+        // 头像更宽，以容器宽度为基准
+        canvasWidth = Math.max(300, Math.min(rect.width, rect.height * avatarAspectRatio));
+        canvasHeight = canvasWidth / avatarAspectRatio;
+      } else {
+        // 头像更高或正方形，以容器高度为基准
+        canvasHeight = Math.max(300, Math.min(rect.height, rect.width / avatarAspectRatio));
+        canvasWidth = canvasHeight * avatarAspectRatio;
+      }
+      
+      // 确保画布不超出容器范围
+      if (canvasWidth > rect.width) {
+        canvasWidth = rect.width;
+        canvasHeight = canvasWidth / avatarAspectRatio;
+      }
+      if (canvasHeight > rect.height) {
+        canvasHeight = rect.height;
+        canvasWidth = canvasHeight * avatarAspectRatio;
+      }
+    }
+    
+    canvas.style.width = canvasWidth + 'px';
+    canvas.style.height = canvasHeight + 'px';
     resize();
   }
   window.addEventListener('resize', () => { fitCanvasToParent(); resize(); });
@@ -242,9 +282,8 @@
 
   function containerSize(){
     const rect = canvas.getBoundingClientRect();
-    const size = Math.min(rect.width, rect.height);
     const padding = 8;
-    return {x:padding, y:padding, w:size - padding*2, h:size - padding*2};
+    return {x:padding, y:padding, w:rect.width - padding*2, h:rect.height - padding*2};
   }
 
   let balls = [];
@@ -336,6 +375,9 @@
   }
   
   function processAvatar(img) {
+    // 保存头像的原始长宽比例
+    avatarAspectRatio = img.width / img.height;
+    
     const size = 64;
     avatarCanvas.width = size;
     avatarCanvas.height = size;
@@ -343,6 +385,10 @@
     // 绘制并缩放图像
     avatarCtx.drawImage(img, 0, 0, size, size);
     avatarImageData = avatarCtx.getImageData(0, 0, size, size);
+    
+    // 更新画布尺寸以匹配头像比例
+    fitCanvasToParent();
+    
     statusSpan.textContent = '头像已加载';
   }
   
