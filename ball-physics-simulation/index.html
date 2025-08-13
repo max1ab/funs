@@ -160,7 +160,8 @@
     <div class="row"><label class="small">弹性 (0-1)：</label><input id="restitution" type="range" min="0" max="1" step="0.01" value="0.8"><span id="rVal" class="small">0.8</span></div>
     <div class="row"><label class="small">子步数：</label><input id="substeps" type="range" min="3" max="40" step="1" value="22"><span id="sVal" class="small">22</span></div>
     <div class="row"><label class="small">发射间隔 (ms)：</label><input id="spawnRate" type="range" min="0.1" max="10" step="0.1" value="0.5"><span id="spVal" class="small">0.5</span></div>
-    <div class="row"><label class="small">目标小球数：</label><input id="targetCount" type="number" min="1" max="4000" value="2400" style="width:80px"></div>
+    <div class="row"><label class="small">每次发射数：</label><input id="ballsPerShot" type="range" min="1" max="10" step="1" value="1"><span id="bpsVal" class="small">1</span></div>
+    <div class="row"><label class="small">目标小球数：</label><input id="targetCount" type="number" min="1" max="4000" value="1200" style="width:80px"></div>
     <div class="stat">
       当前小球: <strong id="count">0</strong><br>
       状态: <strong id="status">等待开始</strong>
@@ -247,6 +248,8 @@
   const sVal = document.getElementById('sVal');
   const spawnRateRange = document.getElementById('spawnRate');
   const spVal = document.getElementById('spVal');
+  const ballsPerShotRange = document.getElementById('ballsPerShot');
+  const bpsVal = document.getElementById('bpsVal');
   const targetCountInput = document.getElementById('targetCount');
   const countSpan = document.getElementById('count');
   const statusSpan = document.getElementById('status');
@@ -258,12 +261,14 @@
     rVal.textContent = parseFloat(restitutionRange.value).toFixed(2); 
     sVal.textContent = substepsRange.value; 
     spVal.textContent = spawnRateRange.value; 
+    bpsVal.textContent = ballsPerShotRange.value; 
     countSpan.textContent = balls.length; 
   }
   gravityRange.oninput = UIupdate;
   restitutionRange.oninput = UIupdate;
   substepsRange.oninput = UIupdate;
   spawnRateRange.oninput = UIupdate;
+  ballsPerShotRange.oninput = UIupdate;
   targetCountInput.oninput = () => { computeRadius(); UIupdate(); };
 
   // 头像和状态管理
@@ -296,7 +301,7 @@
     
     // 使用最密堆积原理计算半径
     // 最密堆积的填充率约为 π/(2√3) ≈ 0.9069，但考虑到实际物理模拟的限制，使用0.74
-    const packingEfficiency = 0.906;
+    const packingEfficiency = 0.9069;
     const containerArea = box.w * box.h;
     const totalBallArea = containerArea * packingEfficiency;
     const singleBallArea = totalBallArea / targetCount;
@@ -508,13 +513,30 @@
     const rate = Math.max(1, Math.floor(parseInt(spawnRateRange.value,10) / 16.67)); // 转换为帧间隔
     if(frameCount - lastSpawnFrame < rate) return;
     lastSpawnFrame = frameCount;
+    
     const box = containerSize();
-    const sx = box.x + emitter.margin;
-    const sy = box.y + emitter.margin;
-    // 移除随机性，使用更大的固定值来加速生成
-    const vx = 600; // 增大水平速度
-    const vy = 50;  // 增大垂直速度
-    addBall(sx, sy, vx, vy);
+    const ballsPerShot = parseInt(ballsPerShotRange.value, 10) || 1;
+    
+    // 一次发射多个小球
+    for (let i = 0; i < ballsPerShot; i++) {
+      // 检查是否已达到目标数量
+      if (mode === 'generating') {
+        if (balls.length >= ballPositions.length) break;
+      } else if (balls.length >= target) {
+        break;
+      }
+      
+      const sx = box.x + emitter.margin;
+      const sy = box.y + emitter.margin + i * R * 0.9; // 垂直偏移避免重叠
+      
+      // 使用确定性速度，根据小球索引产生轻微变化
+       const baseVx = 1200;
+       const baseVy = 100;
+       const vx = baseVx + (i % 3 - 1) * 30; // 确定性水平速度变化：-30, 0, 30
+       const vy = baseVy + (i % 2) * 20;     // 确定性垂直速度变化：0, 20
+      
+      addBall(sx, sy, vx, vy);
+    }
   }
 
   function resolveCollisions(){
