@@ -2,6 +2,7 @@
 <html lang="zh-CN">
 <head>
 <meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
 <title>小球逐渐填满正方体 — 连续喷射</title>
 <style>
   html,body{height:100%;margin:0;background:#111;color:#ddd;font-family:system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;}
@@ -15,6 +16,113 @@
   button{padding:8px 10px;border-radius:6px;border:0;background:#2b6cff;color:white;cursor:pointer}
   .small{font-size:13px;color:#9fb3d9}
   .stat{font-size:13px;margin-top:8px}
+  
+  /* 手机设备适配 */
+  @media (max-width: 768px) {
+    .wrap {
+      flex-direction: column;
+      gap: 4px;
+      padding: 8px;
+    }
+    
+    .left {
+      flex: none;
+      width: 100%;
+      aspect-ratio: 1;
+      max-height: 60vh;
+    }
+    
+    .left canvas {
+      width: 100% !important;
+      height: 100% !important;
+    }
+    
+    .controls {
+      width: 90%;
+      flex: none;
+      padding: 16px;
+      font-size: 16px;
+    }
+    
+    .controls h3 {
+      font-size: 18px;
+      margin-bottom: 12px;
+    }
+    
+    .row {
+      margin: 12px 0;
+      gap: 12px;
+    }
+    
+    input[type=range] {
+      width: 120px;
+      height: 32px;
+    }
+    
+    button {
+      padding: 12px 16px;
+      font-size: 16px;
+      min-height: 44px;
+      border-radius: 8px;
+    }
+    
+    .small {
+      font-size: 15px;
+      min-width: 80px;
+    }
+    
+    .stat {
+      font-size: 15px;
+      margin-top: 12px;
+      padding: 12px;
+      background: rgba(255,255,255,0.05);
+      border-radius: 6px;
+    }
+    
+    input[type=number] {
+      font-size: 16px;
+      padding: 8px;
+      min-height: 32px;
+    }
+    
+    input[type=file] + button {
+      width: 100%;
+      margin-bottom: 8px;
+    }
+    
+    #useDefault {
+      width: 100%;
+    }
+  }
+  
+  /* 更小屏幕的进一步优化 */
+  @media (max-width: 480px) {
+    .wrap {
+      padding: 6px;
+      gap: 2px;
+    }
+    
+    .left {
+      max-height: 55vh;
+    }
+    
+    .controls {
+      padding: 12px;
+    }
+    
+    .row {
+      flex-wrap: wrap;
+    }
+    
+    input[type=range] {
+      width: 100px;
+    }
+    
+    button {
+      padding: 10px 14px;
+      font-size: 15px;
+    }
+  }
 </style>
 </head>
 <body>
