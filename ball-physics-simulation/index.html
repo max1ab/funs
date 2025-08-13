@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>小球逐渐填满正方体 — 连续喷射</title>
+<style>
+  html,body{height:100%;margin:0;background:#111;color:#ddd;font-family:system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;}
+  .wrap{display:flex;gap:16px;padding:16px;height:100%;box-sizing:border-box;}
+  .left{flex:1;display:flex;flex-direction:column;gap:8px;}
+  canvas{background:#0b1220;border-radius:8px;display:block;width:100%;height:100%;}
+  .controls{width:320px;flex:0 0 320px;padding:12px;background:#0e1722;border-radius:8px;box-shadow:0 6px 18px rgba(0,0,0,.6);}
+  .controls h3{margin:0 0 8px 0;font-size:16px;color:#fff}
+  .row{display:flex;align-items:center;gap:8px;margin:8px 0}
+  input[type=range]{width:160px}
+  button{padding:8px 10px;border-radius:6px;border:0;background:#2b6cff;color:white;cursor:pointer}
+  .small{font-size:13px;color:#9fb3d9}
+  .stat{font-size:13px;margin-top:8px}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="left">
+    <canvas id="c"></canvas>
+  </div>
+  <div class="controls">
+    <h3>头像动态生成演示</h3>
+    <div class="row">
+      <input type="file" id="avatarUpload" accept="image/*" style="display:none">
+      <button onclick="document.getElementById('avatarUpload').click()">上传头像</button>
+      <button id="useDefault">使用默认头像</button>
+    </div>
+    <div class="row">
+      <button id="startMapping">开始映射</button>
+      <button id="saveMapping">保存映射</button>
+      <button id="startGeneration">生成头像</button>
+      <button id="reset">重置</button>
+    </div>
+    <div class="row"><label class="small">重力：</label><input id="gravity" type="range" min="0" max="500" value="400" step="1"><span id="gVal" class="small">400</span></div>
+    <div class="row"><label class="small">弹性 (0-1)：</label><input id="restitution" type="range" min="0" max="1" step="0.01" value="0.8"><span id="rVal" class="small">0.8</span></div>
+    <div class="row"><label class="small">子步数：</label><input id="substeps" type="range" min="3" max="40" step="1" value="22"><span id="sVal" class="small">22</span></div>
+    <div class="row"><label class="small">发射间隔 (ms)：</label><input id="spawnRate" type="range" min="0.1" max="10" step="0.1" value="0.5"><span id="spVal" class="small">0.5</span></div>
+    <div class="row"><label class="small">目标小球数：</label><input id="targetCount" type="number" min="1" max="4000" value="2400" style="width:80px"></div>
+    <div class="stat">
+      当前小球: <strong id="count">0</strong><br>
+      状态: <strong id="status">等待开始</strong>
+    </div>
+    <canvas id="avatarCanvas" style="display:none;"></canvas>
+  </div>
+</div>
+
+<script>
+(() => {
+  const canvas = document.getElementById('c');
+  const ctx = canvas.getContext('2d', {alpha:false});
+  function resize() {
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    const rect = canvas.getBoundingClientRect();
+    canvas.width = Math.floor(rect.width * dpr);
+    canvas.height = Math.floor(rect.height * dpr);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+  function fitCanvasToParent(){
+    const left = document.querySelector('.left');
+    const rect = left.getBoundingClientRect();
+    const size = Math.max(300, Math.min(rect.width, rect.height));
+    canvas.style.width = size + 'px';
+    canvas.style.height = size + 'px';
+    resize();
+  }
+  window.addEventListener('resize', () => { fitCanvasToParent(); resize(); });
+  fitCanvasToParent();
+
+  const avatarUpload = document.getElementById('avatarUpload');
+  const useDefaultBtn = document.getElementById('useDefault');
+  const startMappingBtn = document.getElementById('startMapping');
+  const saveMappingBtn = document.getElementById('saveMapping');
+  const startGenerationBtn = document.getElementById('startGeneration');
+  const resetBtn = document.getElementById('reset');
+  const gravityRange = document.getElementById('gravity');
+  const gVal = document.getElementById('gVal');
+  const restitutionRange = document.getElementById('restitution');
+  const rVal = document.getElementById('rVal');
+  const substepsRange = document.getElementById('substeps');
+  const sVal = document.getElementById('sVal');
+  const spawnRateRange = document.getElementById('spawnRate');
+  const spVal = document.getElementById('spVal');
+  const targetCountInput = document.getElementById('targetCount');
+  const countSpan = document.getElementById('count');
+  const statusSpan = document.getElementById('status');
+  const avatarCanvas = document.getElementById('avatarCanvas');
+  const avatarCtx = avatarCanvas.getContext('2d');
+
+  function UIupdate(){ 
+    gVal.textContent = gravityRange.value; 
+    rVal.textContent = parseFloat(restitutionRange.value).toFixed(2); 
+    sVal.textContent = substepsRange.value; 
+    spVal.textContent = spawnRateRange.value; 
+    countSpan.textContent = balls.length; 
+  }
+  gravityRange.oninput = UIupdate;
+  restitutionRange.oninput = UIupdate;
+  substepsRange.oninput = UIupdate;
+  spawnRateRange.oninput = UIupdate;
+  targetCountInput.oninput = () => { computeRadius(); UIupdate(); };
+
+  // 头像和状态管理
+  let avatarImageData = null;
+  let ballPositions = [];
+  let mode = 'idle'; // 'idle', 'mapping', 'generating'
+  let running = false;
+  
+  // 事件处理
+  avatarUpload.onchange = handleAvatarUpload;
+  useDefaultBtn.onclick = useDefaultAvatar;
+  startMappingBtn.onclick = startMapping;
+  saveMappingBtn.onclick = saveMapping;
+  startGenerationBtn.onclick = startGeneration;
+  resetBtn.onclick = resetSim;
+
+  function containerSize(){
+    const rect = canvas.getBoundingClientRect();
+    const size = Math.min(rect.width, rect.height);
+    const padding = 8;
+    return {x:padding, y:padding, w:size - padding*2, h:size - padding*2};
+  }
+
+  let balls = [];
+  let frameCount = 0;
+  let lastSpawnFrame = 0;
+
+  function computeRadius(){
+    const targetCount = Math.max(1, parseInt(targetCountInput.value,10) || 900);
+    const box = containerSize();
+    
+    // 使用最密堆积原理计算半径
+    // 最密堆积的填充率约为 π/(2√3) ≈ 0.9069，但考虑到实际物理模拟的限制，使用0.74
+    const packingEfficiency = 0.906;
+    const containerArea = box.w * box.h;
+    const totalBallArea = containerArea * packingEfficiency;
+    const singleBallArea = totalBallArea / targetCount;
+    const r = Math.sqrt(singleBallArea / Math.PI);
+    
+    return Math.max(2, Math.floor(r));
+  }
+  let R = computeRadius();
+
+  class SpatialHash {
+    constructor(cellSize, w, h) {
+      this.cellSize = cellSize;
+      this.cols = Math.ceil(w / cellSize);
+      this.rows = Math.ceil(h / cellSize);
+      this.buckets = new Map();
+    }
+    _key(col,row){ return col + ',' + row; }
+    clear(){ this.buckets.clear(); }
+    insert(id, x, y){
+      const col = Math.floor(x / this.cellSize);
+      const row = Math.floor(y / this.cellSize);
+      const k = this._key(col,row);
+      if(!this.buckets.has(k)) this.buckets.set(k, []);
+      this.buckets.get(k).push(id);
+    }
+    queryNeighbors(x, y){
+      const col = Math.floor(x / this.cellSize);
+      const row = Math.floor(y / this.cellSize);
+      const result = [];
+      for(let i = col-1; i <= col+1; i++){
+        for(let j = row-1; j <= row+1; j++){
+          const k = this._key(i,j);
+          if(this.buckets.has(k)) result.push(...this.buckets.get(k));
+        }
+      }
+      return result;
+    }
+  }
+
+  // 头像处理函数
+  function handleAvatarUpload(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    
+    const img = new Image();
+    img.onload = () => {
+      processAvatar(img);
+    };
+    img.src = URL.createObjectURL(file);
+  }
+  
+  function useDefaultAvatar() {
+    // 创建一个简单的默认头像
+    const size = 64;
+    avatarCanvas.width = size;
+    avatarCanvas.height = size;
+    
+    // 绘制一个简单的笑脸
+    avatarCtx.fillStyle = '#ffeb3b';
+    avatarCtx.fillRect(0, 0, size, size);
+    
+    // 眼睛
+    avatarCtx.fillStyle = '#000';
+    avatarCtx.beginPath();
+    avatarCtx.arc(size*0.3, size*0.35, size*0.08, 0, Math.PI*2);
+    avatarCtx.arc(size*0.7, size*0.35, size*0.08, 0, Math.PI*2);
+    avatarCtx.fill();
+    
+    // 嘴巴
+    avatarCtx.beginPath();
+    avatarCtx.arc(size*0.5, size*0.5, size*0.2, 0, Math.PI);
+    avatarCtx.stroke();
+    
+    avatarImageData = avatarCtx.getImageData(0, 0, size, size);
+    statusSpan.textContent = '默认头像已加载';
+  }
+  
+  function processAvatar(img) {
+    const size = 64;
+    avatarCanvas.width = size;
+    avatarCanvas.height = size;
+    
+    // 绘制并缩放图像
+    avatarCtx.drawImage(img, 0, 0, size, size);
+    avatarImageData = avatarCtx.getImageData(0, 0, size, size);
+    statusSpan.textContent = '头像已加载';
+  }
+  
+  function startMapping() {
+    if (!avatarImageData) {
+      statusSpan.textContent = '请先上传头像';
+      return;
+    }
+    
+    mode = 'mapping';
+    running = true;
+    ballPositions = [];
+    resetSim();
+    statusSpan.textContent = '映射模式已开始，请在合适时机点击"保存映射"';
+  }
+  
+  function saveMapping() {
+    if (mode !== 'mapping') {
+      statusSpan.textContent = '请先开始映射模式';
+      return;
+    }
+    
+    if (balls.length === 0) {
+      statusSpan.textContent = '没有小球可以映射';
+      return;
+    }
+    
+    ballPositions = balls.map(b => ({x: b.x, y: b.y}));
+    running = false;
+    mode = 'idle';
+    statusSpan.textContent = `位置映射完成，记录了${ballPositions.length}个位置`;
+  }
+  
+  function startGeneration() {
+    if (ballPositions.length === 0) {
+      statusSpan.textContent = '请先完成位置映射';
+      return;
+    }
+    
+    mode = 'generating';
+    running = true;
+    resetSim();
+    statusSpan.textContent = '正在生成头像...';
+  }
+  
+  function getAvatarColor(x, y) {
+    if (!avatarImageData) return '#ffffff';
+    
+    const box = containerSize();
+    const avatarX = Math.floor((x - box.x) / box.w * avatarImageData.width);
+    const avatarY = Math.floor((y - box.y) / box.h * avatarImageData.height);
+    
+    if (avatarX < 0 || avatarX >= avatarImageData.width || avatarY < 0 || avatarY >= avatarImageData.height) {
+      return '#ffffff';
+    }
+    
+    const index = (avatarY * avatarImageData.width + avatarX) * 4;
+    const r = avatarImageData.data[index];
+    const g = avatarImageData.data[index + 1];
+    const b = avatarImageData.data[index + 2];
+    
+    return `rgb(${r},${g},${b})`;
+  }
+
+  function addBall(px, py, vx=0, vy=0){
+    const r = R;
+    let color;
+    
+    if (mode === 'mapping') {
+      color = '#ffffff';
+    } else if (mode === 'generating' && ballPositions.length > balls.length) {
+      const pos = ballPositions[balls.length];
+      color = getAvatarColor(pos.x, pos.y);
+    } else {
+      // 使用固定颜色而不是随机颜色
+      const ballIndex = balls.length;
+      const hue = (ballIndex * 137.5) % 360; // 使用黄金角度分布
+      color = `hsl(${hue} 70% 60%)`;
+    }
+    
+    balls.push({
+      x:px, y:py, vx:vx, vy:vy, r:r, m: r*r,
+      color: color
+    });
+  }
+
+  function resetSim(){
+    balls = [];
+    frameCount = 0;
+    lastSpawnFrame = 0;
+    R = computeRadius();
+    if (mode === 'idle') {
+      statusSpan.textContent = '等待开始';
+    }
+    UIupdate();
+  }
+  resetSim();
+
+  const emitter = { margin: 12 };
+
+  // 连续喷射模式
+  function spawnStep(now){
+    if (!running) return;
+    
+    const target = Math.max(1, parseInt(targetCountInput.value,10) || 900);
+    
+    // 生成模式：按记录的位置数量生成
+    if (mode === 'generating') {
+      if (balls.length >= ballPositions.length) {
+        statusSpan.textContent = '头像生成完成';
+        return; // 只停止生成新球，不停止物理模拟
+      }
+    } else if (balls.length >= target) {
+      return;
+    }
+    
+    const rate = Math.max(1, Math.floor(parseInt(spawnRateRange.value,10) / 16.67)); // 转换为帧间隔
+    if(frameCount - lastSpawnFrame < rate) return;
+    lastSpawnFrame = frameCount;
+    const box = containerSize();
+    const sx = box.x + emitter.margin;
+    const sy = box.y + emitter.margin;
+    // 移除随机性，使用更大的固定值来加速生成
+    const vx = 600; // 增大水平速度
+    const vy = 50;  // 增大垂直速度
+    addBall(sx, sy, vx, vy);
+  }
+
+  function resolveCollisions(){
+    const box = containerSize();
+    const cellSize = R*2;
+    const hash = new SpatialHash(cellSize, box.w + box.x*2, box.h + box.y*2);
+    for(let i=0;i<balls.length;i++) hash.insert(i, balls[i].x, balls[i].y);
+    const restitution = parseFloat(restitutionRange.value);
+    for(let i=0;i<balls.length;i++){
+      const A = balls[i];
+      const neighbors = hash.queryNeighbors(A.x, A.y);
+      for(const j of neighbors){
+        if(j <= i) continue;
+        const B = balls[j];
+        const dx = B.x - A.x, dy = B.y - A.y;
+        const dist2 = dx*dx + dy*dy;
+        const minDist = A.r + B.r;
+        if(dist2 < minDist*minDist && dist2 > 0){
+          const dist = Math.sqrt(dist2);
+          const nx = dx / dist, ny = dy / dist;
+          const overlap = minDist - dist;
+          const totalMass = A.m + B.m;
+          const ratioA = B.m / totalMass;
+          const ratioB = A.m / totalMass;
+          A.x -= nx * overlap * ratioA;
+          A.y -= ny * overlap * ratioA;
+          B.x += nx * overlap * ratioB;
+          B.y += ny * overlap * ratioB;
+          const rvx = B.vx - A.vx, rvy = B.vy - A.vy;
+          const relVel = rvx*nx + rvy*ny;
+          if(relVel > 0) continue;
+          const e = restitution;
+          const jImp = -(1 + e) * relVel / (1/A.m + 1/B.m);
+          const ix = jImp * nx, iy = jImp * ny;
+          A.vx -= ix / A.m; A.vy -= iy / A.m;
+          B.vx += ix / B.m; B.vy += iy / B.m;
+        }
+      }
+    }
+    for(let b of balls){
+      if(b.x - b.r < box.x){ b.x = box.x + b.r; if(b.vx < 0) b.vx = -b.vx * restitution; }
+      if(b.x + b.r > box.x + box.w){ b.x = box.x + box.w - b.r; if(b.vx > 0) b.vx = -b.vx * restitution; }
+      if(b.y - b.r < box.y){ b.y = box.y + b.r; if(b.vy < 0) b.vy = -b.vy * restitution; }
+      if(b.y + b.r > box.y + box.h){ b.y = box.y + box.h - b.r; if(b.vy > 0) b.vy = -b.vy * restitution; b.vx *= 0.999; }
+    }
+  }
+
+  function step(dt){
+    const substeps = Math.max(1, parseInt(substepsRange.value,10));
+    const subdt = dt / substeps;
+    const gravity = parseFloat(gravityRange.value);
+    for(let s=0;s<substeps;s++){
+      for(let b of balls){ b.vy += gravity * subdt; b.x += b.vx * subdt; b.y += b.vy * subdt; }
+      resolveCollisions();
+    }
+  }
+
+  function draw(){
+    const box = containerSize();
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    ctx.fillStyle = '#0b1220';
+    ctx.fillRect(0,0,canvas.width,canvas.height);
+    ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+    ctx.strokeRect(box.x-1, box.y-1, box.w+2, box.h+2);
+    for(let b of balls){
+      ctx.beginPath();
+      ctx.arc(b.x, b.y, b.r, 0, Math.PI*2);
+      ctx.fillStyle = b.color;
+      ctx.fill();
+    }
+    ctx.fillStyle = '#fff';
+    ctx.fillText(`Balls: ${balls.length}`, box.x + 8, box.y + 16);
+  }
+
+  function loop(t){
+    const dt = 1/60; // 固定时间步长
+    frameCount++;
+    UIupdate();
+    spawnStep(frameCount);
+    if(running) step(dt);
+    draw();
+    requestAnimationFrame(loop);
+  }
+  
+  // 初始化默认头像
+  useDefaultAvatar();
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
