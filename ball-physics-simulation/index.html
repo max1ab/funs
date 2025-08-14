@@ -34,6 +34,9 @@
     .left {
       flex: none;
       width: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
     
     .left canvas {
@@ -111,9 +114,9 @@
       gap: 2px;
     }
     
-    .left {
+    /* .left {
       max-height: 55vh;
-    }
+    } */
     
     .controls {
       padding: 12px;
@@ -190,7 +193,7 @@
     if (isMobile) {
       // 手机端：使用容器实际可用宽度，考虑padding
       const availableWidth = rect.width;
-      const availableHeight = window.innerHeight * 0.55; // 为控制面板留出空间
+      const availableHeight = window.innerHeight * 0.85; // 为控制面板留出空间
       
       // 根据头像比例计算最佳尺寸
       if (avatarAspectRatio > 1) {
