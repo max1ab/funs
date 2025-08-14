@@ -3,13 +3,13 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
-<title>小球逐渐填满正方体 — 连续喷射</title>
+<title>小球生成图像模拟器</title>
 <script defer src="https://cloud.umami.is/script.js" data-website-id="5d9aab85-626c-4d4d-a3c6-c4576f4f45bd"></script>
 <style>
   html,body{height:100%;margin:0;background:#000;color:#ccc;font-family:system-ui,Segoe UI,Roboto,"Helvetica Neue",Arial;}
   .wrap{display:flex;gap:16px;padding:16px;height:100%;box-sizing:border-box;}
   .left{flex:1;display:flex;flex-direction:column;gap:8px;}
-  canvas{background:#000;border:1px solid #fff;border-radius:8px;display:block;width:100%;height:100%;}
+  canvas{background:#000;border:1px solid #ccc;border-radius:8px;display:block;width:100%;height:100%;}
   .controls{flex:0 0 320px;padding:12px;background:#000;}
    .controls h3{margin:0 0 8px 0;font-size:18px;color:#fff}
   .row{display:flex;align-items:center;gap:8px;margin:8px 0}
@@ -99,11 +99,6 @@
        border-radius: 4px;
      }
     
-    input[type=file] + button {
-      width: 100%;
-      margin-bottom: 8px;
-    }
-    
     #useDefault {
       width: 100%;
     }
@@ -145,25 +140,25 @@
     <canvas id="c"></canvas>
   </div>
   <div class="controls">
-    <h3>头像动态生成演示</h3>
+    <h3>小球模拟器</h3>
+    <div class="progress-container" style="margin-bottom: 10px;">
+      <div class="progress-bar" style="width: 100%; height: 8px; background-color: #e0e0e0; border-radius: 4px; overflow: hidden;">
+        <div id="progressFill" style="width: 0%; height: 100%; background-color: #4CAF50; transition: width 0.3s ease;"></div>
+      </div>
+      <div id="progressText" style="font-size: 12px; color: #666; margin-top: 4px; text-align: center;">准备开始</div>
+    </div>
     <div class="row">
       <input type="file" id="avatarUpload" accept="image/*" style="display:none">
-      <button onclick="document.getElementById('avatarUpload').click()">上传头像</button>
-      <button id="useDefault">使用默认头像</button>
-    </div>
-    <div class="row">
-      <button id="startMapping">开始映射</button>
-      <button id="saveMapping">保存映射</button>
-      <button id="startGeneration">生成头像</button>
-      <button id="reset">重置</button>
+      <button id="calculateBtn">计算位置</button>
+       <button id="animateBtn" disabled>模拟动画</button>
+       <button id="selectImageBtn">选择图片</button>
     </div>
     <div class="row"><label class="small">重力：</label><input id="gravity" type="range" min="0" max="200" step="1" value="50"><span id="gVal" class="small">50</span></div>
-    <div class="row"><label class="small">发射速度：</label><input id="spawnSpeed" type="range" min="1" max="100" step="1" value="30"><span id="spVal" class="small">30</span></div>
+    <div class="row"><label class="small">发射速度：</label><input id="spawnSpeed" type="range" min="1" max="100" step="1" value="80"><span id="spVal" class="small">80</span></div>
     <div class="row"><label class="small">每次发射数：</label><input id="ballsPerShot" type="range" min="1" max="10" step="1" value="4"><span id="bpsVal" class="small">4</span></div>
-    <div class="row"><label class="small">目标小球数：</label><input id="targetCount" type="range" min="100" max="2000" value="1200" step="100"><span id="countVal" class="small">1200</span></div>
+    <div class="row"><label class="small">目标小球数：</label><input id="targetCount" type="range" min="100" max="2000" value="900" step="100"><span id="countVal" class="small">900</span></div>
     <div class="stat">
-      当前小球: <strong id="count">0</strong><br>
-      状态: <strong id="status">等待开始</strong>
+      当前小球: <strong id="count">0</strong>
     </div>
     <canvas id="avatarCanvas" style="display:none;"></canvas>
   </div>
@@ -248,11 +243,11 @@
   fitCanvasToParent();
 
   const avatarUpload = document.getElementById('avatarUpload');
-  const useDefaultBtn = document.getElementById('useDefault');
-  const startMappingBtn = document.getElementById('startMapping');
-  const saveMappingBtn = document.getElementById('saveMapping');
-  const startGenerationBtn = document.getElementById('startGeneration');
-  const resetBtn = document.getElementById('reset');
+  const calculateBtn = document.getElementById('calculateBtn');
+  const animateBtn = document.getElementById('animateBtn');
+  const selectImageBtn = document.getElementById('selectImageBtn');
+  const progressFill = document.getElementById('progressFill');
+  const progressText = document.getElementById('progressText');
   const gravityRange = document.getElementById('gravity');
   const gVal = document.getElementById('gVal');
   const spawnSpeedRange = document.getElementById('spawnSpeed');
@@ -265,7 +260,6 @@
   const substeps = 12;
   const targetCountInput = document.getElementById('targetCount');
   const countSpan = document.getElementById('count');
-  const statusSpan = document.getElementById('status');
   const avatarCanvas = document.getElementById('avatarCanvas');
   const avatarCtx = avatarCanvas.getContext('2d');
 
@@ -276,24 +270,78 @@
     countSpan.textContent = balls.length; 
     countVal.textContent = targetCountInput.value;
   }
-  gravityRange.oninput = UIupdate;
-  spawnSpeedRange.oninput = UIupdate;
-  ballsPerShotRange.oninput = UIupdate;
-  targetCountInput.oninput = () => { computeRadius(); UIupdate(); };
+  
+  function updateProgress() {
+    if (isCalculating && avatarImageData) {
+      const targetCount = parseInt(targetCountInput.value);
+      const currentCount = balls.length;
+      const progress = Math.min((currentCount / targetCount) * 99, 99); // 最多显示99%
+      
+      progressFill.style.width = progress + '%';
+      progressText.textContent = `正在计算位置... ${currentCount}/${targetCount} (${Math.round(progress)}%)`;
+    }
+  }
+  
+  function resetProgress() {
+    progressFill.style.width = '0%';
+    progressText.textContent = '设置已修改，需要重新计算';
+  }
+  
+  function onSettingsChange() {
+    UIupdate();
+    
+    // 如果正在计算中，停止计算并重置状态
+    if (isCalculating) {
+      isCalculating = false;
+      // running = false;
+      mode = 'idle';
+      calculateBtn.textContent = '重新计算';
+      calculateBtn.disabled = false;
+      animateBtn.disabled = true;
+      resetProgress();
+    }
+    // 如果已经计算过位置，将按钮改为重新计算
+    else if (ballPositions.length > 0) {
+      calculateBtn.textContent = '重新计算';
+      resetProgress();
+    }
+  }
+  
+  gravityRange.oninput = onSettingsChange;
+  spawnSpeedRange.oninput = onSettingsChange;
+  ballsPerShotRange.oninput = () => { 
+    computeRadius(); 
+    onSettingsChange();
+  };
+  targetCountInput.oninput = () => { 
+     computeRadius(); 
+     onSettingsChange();
+   };
 
-  // 头像和状态管理
+  // 图片和状态管理
   let avatarImageData = null;
   let ballPositions = [];
-  let mode = 'idle'; // 'idle', 'mapping', 'generating'
+  let mode = 'idle'; // 'idle', 'calculating', 'stable', 'generating'
   let running = false;
+  let isCalculating = false;
+  let stableFrameCount = 0;
+  const STABLE_THRESHOLD = 180; // 3秒稳定时间
   
   // 事件处理
   avatarUpload.onchange = handleAvatarUpload;
-  useDefaultBtn.onclick = useDefaultAvatar;
-  startMappingBtn.onclick = startMapping;
-  saveMappingBtn.onclick = saveMapping;
-  startGenerationBtn.onclick = startGeneration;
-  resetBtn.onclick = resetSim;
+  calculateBtn.onclick = startCalculation;
+  animateBtn.onclick = startAnimation;
+  selectImageBtn.onclick = () => {
+    avatarUpload.click();
+  };
+  
+  // 画布点击事件 - 上传图片
+  canvas.onclick = () => {
+    if (!avatarImageData) {
+      avatarUpload.click();
+    }
+  };
+  canvas.style.cursor = 'pointer';
 
   function containerSize(){
     const rect = canvas.getBoundingClientRect();
@@ -359,42 +407,35 @@
     
     const img = new Image();
     img.onload = () => {
-      processAvatar(img);
+      processImage(img);
     };
     img.src = URL.createObjectURL(file);
   }
   
-  function useDefaultAvatar() {
-    // 创建一个简单的默认头像
-    const size = 64;
-    avatarCanvas.width = size;
-    avatarCanvas.height = size;
+  function processImage(img) {
+    // 计算新图片的长宽比例
+    const newAspectRatio = img.width / img.height;
     
-    // 绘制一个简单的笑脸
-    avatarCtx.fillStyle = '#ffeb3b';
-    avatarCtx.fillRect(0, 0, size, size);
+    // 如果新图片的比例与原图片不同，重置整个状态
+    if (avatarImageData && Math.abs(avatarAspectRatio - newAspectRatio) > 0.01) {
+      // 重置所有状态
+      running = false;
+      isCalculating = false;
+      mode = 'idle';
+      ballPositions = [];
+      balls = [];
+      frameCount = 0;
+      lastSpawnFrame = 0;
+      stableFrameCount = 0;
+      
+      // 重置进度条
+      resetProgress();
+    }
     
-    // 眼睛
-    avatarCtx.fillStyle = '#000';
-    avatarCtx.beginPath();
-    avatarCtx.arc(size*0.3, size*0.35, size*0.08, 0, Math.PI*2);
-    avatarCtx.arc(size*0.7, size*0.35, size*0.08, 0, Math.PI*2);
-    avatarCtx.fill();
+    // 保存图片的原始长宽比例
+    avatarAspectRatio = newAspectRatio;
     
-    // 嘴巴
-    avatarCtx.beginPath();
-    avatarCtx.arc(size*0.5, size*0.5, size*0.2, 0, Math.PI);
-    avatarCtx.stroke();
-    
-    avatarImageData = avatarCtx.getImageData(0, 0, size, size);
-    statusSpan.textContent = '默认头像已加载';
-  }
-  
-  function processAvatar(img) {
-    // 保存头像的原始长宽比例
-    avatarAspectRatio = img.width / img.height;
-    
-    const size = 64;
+    const size = 128; // 提高分辨率以获得更好的颜色细节
     avatarCanvas.width = size;
     avatarCanvas.height = size;
     
@@ -402,80 +443,254 @@
     avatarCtx.drawImage(img, 0, 0, size, size);
     avatarImageData = avatarCtx.getImageData(0, 0, size, size);
     
-    // 更新画布尺寸以匹配头像比例
+    // 清空颜色缓存，确保新图片的颜色能正确提取
+    colorCache.clear();
+    
+    // 更新画布尺寸以匹配图片比例
     fitCanvasToParent();
     
-    statusSpan.textContent = '头像已加载';
-  }
-  
-  function startMapping() {
-    if (!avatarImageData) {
-      statusSpan.textContent = '请先上传头像';
-      return;
-    }
+    progressText.textContent = '图片已加载，点击计算位置开始';
+    canvas.style.cursor = 'default';
     
-    mode = 'mapping';
-    running = true;
-    ballPositions = [];
+    // 重置状态
     resetSim();
-    statusSpan.textContent = '映射模式已开始，请在合适时机点击"保存映射"';
   }
   
-  function saveMapping() {
-    if (mode !== 'mapping') {
-      statusSpan.textContent = '请先开始映射模式';
+  function startCalculation() {
+    if (!avatarImageData) {
+      progressText.textContent = '请先上传图片';
       return;
     }
     
-    if (balls.length === 0) {
-      statusSpan.textContent = '没有小球可以映射';
+    // 清空所有小球和相关状态
+    balls = [];
+    ballPositions = [];
+    frameCount = 0;
+    lastSpawnFrame = 0;
+    stableFrameCount = 0;
+    
+    // 重新计算小球半径
+    R = computeRadius();
+    
+    mode = 'calculating';
+    running = true;
+    isCalculating = true;
+    calculateBtn.textContent = '重新计算';
+    
+    // 重置动画按钮状态
+    animateBtn.disabled = true;
+    animateBtn.textContent = '模拟动画';
+    animateBtn.onclick = startAnimation;
+     
+    // 初始化进度条
+    progressFill.style.width = '0%';
+    progressText.textContent = '开始计算...';
+  }
+  
+  function checkStability() {
+    if (mode !== 'calculating' || balls.length === 0) return;
+    
+    // 检查所有小球是否稳定（速度很小）
+    let isStable = true;
+    const threshold = 0.5; // 速度阈值
+    
+    for (const ball of balls) {
+      const vx = ball.x - ball.oldX;
+      const vy = ball.y - ball.oldY;
+      const speed = Math.sqrt(vx * vx + vy * vy);
+      
+      if (speed > threshold) {
+        isStable = false;
+        break;
+      }
+    }
+    
+    if (isStable) {
+      stableFrameCount++;
+      if (stableFrameCount >= STABLE_THRESHOLD) {
+        // 小球已稳定
+        ballPositions = balls.map(b => ({x: b.x, y: b.y}));
+        mode = 'stable';
+        running = false;
+        isCalculating = false;
+        calculateBtn.textContent = '计算位置';
+        animateBtn.disabled = false;
+        
+        // 完成进度条
+        progressFill.style.width = '100%';
+        progressText.textContent = `位置计算完成，点击模拟动画生成图片`;
+      }
+    } else {
+      stableFrameCount = 0;
+    }
+  }
+  
+  function checkAnimationStability() {
+    if (mode !== 'animating' || balls.length === 0) return;
+    
+    // 检查所有小球是否静止（速度很小）
+    let isStable = true;
+    const threshold = 0.3; // 动画模式下使用更严格的阈值
+    
+    for (const ball of balls) {
+      const vx = ball.x - ball.oldX;
+      const vy = ball.y - ball.oldY;
+      const speed = Math.sqrt(vx * vx + vy * vy);
+      
+      if (speed > threshold) {
+        isStable = false;
+        break;
+      }
+    }
+    
+    if (isStable) {
+      stableFrameCount++;
+      if (stableFrameCount >= STABLE_THRESHOLD) {
+        // 小球已静止，自动停止动画
+        stopAnimation(true);
+      }
+    } else {
+      stableFrameCount = 0;
+    }
+  }
+  
+  function startAnimation() {
+    if (ballPositions.length === 0) {
+      progressText.textContent = '请先完成位置计算';
       return;
     }
     
-    ballPositions = balls.map(b => ({x: b.x, y: b.y}));
+    mode = 'animating';
+    running = true;
+    stableFrameCount = 0; // 重置静止计数器
+    // 重新生成小球（用于重新模拟）
+    balls = [];
+    frameCount = 0;
+    lastSpawnFrame = 0;
+    R = computeRadius();
+    animateBtn.textContent = '停止动画';
+    animateBtn.onclick = () => stopAnimation(false);
+    progressText.textContent = '动画模拟运行中...';
+  }
+  
+  function stopAnimation(isAutoStop = false) {
     running = false;
     mode = 'idle';
-    statusSpan.textContent = `位置映射完成，记录了${ballPositions.length}个位置`;
+    
+    if (isAutoStop) {
+      // 自动停止：显示重新模拟
+      animateBtn.textContent = '重新模拟';
+      animateBtn.onclick = startAnimation;
+      progressText.textContent = '小球已静止，动画自动停止';
+    } else {
+      // 手动停止：显示继续动画
+      animateBtn.textContent = '继续动画';
+      animateBtn.onclick = continueAnimation;
+      progressText.textContent = '动画已停止';
+    }
   }
   
-  function startGeneration() {
-    if (ballPositions.length === 0) {
-      statusSpan.textContent = '请先完成位置映射';
-      return;
-    }
-    
-    mode = 'generating';
+  function continueAnimation() {
+    mode = 'animating';
     running = true;
-    resetSim();
-    statusSpan.textContent = '正在生成头像...';
+    stableFrameCount = 0; // 重置静止计数器
+    // 重置时间相关变量，确保小球发射时机正确
+    lastSpawnFrame = frameCount;
+    // 不重新生成小球，保持当前状态继续动画
+    animateBtn.textContent = '停止动画';
+    animateBtn.onclick = () => stopAnimation(false);
+    progressText.textContent = '动画模拟运行中...';
   }
+  
+  // 颜色缓存，避免重复计算
+  const colorCache = new Map();
   
   function getAvatarColor(x, y) {
     if (!avatarImageData) return '#ffffff';
     
     const box = containerSize();
-    const avatarX = Math.floor((x - box.x) / box.w * avatarImageData.width);
-    const avatarY = Math.floor((y - box.y) / box.h * avatarImageData.height);
+    // 使用浮点数坐标进行更精确的映射
+    const avatarX = (x - box.x) / box.w * avatarImageData.width;
+    const avatarY = (y - box.y) / box.h * avatarImageData.height;
     
+    // 边界检查
     if (avatarX < 0 || avatarX >= avatarImageData.width || avatarY < 0 || avatarY >= avatarImageData.height) {
       return '#ffffff';
     }
     
-    const index = (avatarY * avatarImageData.width + avatarX) * 4;
-    const r = avatarImageData.data[index];
-    const g = avatarImageData.data[index + 1];
-    const b = avatarImageData.data[index + 2];
+    // 生成缓存键
+    const cacheKey = `${Math.round(avatarX * 10)}_${Math.round(avatarY * 10)}`;
+    if (colorCache.has(cacheKey)) {
+      return colorCache.get(cacheKey);
+    }
     
-    return `rgb(${r},${g},${b})`;
+    // 双线性插值获取更平滑的颜色
+    const x1 = Math.floor(avatarX);
+    const y1 = Math.floor(avatarY);
+    const x2 = Math.min(x1 + 1, avatarImageData.width - 1);
+    const y2 = Math.min(y1 + 1, avatarImageData.height - 1);
+    
+    const fx = avatarX - x1;
+    const fy = avatarY - y1;
+    
+    // 获取四个角的颜色
+    const getPixel = (px, py) => {
+      const index = (py * avatarImageData.width + px) * 4;
+      return {
+        r: avatarImageData.data[index],
+        g: avatarImageData.data[index + 1],
+        b: avatarImageData.data[index + 2]
+      };
+    };
+    
+    const c1 = getPixel(x1, y1);
+    const c2 = getPixel(x2, y1);
+    const c3 = getPixel(x1, y2);
+    const c4 = getPixel(x2, y2);
+    
+    // 双线性插值
+    const r = Math.round(
+      c1.r * (1 - fx) * (1 - fy) +
+      c2.r * fx * (1 - fy) +
+      c3.r * (1 - fx) * fy +
+      c4.r * fx * fy
+    );
+    const g = Math.round(
+      c1.g * (1 - fx) * (1 - fy) +
+      c2.g * fx * (1 - fy) +
+      c3.g * (1 - fx) * fy +
+      c4.g * fx * fy
+    );
+    const b = Math.round(
+      c1.b * (1 - fx) * (1 - fy) +
+      c2.b * fx * (1 - fy) +
+      c3.b * (1 - fx) * fy +
+      c4.b * fx * fy
+    );
+    
+    // 颜色增强：提高饱和度和对比度
+    const enhancedR = Math.min(255, Math.max(0, r * 1.1));
+    const enhancedG = Math.min(255, Math.max(0, g * 1.1));
+    const enhancedB = Math.min(255, Math.max(0, b * 1.1));
+    
+    const color = `rgb(${Math.round(enhancedR)},${Math.round(enhancedG)},${Math.round(enhancedB)})`;
+    
+    // 缓存结果
+    if (colorCache.size > 1000) {
+      colorCache.clear(); // 防止内存泄漏
+    }
+    colorCache.set(cacheKey, color);
+    
+    return color;
   }
 
   function addBall(px, py, vx=0, vy=0){
     const r = R;
     let color;
     
-    if (mode === 'mapping') {
+    if (mode === 'calculating') {
       color = '#ffffff';
-    } else if (mode === 'generating' && ballPositions.length > balls.length) {
+    } else if (mode === 'animating' && ballPositions.length > balls.length) {
       const pos = ballPositions[balls.length];
       color = getAvatarColor(pos.x, pos.y);
     } else {
@@ -498,10 +713,42 @@
     balls = [];
     frameCount = 0;
     lastSpawnFrame = 0;
+    stableFrameCount = 0;
     R = computeRadius();
+    
     if (mode === 'idle') {
-      statusSpan.textContent = '等待开始';
+      if (!avatarImageData) {
+        canvas.style.cursor = 'pointer';
+        // 重置进度条为准备状态
+        progressFill.style.width = '0%';
+        progressText.textContent = '点击画布上传图片';
+      } else {
+        canvas.style.cursor = 'default';
+        // 只有在没有计算过位置时才重置进度条
+        if (ballPositions.length === 0) {
+          progressFill.style.width = '0%';
+          progressText.textContent = '图片已加载，点击计算位置开始';
+        } else {
+          // 保持计算完成状态
+          progressFill.style.width = '100%';
+          progressText.textContent = `位置计算完成，记录了${ballPositions.length}个位置`;
+        }
+      }
     }
+    
+    // 重置按钮状态
+    if (!isCalculating) {
+       calculateBtn.textContent = '计算位置';
+     }
+     if (mode !== 'animating') {
+       animateBtn.disabled = ballPositions.length === 0;
+       // 只有在真正需要重置时才改变按钮文本
+       if (animateBtn.textContent === '停止动画') {
+         animateBtn.textContent = '模拟动画';
+         animateBtn.onclick = startAnimation;
+       }
+     }
+    
     UIupdate();
   }
   resetSim();
@@ -514,11 +761,11 @@
     
     const target = Math.max(1, parseInt(targetCountInput.value,10) || 900);
     
-    // 生成模式：按记录的位置数量生成
-    if (mode === 'generating') {
+    // 动画模式：按记录的位置数量生成
+    if (mode === 'animating') {
       if (balls.length >= ballPositions.length) {
-        statusSpan.textContent = '头像生成完成';
-        return; // 只停止生成新球，不停止物理模拟
+        // 动画模式下不停止，继续运行
+        return;
       }
     } else if (balls.length >= target) {
       return;
@@ -681,6 +928,18 @@
     ctx.fillRect(0,0,canvas.width,canvas.height);
     ctx.strokeStyle = 'rgba(255,255,255,0.08)';
     ctx.strokeRect(box.x-1, box.y-1, box.w+2, box.h+2);
+    
+    // 如果没有图片，显示上传提示
+    if (!avatarImageData) {
+      ctx.fillStyle = 'rgba(255,255,255,0.5)';
+      ctx.font = '16px system-ui';
+      ctx.textAlign = 'center';
+      ctx.fillText('点击上传图片', box.x + box.w/2, box.y + box.h/2 - 10);
+      ctx.fillText('📷', box.x + box.w/2, box.y + box.h/2 + 20);
+      ctx.textAlign = 'left';
+      return;
+    }
+    
     for(let b of balls){
       ctx.beginPath();
       ctx.arc(b.x, b.y, b.r, 0, Math.PI*2);
@@ -696,13 +955,18 @@
     frameCount++;
     UIupdate();
     spawnStep(frameCount);
-    if(running) step(dt);
+    if(running) {
+      step(dt);
+      checkStability(); // 检查小球稳定性
+      checkAnimationStability(); // 检查动画模式下的静止状态
+      if (isCalculating) {
+        updateProgress();
+      }
+    }
     draw();
     requestAnimationFrame(loop);
   }
   
-  // 初始化默认头像
-  useDefaultAvatar();
   requestAnimationFrame(loop);
 })();
 </script>
