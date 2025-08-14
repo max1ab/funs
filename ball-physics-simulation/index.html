@@ -157,12 +157,10 @@
       <button id="startGeneration">生成头像</button>
       <button id="reset">重置</button>
     </div>
-    <div class="row"><label class="small">重力：</label><input id="gravity" type="range" min="0" max="500" value="400" step="1"><span id="gVal" class="small">400</span></div>
-    <div class="row"><label class="small">弹性 (0-1)：</label><input id="restitution" type="range" min="0" max="1" step="0.01" value="0.8"><span id="rVal" class="small">0.8</span></div>
-    <div class="row"><label class="small">子步数：</label><input id="substeps" type="range" min="3" max="40" step="1" value="22"><span id="sVal" class="small">22</span></div>
-    <div class="row"><label class="small">发射间隔 (ms)：</label><input id="spawnRate" type="range" min="0.1" max="10" step="0.1" value="0.5"><span id="spVal" class="small">0.5</span></div>
-    <div class="row"><label class="small">每次发射数：</label><input id="ballsPerShot" type="range" min="1" max="10" step="1" value="1"><span id="bpsVal" class="small">1</span></div>
-    <div class="row"><label class="small">目标小球数：</label><input id="targetCount" type="number" min="1" max="4000" value="1200" style="width:80px"></div>
+    <div class="row"><label class="small">重力：</label><input id="gravity" type="range" min="0" max="200" step="1" value="50"><span id="gVal" class="small">50</span></div>
+    <div class="row"><label class="small">发射速度：</label><input id="spawnSpeed" type="range" min="1" max="100" step="1" value="30"><span id="spVal" class="small">30</span></div>
+    <div class="row"><label class="small">每次发射数：</label><input id="ballsPerShot" type="range" min="1" max="10" step="1" value="4"><span id="bpsVal" class="small">4</span></div>
+    <div class="row"><label class="small">目标小球数：</label><input id="targetCount" type="range" min="100" max="2000" value="1200" step="100"><span id="countVal" class="small">1200</span></div>
     <div class="stat">
       当前小球: <strong id="count">0</strong><br>
       状态: <strong id="status">等待开始</strong>
@@ -195,14 +193,28 @@
     let canvasWidth, canvasHeight;
     
     if (isMobile) {
-      // 手机端：以屏幕宽度为画布宽度，高度根据头像比例计算
-      canvasWidth = window.innerWidth;
-      canvasHeight = canvasWidth / avatarAspectRatio;
+      // 手机端：使用容器实际可用宽度，考虑padding
+      const availableWidth = rect.width;
+      const availableHeight = window.innerHeight * 0.55; // 为控制面板留出空间
       
-      // 确保高度不超过可视区域高度的80%
-      const maxHeight = window.innerHeight * 0.8;
-      if (canvasHeight > maxHeight) {
-        canvasHeight = maxHeight;
+      // 根据头像比例计算最佳尺寸
+      if (avatarAspectRatio > 1) {
+        // 头像更宽
+        canvasWidth = Math.min(availableWidth, availableHeight * avatarAspectRatio);
+        canvasHeight = canvasWidth / avatarAspectRatio;
+      } else {
+        // 头像更高或正方形
+        canvasHeight = Math.min(availableHeight, availableWidth / avatarAspectRatio);
+        canvasWidth = canvasHeight * avatarAspectRatio;
+      }
+      
+      // 确保不超出容器范围
+      if (canvasWidth > availableWidth) {
+        canvasWidth = availableWidth;
+        canvasHeight = canvasWidth / avatarAspectRatio;
+      }
+      if (canvasHeight > availableHeight) {
+        canvasHeight = availableHeight;
         canvasWidth = canvasHeight * avatarAspectRatio;
       }
     } else {
@@ -243,14 +255,14 @@
   const resetBtn = document.getElementById('reset');
   const gravityRange = document.getElementById('gravity');
   const gVal = document.getElementById('gVal');
-  const restitutionRange = document.getElementById('restitution');
-  const rVal = document.getElementById('rVal');
-  const substepsRange = document.getElementById('substeps');
-  const sVal = document.getElementById('sVal');
-  const spawnRateRange = document.getElementById('spawnRate');
+  const spawnSpeedRange = document.getElementById('spawnSpeed');
   const spVal = document.getElementById('spVal');
   const ballsPerShotRange = document.getElementById('ballsPerShot');
   const bpsVal = document.getElementById('bpsVal');
+  
+  // 固定值
+  const restitution = 0.8;
+  const substeps = 12;
   const targetCountInput = document.getElementById('targetCount');
   const countSpan = document.getElementById('count');
   const statusSpan = document.getElementById('status');
@@ -259,16 +271,13 @@
 
   function UIupdate(){ 
     gVal.textContent = gravityRange.value; 
-    rVal.textContent = parseFloat(restitutionRange.value).toFixed(2); 
-    sVal.textContent = substepsRange.value; 
-    spVal.textContent = spawnRateRange.value; 
+    spVal.textContent = spawnSpeedRange.value; 
     bpsVal.textContent = ballsPerShotRange.value; 
     countSpan.textContent = balls.length; 
+    countVal.textContent = targetCountInput.value;
   }
   gravityRange.oninput = UIupdate;
-  restitutionRange.oninput = UIupdate;
-  substepsRange.oninput = UIupdate;
-  spawnRateRange.oninput = UIupdate;
+  spawnSpeedRange.oninput = UIupdate;
   ballsPerShotRange.oninput = UIupdate;
   targetCountInput.oninput = () => { computeRadius(); UIupdate(); };
 
@@ -288,7 +297,7 @@
 
   function containerSize(){
     const rect = canvas.getBoundingClientRect();
-    const padding = 8;
+    const padding = 0;
     return {x:padding, y:padding, w:rect.width - padding*2, h:rect.height - padding*2};
   }
 
@@ -302,13 +311,14 @@
     
     // 使用最密堆积原理计算半径
     // 最密堆积的填充率约为 π/(2√3) ≈ 0.9069，但考虑到实际物理模拟的限制，使用0.74
-    const packingEfficiency = 0.9069;
+    const packingEfficiency = 0.85;
     const containerArea = box.w * box.h;
     const totalBallArea = containerArea * packingEfficiency;
     const singleBallArea = totalBallArea / targetCount;
     const r = Math.sqrt(singleBallArea / Math.PI);
     
-    return Math.max(2, Math.floor(r));
+    return Math.max(2, r);
+    // return Math.max(2, Math.floor(r));
   }
   let R = computeRadius();
 
@@ -475,8 +485,11 @@
       color = `hsl(${hue} 70% 60%)`;
     }
     
+    // 基于位置的Verlet积分：存储当前位置和上一帧位置
     balls.push({
-      x:px, y:py, vx:vx, vy:vy, r:r, m: r*r,
+      x: px, y: py,           // 当前位置
+      oldX: px - vx/60, oldY: py - vy/60,  // 上一帧位置（基于初始速度估算）
+      r: r, m: r*r,           // 半径和质量（质量 = 半径平方，密度相同）
       color: color
     });
   }
@@ -511,8 +524,10 @@
       return;
     }
     
-    const rate = Math.max(1, Math.floor(parseInt(spawnRateRange.value,10) / 16.67)); // 转换为帧间隔
-    if(frameCount - lastSpawnFrame < rate) return;
+    const spawnSpeed = parseFloat(spawnSpeedRange.value);
+    const spawnInterval = 120 - spawnSpeed + R; // 发射速度与间隔成反比，速度1对应50ms，速度50对应1ms
+    const frameInterval = spawnInterval / 16.67; // 转换为帧间隔 (60fps)
+    if(frameCount - lastSpawnFrame < frameInterval) return;
     lastSpawnFrame = frameCount;
     
     const box = containerSize();
@@ -528,70 +543,134 @@
       }
       
       const sx = box.x + emitter.margin;
-      const sy = box.y + emitter.margin + i * R * 0.9; // 垂直偏移避免重叠
+      const sy = box.y + emitter.margin + i * R * 2.1; // 垂直偏移避免重叠
       
       // 使用确定性速度，根据小球索引产生轻微变化
-       const baseVx = 1200;
-       const baseVy = 100;
-       const vx = baseVx + (i % 3 - 1) * 30; // 确定性水平速度变化：-30, 0, 30
-       const vy = baseVy + (i % 2) * 20;     // 确定性垂直速度变化：0, 20
+       const baseVx = spawnSpeed;
+       const baseVy = 1;
+       const vx = baseVx// + (i % 3 - 1) * 10; // 确定性水平速度变化：-30, 0, 30
+       const vy = baseVy//baseVy + (i % 2) * 2;     // 确定性垂直速度变化：0, 20
       
       addBall(sx, sy, vx, vy);
     }
   }
 
-  function resolveCollisions(){
-    const box = containerSize();
+  // 基于位置的碰撞检测和约束求解
+  function solveBallCollisions(){
     const cellSize = R*2;
+    const box = containerSize();
     const hash = new SpatialHash(cellSize, box.w + box.x*2, box.h + box.y*2);
     for(let i=0;i<balls.length;i++) hash.insert(i, balls[i].x, balls[i].y);
-    const restitution = parseFloat(restitutionRange.value);
+    
     for(let i=0;i<balls.length;i++){
-      const A = balls[i];
-      const neighbors = hash.queryNeighbors(A.x, A.y);
+      const ball1 = balls[i];
+      const neighbors = hash.queryNeighbors(ball1.x, ball1.y);
       for(const j of neighbors){
         if(j <= i) continue;
-        const B = balls[j];
-        const dx = B.x - A.x, dy = B.y - A.y;
-        const dist2 = dx*dx + dy*dy;
-        const minDist = A.r + B.r;
-        if(dist2 < minDist*minDist && dist2 > 0){
-          const dist = Math.sqrt(dist2);
-          const nx = dx / dist, ny = dy / dist;
-          const overlap = minDist - dist;
-          const totalMass = A.m + B.m;
-          const ratioA = B.m / totalMass;
-          const ratioB = A.m / totalMass;
-          A.x -= nx * overlap * ratioA;
-          A.y -= ny * overlap * ratioA;
-          B.x += nx * overlap * ratioB;
-          B.y += ny * overlap * ratioB;
-          const rvx = B.vx - A.vx, rvy = B.vy - A.vy;
-          const relVel = rvx*nx + rvy*ny;
-          if(relVel > 0) continue;
-          const e = restitution;
-          const jImp = -(1 + e) * relVel / (1/A.m + 1/B.m);
-          const ix = jImp * nx, iy = jImp * ny;
-          A.vx -= ix / A.m; A.vy -= iy / A.m;
-          B.vx += ix / B.m; B.vy += iy / B.m;
+        const ball2 = balls[j];
+        
+        const dx = ball2.x - ball1.x;
+        const dy = ball2.y - ball1.y;
+        const distance = Math.sqrt(dx*dx + dy*dy);
+        const minDistance = ball1.r + ball2.r;
+        
+        if(distance < minDistance && distance > 0){
+          const overlap = minDistance - distance;
+          const nx = dx / distance;
+          const ny = dy / distance;
+          
+          // 由于所有小球质量相同，简化为均分重叠距离
+          const moveDistance = overlap * 0.5;
+          
+          ball1.x -= nx * moveDistance;
+          ball1.y -= ny * moveDistance;
+          ball2.x += nx * moveDistance;
+          ball2.y += ny * moveDistance;
         }
       }
     }
-    for(let b of balls){
-      if(b.x - b.r < box.x){ b.x = box.x + b.r; if(b.vx < 0) b.vx = -b.vx * restitution; }
-      if(b.x + b.r > box.x + box.w){ b.x = box.x + box.w - b.r; if(b.vx > 0) b.vx = -b.vx * restitution; }
-      if(b.y - b.r < box.y){ b.y = box.y + b.r; if(b.vy < 0) b.vy = -b.vy * restitution; }
-      if(b.y + b.r > box.y + box.h){ b.y = box.y + box.h - b.r; if(b.vy > 0) b.vy = -b.vy * restitution; b.vx *= 0.999; }
+  }
+  
+  function solveBoundaryCollisions(){
+    const box = containerSize();
+    
+    for(const ball of balls){
+      // 保存原始速度
+      const originalVx = ball.x - ball.oldX;
+      const originalVy = ball.y - ball.oldY;
+      
+      // 左边界
+      if(ball.x - ball.r < box.x){
+        ball.x = box.x + ball.r;
+        ball.oldX = ball.x + originalVx * restitution; // 反向弹性速度
+      }
+      
+      // 右边界
+      if(ball.x + ball.r > box.x + box.w){
+        ball.x = box.x + box.w - ball.r;
+        ball.oldX = ball.x + originalVx * restitution; // 反向弹性速度
+      }
+      
+      // 上边界
+      if(ball.y - ball.r < box.y){
+        ball.y = box.y + ball.r;
+        ball.oldY = ball.y + originalVy * restitution; // 反向弹性速度
+      }
+      
+      // 下边界
+      if(ball.y + ball.r > box.y + box.h){
+        ball.y = box.y + box.h - ball.r;
+        ball.oldY = ball.y + originalVy * restitution; // 反向弹性速度
+        // 添加摩擦力
+        ball.oldX = ball.x + originalVx * 0.999;
+      }
     }
   }
 
   function step(dt){
-    const substeps = Math.max(1, parseInt(substepsRange.value,10));
-    const subdt = dt / substeps;
+    const iterations = substeps;
+    const subStep = dt / iterations;
     const gravity = parseFloat(gravityRange.value);
-    for(let s=0;s<substeps;s++){
-      for(let b of balls){ b.vy += gravity * subdt; b.x += b.vx * subdt; b.y += b.vy * subdt; }
-      resolveCollisions();
+    
+    for(let i = 0; i < iterations; i++){
+      // Verlet积分更新位置
+      for(const ball of balls){
+        let velX = ball.x - ball.oldX;
+        let velY = ball.y - ball.oldY;
+        
+        // 速度限制：禁止超过300
+        const speed = Math.sqrt(velX * velX + velY * velY);
+        if (speed > 80) {
+          const scale = 80 / speed;
+          velX *= scale;
+          velY *= scale;
+        }
+        
+        ball.oldX = ball.x;
+        ball.oldY = ball.y;
+        
+        // 计算重力加速度
+        const gravityAccel = gravity * subStep * subStep * 10;
+        
+        // 加速度限制：不能超过两倍的重力加速度
+        const maxAccel = Math.abs(gravity * subStep * subStep * 10 * 2);
+        let accelX = 0;
+        let accelY = gravityAccel;
+        
+        const totalAccel = Math.sqrt(accelX * accelX + accelY * accelY);
+        if (totalAccel > maxAccel) {
+          const accelScale = maxAccel / totalAccel;
+          accelX *= accelScale;
+          accelY *= accelScale;
+        }
+        
+        ball.x += velX;
+        ball.y += velY + accelY; // 使用限制后的加速度
+      }
+      
+      // 约束求解
+      solveBallCollisions();
+      solveBoundaryCollisions();
     }
   }
 
