@@ -193,7 +193,8 @@
     if (isMobile) {
       // 手机端：使用容器实际可用宽度，考虑padding
       const availableWidth = rect.width;
-      const availableHeight = window.innerHeight * 0.85; // 为控制面板留出空间
+      const availableHeight = availableWidth * 4/3;
+      // const availableHeight = window.innerHeight * 0.85; // 为控制面板留出空间
       
       // 根据头像比例计算最佳尺寸
       if (avatarAspectRatio > 1) {
@@ -278,7 +279,7 @@
     if (isCalculating && avatarImageData) {
       const targetCount = parseInt(targetCountInput.value);
       const currentCount = balls.length;
-      const progress = Math.min((currentCount / targetCount) * 99, 99); // 最多显示99%
+      const progress = Math.min((currentCount / targetCount) * 90, 90); // 最多显示99%
       
       progressFill.style.width = progress + '%';
       progressText.textContent = `正在计算位置... ${currentCount}/${targetCount} (${Math.round(progress)}%)`;
@@ -461,7 +462,7 @@
   
   function startCalculation() {
     if (!avatarImageData) {
-      progressText.textContent = '请先上传图片';
+      progressText.textContent = '请先选择图片';
       return;
     }
     
@@ -724,7 +725,7 @@
         canvas.style.cursor = 'pointer';
         // 重置进度条为准备状态
         progressFill.style.width = '0%';
-        progressText.textContent = '点击画布上传图片';
+        progressText.textContent = '点击画布选择图片';
       } else {
         canvas.style.cursor = 'default';
         // 只有在没有计算过位置时才重置进度条
@@ -937,7 +938,7 @@
       ctx.fillStyle = 'rgba(255,255,255,0.5)';
       ctx.font = '16px system-ui';
       ctx.textAlign = 'center';
-      ctx.fillText('点击上传图片', box.x + box.w/2, box.y + box.h/2 - 10);
+      ctx.fillText('点击选择图片', box.x + box.w/2, box.y + box.h/2 - 10);
       ctx.fillText('📷', box.x + box.w/2, box.y + box.h/2 + 20);
       ctx.textAlign = 'left';
       return;
