@@ -1,1179 +1,671 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>五笔打字练习</title>
-<style>
-  :root {
-    --bg: #0d0d12;
-    --surface: #18181f;
-    --surface2: #24242f;
-    --border: #2a2a38;
-    --text: #ececee;
-    --text2: #8888a0;
-    --text3: #5c5c72;
-    --accent: #818cf8;
-    --accent-dim: rgba(129,140,248,0.12);
-    --accent-glow: rgba(129,140,248,0.3);
-    --green: #34d399;
-    --green-dim: rgba(52,211,153,0.12);
-    --red: #f87171;
-    --red-dim: rgba(248,113,113,0.12);
-    --yellow: #fbbf24;
-    --yellow-dim: rgba(251,191,36,0.12);
-    --orange: #fb923c;
-    --orange-dim: rgba(251,146,60,0.12);
-    --radius: 14px;
-    --radius-sm: 8px;
-    --radius-xs: 6px;
-  }
-  * { margin: 0; padding: 0; box-sizing: border-box; }
-  body {
-    font-family: -apple-system, "PingFang SC", "Microsoft YaHei", "Noto Sans SC", sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  .container {
-    width: 100%;
-    max-width: 520px;
-    padding: 32px 20px 40px;
-  }
-
-  /* Header — minimal */
-  header {
-    text-align: center;
-    margin-bottom: 28px;
-  }
-  header h1 {
-    font-size: 20px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-    color: var(--text);
-  }
-  header .sub {
-    color: var(--text3);
-    font-size: 12px;
-    margin-top: 4px;
-  }
-
-  /* Stats — inline, subtle */
-  .stats {
-    display: flex;
-    gap: 0;
-    justify-content: center;
-    margin-bottom: 28px;
-  }
-  .stat-card {
-    text-align: center;
-    padding: 0 18px;
-  }
-  .stat-card + .stat-card {
-    border-left: 1px solid var(--border);
-  }
-  .stat-card .val {
-    font-size: 24px;
-    font-weight: 700;
-    color: var(--text);
-    font-variant-numeric: tabular-nums;
-  }
-  .stat-card .lbl {
-    font-size: 11px;
-    color: var(--text3);
-    margin-top: 2px;
-    letter-spacing: 0.3px;
-  }
-
-  /* Mode switcher — clean pill group */
-  .mode-switcher {
-    display: flex;
-    gap: 4px;
-    margin-bottom: 24px;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 4px;
-  }
-  .mode-btn {
-    flex: 1;
-    text-align: center;
-    padding: 10px 6px;
-    font-size: 13px;
-    font-weight: 500;
-    border-radius: 11px;
-    cursor: pointer;
-    color: var(--text3);
-    transition: all 0.2s ease;
-    border: none;
-    background: transparent;
-    line-height: 1.35;
-  }
-  .mode-btn .icon { display: block; font-size: 16px; margin-bottom: 1px; }
-  .mode-btn .desc { font-size: 10px; display: block; margin-top: 1px; opacity: 0.7; }
-  .mode-btn.active {
-    background: var(--accent-dim);
-    color: var(--accent);
-    font-weight: 600;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
-  }
-  .mode-btn.active .desc { opacity: 1; }
-  .mode-btn:hover:not(.active) {
-    color: var(--text2);
-  }
-
-  /* Character stage — calm & centered */
-  .char-stage {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 44px 24px 36px;
-    text-align: center;
-    margin-bottom: 20px;
-    position: relative;
-    transition: border-color 0.3s ease, box-shadow 0.3s ease;
-  }
-  .char-stage.correct-flash {
-    border-color: var(--green);
-    box-shadow: 0 0 0 3px var(--green-dim);
-  }
-  .char-stage.wrong-flash {
-    border-color: var(--red);
-    box-shadow: 0 0 0 3px var(--red-dim);
-  }
-  .char-display {
-    font-size: 88px;
-    font-weight: 700;
-    line-height: 1.1;
-    color: var(--text);
-    letter-spacing: 2px;
-  }
-  .code-display {
-    font-family: "SF Mono", "Consolas", "Courier New", "JetBrains Mono", monospace;
-    font-size: 28px;
-    color: var(--accent);
-    letter-spacing: 5px;
-    margin-top: 10px;
-    font-weight: 500;
-  }
-  .char-meta {
-    font-size: 11px;
-    color: var(--text3);
-    margin-top: 8px;
-  }
-  .mode-label {
-    display: inline-block;
-    font-size: 10px;
-    padding: 3px 10px;
-    border-radius: 20px;
-    margin-bottom: 10px;
-    font-weight: 600;
-    letter-spacing: 0.5px;
-  }
-  .mode-label.copy { background: var(--green-dim); color: var(--green); }
-  .mode-label.lookup { background: var(--yellow-dim); color: var(--yellow); }
-  .mode-label.blind { background: var(--red-dim); color: var(--red); }
-
-  /* Input area */
-  .input-area {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 10px;
-    align-items: center;
-  }
-  .input-area input {
-    flex: 1;
-    padding: 16px 20px;
-    font-size: 24px;
-    font-family: "SF Mono", "Consolas", "Courier New", "JetBrains Mono", monospace;
-    background: var(--surface);
-    border: 1.5px solid var(--border);
-    border-radius: var(--radius);
-    color: var(--text);
-    outline: none;
-    transition: border-color 0.2s ease, box-shadow 0.2s ease;
-    letter-spacing: 4px;
-    text-transform: lowercase;
-  }
-  .input-area input::placeholder {
-    color: var(--text3);
-    letter-spacing: 1px;
-    font-size: 15px;
-  }
-  .input-area input:focus {
-    border-color: var(--accent);
-    box-shadow: 0 0 0 3px var(--accent-glow);
-  }
-  .input-area input.wrong-input {
-    border-color: var(--red);
-    box-shadow: 0 0 0 3px var(--red-dim);
-  }
-  .submit-btn {
-    padding: 16px 28px;
-    font-size: 15px;
-    font-weight: 600;
-    background: var(--accent);
-    color: #fff;
-    border: none;
-    border-radius: var(--radius);
-    cursor: pointer;
-    transition: background 0.2s ease, transform 0.1s ease;
-    white-space: nowrap;
-    letter-spacing: 0.5px;
-  }
-  .submit-btn:hover { background: #7477e6; }
-  .submit-btn:active { transform: scale(0.97); }
-  .submit-btn.retry { background: var(--orange); }
-  .submit-btn.retry:hover { background: #e8842a; }
-
-  /* Feedback */
-  .feedback {
-    text-align: center;
-    min-height: 26px;
-    font-size: 14px;
-    margin-bottom: 6px;
-    line-height: 1.5;
-  }
-  .feedback .correct { color: var(--green); font-weight: 600; }
-  .feedback .wrong { color: var(--red); font-weight: 600; }
-  .feedback .hint { color: var(--yellow); }
-  .feedback .retry-msg { color: var(--orange); font-weight: 600; }
-
-  /* Hint row — lighter secondary actions */
-  .hint-row {
-    display: flex;
-    gap: 6px;
-    justify-content: center;
-    flex-wrap: wrap;
-    margin-bottom: 24px;
-  }
-  .hint-row button {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text3);
-    padding: 6px 14px;
-    border-radius: var(--radius-xs);
-    cursor: pointer;
-    font-size: 12px;
-    transition: all 0.15s ease;
-  }
-  .hint-row button:hover {
-    border-color: var(--text2);
-    color: var(--text2);
-  }
-  .hint-row button.used-hint { opacity: 0.3; pointer-events: none; }
-
-  /* Lookup keyboard ref (compact) */
-  .lookup-kb {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius-sm);
-    padding: 12px;
-    margin-bottom: 16px;
-  }
-  .lookup-kb .kb-rows { display: flex; flex-direction: column; gap: 2px; align-items: center; }
-  .lookup-kb .kb-row { display: flex; gap: 2px; }
-  .lookup-kb .kb-key {
-    width: 30px; height: 30px;
-    background: var(--surface2);
-    border-radius: 5px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 10px;
-    color: var(--text3);
-    font-family: "SF Mono", "Consolas", monospace;
-    font-weight: 500;
-    transition: all 0.15s ease;
-  }
-  .lookup-kb .kb-key.highlight {
-    background: var(--accent);
-    color: #fff;
-    transform: scale(1.15);
-    box-shadow: 0 0 8px var(--accent-glow);
-  }
-  .lookup-kb .zone-label {
-    text-align: center;
-    font-size: 10px;
-    color: var(--text3);
-    margin-top: 8px;
-  }
-
-  /* Bottom nav */
-  .bottom-nav {
-    display: flex;
-    gap: 8px;
-    justify-content: center;
-    margin-top: 8px;
-  }
-  .bottom-nav button {
-    background: transparent;
-    border: 1px solid var(--border);
-    color: var(--text3);
-    padding: 8px 18px;
-    border-radius: var(--radius-xs);
-    cursor: pointer;
-    font-size: 13px;
-    transition: all 0.15s ease;
-  }
-  .bottom-nav button:hover {
-    border-color: var(--text2);
-    color: var(--text2);
-  }
-  .bottom-nav button .badge {
-    background: var(--red);
-    color: #fff;
-    border-radius: 50%;
-    padding: 1px 6px;
-    font-size: 10px;
-    margin-left: 4px;
-    font-weight: 600;
-  }
-
-  /* Panel overlay */
-  .panel-overlay {
-    display: none;
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0,0,0,0.5);
-    backdrop-filter: blur(4px);
-    z-index: 100;
-    justify-content: center;
-    align-items: flex-start;
-    padding-top: 80px;
-  }
-  .panel-overlay.show { display: flex; }
-  .panel {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 24px;
-    width: 100%;
-    max-width: 480px;
-    max-height: 70vh;
-    overflow-y: auto;
-    margin: 0 16px;
-    box-shadow: 0 20px 60px rgba(0,0,0,0.4);
-  }
-  .panel h3 {
-    font-size: 15px;
-    margin-bottom: 16px;
-    font-weight: 600;
-  }
-  .panel .close-btn {
-    float: right;
-    background: transparent;
-    border: none;
-    color: var(--text3);
-    font-size: 22px;
-    cursor: pointer;
-    padding: 0 4px;
-    line-height: 1;
-    transition: color 0.15s;
-  }
-  .panel .close-btn:hover { color: var(--text); }
-  .wrong-item {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 12px 0;
-    border-bottom: 1px solid var(--border);
-  }
-  .wrong-item:last-child { border-bottom: none; }
-  .wrong-char { font-size: 22px; font-weight: 600; }
-  .wrong-code { font-family: "SF Mono", "Consolas", monospace; color: var(--accent); letter-spacing: 3px; font-size: 15px; }
-  .wrong-count { font-size: 11px; color: var(--red); }
-  .empty-state { text-align: center; color: var(--text3); padding: 40px 0; font-size: 14px; }
-
-  .kb-ref-full { margin-top: 12px; }
-  .kb-ref-full .kb-rows { display: flex; flex-direction: column; gap: 3px; align-items: center; }
-  .kb-ref-full .kb-row { display: flex; gap: 3px; }
-  .kb-ref-full .kb-key {
-    width: 38px; height: 40px;
-    background: var(--surface2);
-    border-radius: 6px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-size: 12px;
-    font-weight: 600;
-    color: var(--text);
-    font-family: "SF Mono", "Consolas", monospace;
-  }
-  .kb-ref-full .kb-key .zone { font-size: 8px; color: var(--text3); font-weight: 400; margin-top: 1px; }
-
-  /* Responsive */
-  @media (max-width: 420px) {
-    .container { padding: 20px 14px 32px; }
-    .char-display { font-size: 68px; }
-    .code-display { font-size: 24px; }
-    .stat-card { padding: 0 12px; }
-    .stat-card .val { font-size: 20px; }
-    .mode-btn { font-size: 11px; padding: 8px 4px; }
-    .input-area input { font-size: 20px; padding: 14px 16px; }
-    .submit-btn { padding: 14px 20px; font-size: 14px; }
-  }
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>五笔查表练习</title>
+  <link rel="stylesheet" href="/design-tokens.css" />
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: var(--font-sans);
+      color: var(--color-text);
+      background:
+        radial-gradient(circle at 20% 0%, rgba(221, 198, 166, .38), transparent 28rem),
+        linear-gradient(180deg, #fbf7ef 0%, var(--color-bg) 100%);
+    }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    .app {
+      width: min(1440px, 100%);
+      margin: 0 auto;
+      padding: 32px 24px 40px;
+    }
+    .site-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 24px;
+      margin-bottom: 24px;
+    }
+    .eyebrow {
+      margin: 0 0 8px;
+      color: var(--color-accent);
+      font-size: 13px;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+    h1 {
+      margin: 0;
+      font-size: clamp(28px, 4vw, 48px);
+      letter-spacing: -.04em;
+      line-height: 1.08;
+    }
+    .subtitle {
+      margin: 12px 0 0;
+      max-width: 680px;
+      color: var(--color-text-secondary);
+      line-height: 1.8;
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(76px, 1fr));
+      gap: 10px;
+      min-width: min(440px, 100%);
+    }
+    .stat {
+      padding: 14px 16px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: rgba(255, 253, 248, .72);
+      backdrop-filter: blur(12px);
+      text-align: center;
+    }
+    .stat strong {
+      display: block;
+      font-family: var(--font-mono);
+      font-size: 22px;
+      line-height: 1;
+    }
+    .stat span {
+      display: block;
+      margin-top: 7px;
+      color: var(--color-text-muted);
+      font-size: 12px;
+    }
+    .workspace {
+      display: grid;
+      grid-template-columns: minmax(340px, 450px) minmax(520px, 1fr);
+      gap: 20px;
+      align-items: start;
+    }
+    .panel {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      background: rgba(255, 253, 248, .88);
+      box-shadow: var(--shadow-xl);
+    }
+    .practice-panel {
+      position: sticky;
+      top: 20px;
+      padding: 24px;
+    }
+    .mode-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 5px;
+      border: 1px solid var(--color-border);
+      border-radius: 999px;
+      background: var(--color-surface2);
+    }
+    .mode-tab {
+      border: 0;
+      border-radius: 999px;
+      padding: 11px 14px;
+      background: transparent;
+      color: var(--color-text-secondary);
+      font-weight: 700;
+    }
+    .mode-tab.active {
+      background: var(--color-surface);
+      color: var(--color-text);
+      box-shadow: 0 7px 18px rgba(95, 65, 36, .12);
+    }
+    .mode-note {
+      min-height: 44px;
+      margin: 14px 0 20px;
+      color: var(--color-text-secondary);
+      font-size: 14px;
+      line-height: 1.6;
+    }
+    .char-card {
+      display: grid;
+      place-items: center;
+      min-height: 210px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      background: linear-gradient(180deg, #fffdfa, #f5ecde);
+      position: relative;
+      overflow: hidden;
+    }
+    .char-card::after {
+      content: "";
+      position: absolute;
+      inset: 18px;
+      border: 1px solid rgba(155, 95, 47, .12);
+      border-radius: 20px;
+      pointer-events: none;
+    }
+    .target-char {
+      font-size: clamp(86px, 16vw, 140px);
+      line-height: 1;
+      font-weight: 500;
+      letter-spacing: -.08em;
+    }
+    .char-info {
+      margin: 14px 0 0;
+      text-align: center;
+      color: var(--color-text-secondary);
+      font-size: 13px;
+    }
+    .input-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .code-input {
+      width: 100%;
+      border: 1.5px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: var(--color-surface);
+      padding: 16px 18px;
+      font-family: var(--font-mono);
+      font-size: 28px;
+      letter-spacing: .22em;
+      text-transform: lowercase;
+      outline: none;
+      color: var(--color-text);
+    }
+    .code-input:focus {
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 4px rgba(155, 95, 47, .13);
+    }
+    .code-input.error {
+      border-color: var(--color-error);
+      box-shadow: 0 0 0 4px rgba(183, 91, 75, .14);
+    }
+    .primary-btn {
+      border: 0;
+      border-radius: var(--radius-md);
+      padding: 0 22px;
+      background: var(--color-text);
+      color: #fffaf0;
+      font-weight: 800;
+    }
+    .feedback {
+      min-height: 34px;
+      margin: 14px 0 0;
+      color: var(--color-text-secondary);
+      line-height: 1.7;
+      text-align: center;
+    }
+    .feedback.good { color: var(--color-success); font-weight: 700; }
+    .feedback.bad { color: var(--color-error); font-weight: 700; }
+    .hint-actions {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-top: 14px;
+    }
+    .ghost-btn {
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-sm);
+      background: transparent;
+      color: var(--color-text-secondary);
+      padding: 10px 8px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+    .ghost-btn:hover { color: var(--color-accent); border-color: var(--color-accent-dim); background: #fff8ef; }
+    .table-panel { padding: 22px; }
+    .table-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: end;
+      margin-bottom: 18px;
+    }
+    .table-head h2 { margin: 0; font-size: 22px; letter-spacing: -.03em; }
+    .table-head p { margin: 6px 0 0; color: var(--color-text-secondary); font-size: 14px; line-height: 1.6; }
+    .search-box {
+      width: min(260px, 100%);
+      border: 1px solid var(--color-border);
+      border-radius: 999px;
+      background: var(--color-surface);
+      padding: 11px 15px;
+      outline: none;
+    }
+    .keyboard {
+      display: grid;
+      gap: 12px;
+    }
+    .key-row {
+      display: grid;
+      gap: 10px;
+      grid-template-columns: repeat(10, minmax(0, 1fr));
+    }
+    .key-row.home { grid-template-columns: .45fr repeat(9, minmax(0, 1fr)) .45fr; }
+    .key-row.bottom { grid-template-columns: 1.15fr repeat(7, minmax(0, 1fr)) 2.15fr; }
+    .key-spacer { min-width: 0; }
+    .root-key {
+      min-height: 142px;
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      background: #fffaf2;
+      padding: 12px;
+      text-align: left;
+      transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease, background .16s ease;
+    }
+    .root-key:hover, .root-key.active {
+      transform: translateY(-2px);
+      border-color: var(--color-accent);
+      box-shadow: 0 14px 32px rgba(116, 78, 42, .14);
+      background: #fff7e8;
+    }
+    .root-key.hinted {
+      border-color: var(--color-accent);
+      background: var(--color-accent-dim);
+      box-shadow: 0 0 0 4px rgba(155, 95, 47, .12);
+    }
+    .key-top {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .key-letter {
+      font-family: var(--font-mono);
+      font-size: 22px;
+      font-weight: 900;
+    }
+    .key-zone { color: var(--color-text-muted); font-size: 12px; }
+    .key-label { font-size: 20px; font-weight: 800; margin-bottom: 6px; }
+    .key-mnemonic { color: var(--color-accent); font-size: 13px; line-height: 1.5; margin-bottom: 8px; }
+    .root-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+    .root-chip {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid rgba(155, 95, 47, .14);
+      border-radius: 999px;
+      background: rgba(255, 253, 248, .74);
+      padding: 3px 7px;
+      font-size: 12px;
+      color: var(--color-text-secondary);
+      line-height: 1.2;
+    }
+    .detail-card {
+      margin-top: 16px;
+      padding: 16px;
+      border: 1px dashed var(--color-border);
+      border-radius: var(--radius-md);
+      background: rgba(241, 234, 223, .55);
+      color: var(--color-text-secondary);
+      line-height: 1.8;
+    }
+    .mistakes {
+      margin-top: 18px;
+      border-top: 1px solid var(--color-border);
+      padding-top: 16px;
+    }
+    .mistakes h3 { margin: 0 0 10px; font-size: 15px; }
+    .mistake-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      min-height: 32px;
+      color: var(--color-text-muted);
+      font-size: 13px;
+    }
+    .mistake-pill {
+      border: 1px solid var(--color-border);
+      border-radius: 999px;
+      padding: 6px 10px;
+      background: var(--color-surface);
+      color: var(--color-text-secondary);
+      font-family: var(--font-mono);
+    }
+    @media (max-width: 980px) {
+      .site-header { display: block; }
+      .stats { margin-top: 20px; }
+      .workspace { grid-template-columns: 1fr; }
+      .practice-panel { position: static; }
+    }
+    @media (max-width: 620px) {
+      .app { padding: 20px 12px 28px; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .input-row { grid-template-columns: 1fr; }
+      .primary-btn { min-height: 50px; }
+      .hint-actions { grid-template-columns: 1fr; }
+      .table-head { display: block; }
+      .search-box { width: 100%; margin-top: 14px; }
+      .key-row, .key-row.home, .key-row.bottom { grid-template-columns: 1fr; }
+      .key-spacer { display: none; }
+      .root-key { min-height: auto; }
+    }
+  </style>
 </head>
 <body>
-<div class="container">
-  <header>
-    <h1>五笔打字练习</h1>
-    <div class="sub">五笔86版 · 编码肌肉记忆训练器</div>
-  </header>
-
-  <div class="stats">
-    <div class="stat-card"><div class="val" id="totalCount">0</div><div class="lbl">总练习</div></div>
-    <div class="stat-card"><div class="val" id="accPct">-</div><div class="lbl">准确率</div></div>
-    <div class="stat-card"><div class="val" id="streakVal">0</div><div class="lbl">连对</div></div>
-    <div class="stat-card"><div class="val" id="wrongCount">0</div><div class="lbl">错题</div></div>
-  </div>
-
-  <!-- Mode switcher -->
-  <div class="mode-switcher" id="modeSwitcher">
-    <button class="mode-btn active" data-mode="copy">
-      <span class="icon">📋</span>抄写模式
-      <span class="desc">看编码照打</span>
-    </button>
-    <button class="mode-btn" data-mode="lookup">
-      <span class="icon">🔍</span>查表模式
-      <span class="desc">看字根推导</span>
-    </button>
-    <button class="mode-btn" data-mode="blind">
-      <span class="icon">🧠</span>盲打模式
-      <span class="desc">纯记忆输入</span>
-    </button>
-  </div>
-
-  <!-- Practice area -->
-  <div class="char-stage" id="charStage">
-    <div class="mode-label copy" id="modeLabel">抄写模式</div>
-    <div class="char-display" id="charDisplay">我</div>
-    <div class="code-display" id="codeDisplay">q</div>
-    <div class="char-meta" id="charMeta">编码长度 1</div>
-  </div>
-
-  <!-- Lookup: keyboard reference (only shown in lookup mode) -->
-  <div class="lookup-kb" id="lookupKb" style="display:none;">
-    <div class="kb-rows" id="lookupKbRows"></div>
-    <div class="zone-label">五笔86字根键盘 · 点击按键高亮定位</div>
-  </div>
-
-  <div class="feedback" id="feedback"></div>
-
-  <div class="input-area">
-    <input type="text" id="codeInput" placeholder="输入五笔编码..." autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false">
-    <button class="submit-btn" id="submitBtn">确认</button>
-  </div>
-
-  <!-- Hint buttons (contextual per mode) -->
-  <div class="hint-row" id="hintRow">
-    <button id="hintFirst">🔤 显示首码</button>
-    <button id="hintNext">➕ 显示下一码</button>
-    <button id="hintAll">💡 显示答案</button>
-    <button id="skipBtn">⏭ 跳过</button>
-  </div>
-
-  <!-- Bottom nav -->
-  <div class="bottom-nav">
-    <button id="reviewBtn">🔄 易错复习 <span class="badge" id="reviewBadge" style="display:none;">0</span></button>
-    <button id="kbRefBtn">⌨ 键位参考</button>
-  </div>
-</div>
-
-<!-- Review panel overlay -->
-<div class="panel-overlay" id="reviewPanel">
-  <div class="panel">
-    <button class="close-btn" id="reviewClose">&times;</button>
-    <h3>🔄 易错字复习队列</h3>
-    <div id="wrongList"></div>
-  </div>
-</div>
-
-<!-- Keyboard reference panel overlay -->
-<div class="panel-overlay" id="kbPanel">
-  <div class="panel">
-    <button class="close-btn" id="kbClose">&times;</button>
-    <h3>五笔86版字根键盘</h3>
-    <div class="kb-ref-full">
-      <div class="kb-rows">
-        <div class="kb-row">
-          <span class="kb-key">Q<span class="zone">金</span></span>
-          <span class="kb-key">W<span class="zone">人</span></span>
-          <span class="kb-key">E<span class="zone">月</span></span>
-          <span class="kb-key">R<span class="zone">白</span></span>
-          <span class="kb-key">T<span class="zone">禾</span></span>
-          <span class="kb-key">Y<span class="zone">言</span></span>
-          <span class="kb-key">U<span class="zone">立</span></span>
-          <span class="kb-key">I<span class="zone">水</span></span>
-          <span class="kb-key">O<span class="zone">火</span></span>
-          <span class="kb-key">P<span class="zone">之</span></span>
-        </div>
-        <div class="kb-row">
-          <span class="kb-key">A<span class="zone">工</span></span>
-          <span class="kb-key">S<span class="zone">木</span></span>
-          <span class="kb-key">D<span class="zone">大</span></span>
-          <span class="kb-key">F<span class="zone">土</span></span>
-          <span class="kb-key">G<span class="zone">王</span></span>
-          <span class="kb-key">H<span class="zone">目</span></span>
-          <span class="kb-key">J<span class="zone">日</span></span>
-          <span class="kb-key">K<span class="zone">口</span></span>
-          <span class="kb-key">L<span class="zone">田</span></span>
-        </div>
-        <div class="kb-row" style="margin-left:20px;">
-          <span class="kb-key">X<span class="zone">纟</span></span>
-          <span class="kb-key">C<span class="zone">又</span></span>
-          <span class="kb-key">V<span class="zone">女</span></span>
-          <span class="kb-key">B<span class="zone">子</span></span>
-          <span class="kb-key">N<span class="zone">已</span></span>
-          <span class="kb-key">M<span class="zone">山</span></span>
-        </div>
+  <main class="app">
+    <header class="site-header">
+      <div>
+        <p class="eyebrow">Wubi 86 Trainer</p>
+        <h1>先查表，再盲打。</h1>
+        <p class="subtitle">用详尽字根表辅助推导编码，再进入盲打检验。网页不做输入法，只训练五笔 86 的字根、键位与编码记忆。</p>
       </div>
-      <p style="text-align:center;color:var(--text2);font-size:11px;margin-top:10px;">
-        横区 G–A · 竖区 H–M · 撇区 T–Q · 捺区 Y–P · 折区 N–X
-      </p>
-    </div>
-  </div>
-</div>
+      <section class="stats" aria-label="练习统计">
+        <div class="stat"><strong id="totalCount">0</strong><span>练习</span></div>
+        <div class="stat"><strong id="accuracy">0%</strong><span>准确率</span></div>
+        <div class="stat"><strong id="streak">0</strong><span>连对</span></div>
+        <div class="stat"><strong id="wrongCount">0</strong><span>错题</span></div>
+      </section>
+    </header>
 
-<script>
-// ====== Wubi 86 Character Database ======
-const level1 = [
-  { char: '一', code: 'g',   difficulty: 1 },
-  { char: '地', code: 'f',   difficulty: 1 },
-  { char: '在', code: 'd',   difficulty: 1 },
-  { char: '要', code: 's',   difficulty: 1 },
-  { char: '工', code: 'a',   difficulty: 1 },
-  { char: '上', code: 'h',   difficulty: 1 },
-  { char: '是', code: 'j',   difficulty: 1 },
-  { char: '中', code: 'k',   difficulty: 1 },
-  { char: '国', code: 'l',   difficulty: 1 },
-  { char: '同', code: 'm',   difficulty: 1 },
-  { char: '和', code: 't',   difficulty: 1 },
-  { char: '的', code: 'r',   difficulty: 1 },
-  { char: '有', code: 'e',   difficulty: 1 },
-  { char: '人', code: 'w',   difficulty: 1 },
-  { char: '我', code: 'q',   difficulty: 1 },
-  { char: '主', code: 'y',   difficulty: 1 },
-  { char: '产', code: 'u',   difficulty: 1 },
-  { char: '不', code: 'i',   difficulty: 1 },
-  { char: '为', code: 'o',   difficulty: 1 },
-  { char: '这', code: 'p',   difficulty: 1 },
-  { char: '民', code: 'n',   difficulty: 1 },
-  { char: '了', code: 'b',   difficulty: 1 },
-  { char: '发', code: 'v',   difficulty: 1 },
-  { char: '以', code: 'c',   difficulty: 1 },
-  { char: '经', code: 'x',   difficulty: 1 },
-];
+    <section class="workspace">
+      <aside class="panel practice-panel">
+        <div class="mode-tabs" role="tablist" aria-label="练习模式">
+          <button class="mode-tab active" data-mode="lookup" type="button">查表推导</button>
+          <button class="mode-tab" data-mode="blind" type="button">盲打检验</button>
+        </div>
+        <p class="mode-note" id="modeNote">对照右侧字根表推导编码。提示不会直接替你完成，只会逐步高亮相关键位。</p>
 
-const level2 = [
-  { char: '大', code: 'dd', difficulty: 1 }, { char: '小', code: 'ih', difficulty: 1 },
-  { char: '多', code: 'qq', difficulty: 1 }, { char: '少', code: 'it', difficulty: 1 },
-  { char: '天', code: 'gd', difficulty: 2 }, { char: '学', code: 'ip', difficulty: 2 },
-  { char: '生', code: 'tg', difficulty: 2 }, { char: '会', code: 'wf', difficulty: 2 },
-  { char: '年', code: 'rh', difficulty: 2 }, { char: '月', code: 'eee', difficulty: 2 },
-  { char: '日', code: 'jjj', difficulty: 1 }, { char: '时', code: 'jf', difficulty: 2 },
-  { char: '间', code: 'uj', difficulty: 2 }, { char: '出', code: 'bm', difficulty: 2 },
-  { char: '来', code: 'go', difficulty: 2 }, { char: '去', code: 'fcu', difficulty: 2 },
-  { char: '看', code: 'rhf', difficulty: 2 }, { char: '说', code: 'yu', difficulty: 2 },
-  { char: '话', code: 'ytd', difficulty: 2 }, { char: '写', code: 'pgn', difficulty: 2 },
-  { char: '字', code: 'pb', difficulty: 2 }, { char: '好', code: 'vb', difficulty: 2 },
-  { char: '女', code: 'vvv', difficulty: 1 }, { char: '子', code: 'bb', difficulty: 1 },
-  { char: '男', code: 'll', difficulty: 2 }, { char: '水', code: 'ii', difficulty: 1 },
-  { char: '火', code: 'ooo', difficulty: 1 }, { char: '土', code: 'fff', difficulty: 1 },
-  { char: '木', code: 'sss', difficulty: 1 }, { char: '金', code: 'qqq', difficulty: 1 },
-  { char: '山', code: 'mmm', difficulty: 1 }, { char: '石', code: 'dgtg', difficulty: 2 },
-  { char: '田', code: 'lll', difficulty: 1 }, { char: '白', code: 'rrr', difficulty: 1 },
-  { char: '目', code: 'hhhh', difficulty: 1 }, { char: '口', code: 'kkk', difficulty: 1 },
-  { char: '手', code: 'rt', difficulty: 2 }, { char: '心', code: 'ny', difficulty: 2 },
-  { char: '力', code: 'lt', difficulty: 2 }, { char: '电', code: 'jn', difficulty: 2 },
-  { char: '车', code: 'lg', difficulty: 2 }, { char: '马', code: 'cn', difficulty: 2 },
-  { char: '牛', code: 'rhk', difficulty: 2 }, { char: '羊', code: 'udj', difficulty: 2 },
-  { char: '鱼', code: 'qgf', difficulty: 2 }, { char: '虫', code: 'jhny', difficulty: 2 },
-  { char: '花', code: 'awx', difficulty: 2 }, { char: '草', code: 'ajj', difficulty: 2 },
-  { char: '树', code: 'scf', difficulty: 2 }, { char: '开', code: 'ga', difficulty: 2 },
-  { char: '关', code: 'ud', difficulty: 2 }, { char: '门', code: 'uyh', difficulty: 2 },
-  { char: '前', code: 'ue', difficulty: 3 }, { char: '后', code: 'rg', difficulty: 2 },
-  { char: '左', code: 'da', difficulty: 2 }, { char: '右', code: 'dk', difficulty: 2 },
-  { char: '东', code: 'ai', difficulty: 2 }, { char: '西', code: 'sghg', difficulty: 2 },
-  { char: '南', code: 'fm', difficulty: 2 }, { char: '北', code: 'ux', difficulty: 2 },
-  { char: '高', code: 'ym', difficulty: 2 }, { char: '低', code: 'wqa', difficulty: 3 },
-  { char: '长', code: 'ta', difficulty: 2 }, { char: '短', code: 'tdg', difficulty: 2 },
-  { char: '新', code: 'usr', difficulty: 3 }, { char: '旧', code: 'hj', difficulty: 2 },
-  { char: '快', code: 'nnw', difficulty: 2 }, { char: '慢', code: 'nj', difficulty: 2 },
-  { char: '明', code: 'je', difficulty: 2 }, { char: '暗', code: 'ju', difficulty: 2 },
-  { char: '早', code: 'jh', difficulty: 2 }, { char: '晚', code: 'jq', difficulty: 2 },
-  { char: '春', code: 'dw', difficulty: 2 }, { char: '夏', code: 'dht', difficulty: 2 },
-  { char: '秋', code: 'to', difficulty: 2 }, { char: '冬', code: 'tuu', difficulty: 2 },
-  { char: '风', code: 'mq', difficulty: 2 }, { char: '雨', code: 'fghy', difficulty: 2 },
-  { char: '雪', code: 'fv', difficulty: 2 }, { char: '云', code: 'fcu', difficulty: 2 },
-  { char: '行', code: 'tf', difficulty: 2 }, { char: '走', code: 'fhu', difficulty: 2 },
-  { char: '跑', code: 'khq', difficulty: 3 }, { char: '吃', code: 'ktn', difficulty: 2 },
-  { char: '喝', code: 'kjq', difficulty: 2 }, { char: '饭', code: 'qnr', difficulty: 2 },
-  { char: '菜', code: 'ae', difficulty: 2 }, { char: '茶', code: 'aw', difficulty: 2 },
-  { char: '酒', code: 'isgg', difficulty: 2 }, { char: '家', code: 'pe', difficulty: 2 },
-  { char: '住', code: 'wygg', difficulty: 2 }, { char: '房', code: 'yny', difficulty: 2 },
-  { char: '书', code: 'nnh', difficulty: 2 }, { char: '画', code: 'gl', difficulty: 2 },
-  { char: '音', code: 'ujf', difficulty: 2 }, { char: '乐', code: 'qi', difficulty: 2 },
-  { char: '体', code: 'wsg', difficulty: 2 }, { char: '育', code: 'yce', difficulty: 2 },
-  { char: '教', code: 'ftbt', difficulty: 3 }, { char: '师', code: 'jgm', difficulty: 2 },
-  { char: '医', code: 'atd', difficulty: 2 }, { char: '病', code: 'ugm', difficulty: 2 },
-  { char: '药', code: 'ax', difficulty: 2 }, { char: '钱', code: 'qg', difficulty: 2 },
-  { char: '买', code: 'nudu', difficulty: 3 }, { char: '卖', code: 'fnud', difficulty: 3 },
-  { char: '安', code: 'pv', difficulty: 2 }, { char: '全', code: 'wg', difficulty: 2 },
-  { char: '美', code: 'ugdu', difficulty: 2 }, { char: '爱', code: 'ep', difficulty: 2 },
-  { char: '想', code: 'shn', difficulty: 3 }, { char: '知', code: 'td', difficulty: 2 },
-  { char: '道', code: 'uthp', difficulty: 3 }, { char: '问', code: 'ukd', difficulty: 2 },
-  { char: '答', code: 'tw', difficulty: 2 }, { char: '听', code: 'kr', difficulty: 2 },
-  { char: '见', code: 'mqb', difficulty: 2 }, { char: '远', code: 'fqp', difficulty: 2 },
-  { char: '近', code: 'rp', difficulty: 2 }, { char: '真', code: 'fhw', difficulty: 2 },
-  { char: '假', code: 'wnh', difficulty: 2 }, { char: '对', code: 'cf', difficulty: 2 },
-  { char: '错', code: 'qaj', difficulty: 2 }, { char: '红', code: 'xa', difficulty: 2 },
-  { char: '绿', code: 'xv', difficulty: 2 }, { char: '蓝', code: 'ajt', difficulty: 2 },
-  { char: '黄', code: 'amw', difficulty: 2 }, { char: '黑', code: 'lfo', difficulty: 2 },
-  { char: '香', code: 'tjf', difficulty: 2 }, { char: '甜', code: 'tda', difficulty: 2 },
-  { char: '苦', code: 'adf', difficulty: 2 }, { char: '辣', code: 'ugk', difficulty: 2 },
-  { char: '冷', code: 'uwyc', difficulty: 2 }, { char: '热', code: 'rvyo', difficulty: 2 },
-  { char: '温', code: 'ijl', difficulty: 2 }, { char: '暖', code: 'jef', difficulty: 2 },
-  { char: '父', code: 'wqu', difficulty: 2 }, { char: '母', code: 'xgu', difficulty: 2 },
-  { char: '孩', code: 'bynw', difficulty: 3 }, { char: '朋', code: 'ee', difficulty: 2 },
-  { char: '友', code: 'dc', difficulty: 2 }, { char: '老', code: 'ftx', difficulty: 2 },
-  { char: '作', code: 'wt', difficulty: 2 }, { char: '休', code: 'ws', difficulty: 2 },
-  { char: '息', code: 'thn', difficulty: 2 }, { char: '读', code: 'yfn', difficulty: 2 },
-  { char: '文', code: 'yygy', difficulty: 2 }, { char: '化', code: 'wx', difficulty: 2 },
-  { char: '科', code: 'tu', difficulty: 2 }, { char: '技', code: 'rfc', difficulty: 2 },
-  { char: '数', code: 'ovt', difficulty: 2 }, { char: '计', code: 'yf', difficulty: 2 },
-  { char: '算', code: 'tha', difficulty: 2 }, { char: '机', code: 'sm', difficulty: 2 },
-  { char: '网', code: 'mqq', difficulty: 2 }, { char: '络', code: 'xtk', difficulty: 2 },
-  { char: '世', code: 'an', difficulty: 2 }, { char: '界', code: 'lwj', difficulty: 2 },
-  { char: '华', code: 'wxf', difficulty: 2 }, { char: '族', code: 'ytt', difficulty: 2 },
-  { char: '政', code: 'ght', difficulty: 2 }, { char: '府', code: 'ywf', difficulty: 3 },
-  { char: '法', code: 'if', difficulty: 2 }, { char: '律', code: 'tvfh', difficulty: 3 },
-  { char: '公', code: 'wc', difficulty: 2 }, { char: '司', code: 'ngk', difficulty: 2 },
-  { char: '企', code: 'whf', difficulty: 2 }, { char: '业', code: 'og', difficulty: 2 },
-  { char: '济', code: 'iyj', difficulty: 2 }, { char: '市', code: 'ymhj', difficulty: 2 },
-  { char: '场', code: 'fnrt', difficulty: 3 }, { char: '银', code: 'qve', difficulty: 2 },
-  { char: '铁', code: 'qr', difficulty: 2 }, { char: '钢', code: 'qmq', difficulty: 2 },
-  { char: '纸', code: 'xqa', difficulty: 2 }, { char: '笔', code: 'tt', difficulty: 2 },
-  { char: '桌', code: 'hjs', difficulty: 2 }, { char: '椅', code: 'sds', difficulty: 2 },
-  { char: '灯', code: 'os', difficulty: 2 }, { char: '光', code: 'iq', difficulty: 2 },
-  { char: '影', code: 'jyie', difficulty: 3 }, { char: '声', code: 'fnr', difficulty: 2 },
-];
+        <div class="char-card">
+          <div class="target-char" id="targetChar">字</div>
+        </div>
+        <p class="char-info" id="charInfo">五笔86 · 常用字</p>
 
-const level3 = [
-  { char: '感', code: 'dgin', difficulty: 3 }, { char: '情', code: 'nge', difficulty: 2 },
-  { char: '思', code: 'ln', difficulty: 2 }, { char: '意', code: 'ujn', difficulty: 2 },
-  { char: '愿', code: 'drin', difficulty: 3 }, { char: '记', code: 'yn', difficulty: 2 },
-  { char: '忆', code: 'nn', difficulty: 2 }, { char: '忘', code: 'ynnu', difficulty: 3 },
-  { char: '忙', code: 'nynn', difficulty: 2 }, { char: '急', code: 'qvn', difficulty: 2 },
-  { char: '怕', code: 'nr', difficulty: 2 }, { char: '惊', code: 'nyiy', difficulty: 3 },
-  { char: '喜', code: 'fku', difficulty: 2 }, { char: '怒', code: 'vcn', difficulty: 3 },
-  { char: '哀', code: 'yeu', difficulty: 3 }, { char: '悲', code: 'djdn', difficulty: 3 },
-  { char: '欢', code: 'cqw', difficulty: 2 }, { char: '迎', code: 'qbp', difficulty: 2 },
-  { char: '送', code: 'udp', difficulty: 2 }, { char: '谢', code: 'ytm', difficulty: 3 },
-  { char: '请', code: 'yge', difficulty: 2 }, { char: '帮', code: 'dt', difficulty: 2 },
-  { char: '助', code: 'egl', difficulty: 2 }, { char: '支', code: 'fc', difficulty: 2 },
-  { char: '持', code: 'rf', difficulty: 2 }, { char: '保', code: 'wk', difficulty: 2 },
-  { char: '护', code: 'ryn', difficulty: 2 }, { char: '环', code: 'ggi', difficulty: 2 },
-  { char: '境', code: 'fuj', difficulty: 2 }, { char: '自', code: 'thd', difficulty: 2 },
-  { char: '然', code: 'qd', difficulty: 2 }, { char: '信', code: 'wy', difficulty: 2 },
-  { char: '任', code: 'wtf', difficulty: 2 }, { char: '希', code: 'qdm', difficulty: 2 },
-  { char: '望', code: 'yneg', difficulty: 3 }, { char: '梦', code: 'ssq', difficulty: 2 },
-  { char: '追', code: 'wnnp', difficulty: 3 }, { char: '赶', code: 'fhfk', difficulty: 3 },
-  { char: '超', code: 'fhv', difficulty: 2 }, { char: '越', code: 'fha', difficulty: 2 },
-  { char: '赢', code: 'ynky', difficulty: 3 }, { char: '输', code: 'lwg', difficulty: 3 },
-  { char: '胜', code: 'etg', difficulty: 2 }, { char: '败', code: 'mty', difficulty: 2 },
-  { char: '战', code: 'hka', difficulty: 2 }, { char: '争', code: 'qvh', difficulty: 2 },
-  { char: '斗', code: 'ufk', difficulty: 2 }, { char: '平', code: 'gu', difficulty: 2 },
-  { char: '强', code: 'xk', difficulty: 2 }, { char: '弱', code: 'xu', difficulty: 2 },
-  { char: '富', code: 'pgk', difficulty: 2 }, { char: '穷', code: 'pwl', difficulty: 2 },
-  { char: '贵', code: 'khgm', difficulty: 3 }, { char: '贱', code: 'mgt', difficulty: 3 },
-  { char: '善', code: 'uduk', difficulty: 3 }, { char: '恶', code: 'gogn', difficulty: 3 },
-  { char: '正', code: 'ghd', difficulty: 2 }, { char: '邪', code: 'ahtb', difficulty: 3 },
-  { char: '清', code: 'ige', difficulty: 2 }, { char: '洁', code: 'ifk', difficulty: 2 },
-  { char: '净', code: 'uqv', difficulty: 2 }, { char: '脏', code: 'eyf', difficulty: 2 },
-  { char: '乱', code: 'tdn', difficulty: 2 }, { char: '整', code: 'gkih', difficulty: 3 },
-  { char: '齐', code: 'yjj', difficulty: 2 }, { char: '简', code: 'tuj', difficulty: 2 },
-  { char: '单', code: 'ujfj', difficulty: 2 }, { char: '复', code: 'tjt', difficulty: 2 },
-  { char: '杂', code: 'vs', difficulty: 2 }, { char: '难', code: 'cw', difficulty: 2 },
-  { char: '易', code: 'jqr', difficulty: 2 }, { char: '变', code: 'yo', difficulty: 2 },
-  { char: '深', code: 'ipw', difficulty: 2 }, { char: '浅', code: 'igt', difficulty: 2 },
-  { char: '厚', code: 'djb', difficulty: 2 }, { char: '薄', code: 'aig', difficulty: 3 },
-  { char: '胖', code: 'euf', difficulty: 2 }, { char: '瘦', code: 'uvh', difficulty: 2 },
-  { char: '丑', code: 'nfd', difficulty: 2 }, { char: '粗', code: 'oe', difficulty: 2 },
-  { char: '细', code: 'xl', difficulty: 2 }, { char: '硬', code: 'dgj', difficulty: 2 },
-  { char: '软', code: 'lqw', difficulty: 2 }, { char: '轻', code: 'lc', difficulty: 2 },
-  { char: '重', code: 'tgj', difficulty: 2 }, { char: '干', code: 'fggh', difficulty: 2 },
-  { char: '湿', code: 'ijo', difficulty: 2 }, { char: '燥', code: 'okk', difficulty: 2 },
-  { char: '精', code: 'oge', difficulty: 2 }, { char: '神', code: 'pyj', difficulty: 2 },
-  { char: '健', code: 'wvf', difficulty: 2 }, { char: '康', code: 'yvi', difficulty: 2 },
-  { char: '壮', code: 'ufg', difficulty: 2 }, { char: '勇', code: 'cel', difficulty: 2 },
-  { char: '敢', code: 'nbt', difficulty: 2 }, { char: '创', code: 'wbj', difficulty: 2 },
-  { char: '展', code: 'nae', difficulty: 2 }, { char: '进', code: 'fj', difficulty: 2 },
-  { char: '步', code: 'hi', difficulty: 2 }, { char: '改', code: 'nty', difficulty: 2 },
-  { char: '革', code: 'af', difficulty: 2 }, { char: '稳', code: 'tqv', difficulty: 2 },
-  { char: '定', code: 'pg', difficulty: 2 }, { char: '团', code: 'lft', difficulty: 2 },
-  { char: '结', code: 'xf', difficulty: 2 }, { char: '合', code: 'wgk', difficulty: 2 },
-  { char: '分', code: 'wv', difficulty: 2 }, { char: '离', code: 'yb', difficulty: 2 },
-  { char: '集', code: 'wys', difficulty: 2 }, { char: '散', code: 'aet', difficulty: 2 },
-  { char: '增', code: 'fu', difficulty: 2 }, { char: '减', code: 'udg', difficulty: 2 },
-  { char: '乘', code: 'tux', difficulty: 2 }, { char: '除', code: 'bwt', difficulty: 2 },
-  { char: '加', code: 'lk', difficulty: 2 }, { char: '选', code: 'tfqp', difficulty: 3 },
-  { char: '择', code: 'rcf', difficulty: 2 }, { char: '接', code: 'ruv', difficulty: 2 },
-  { char: '受', code: 'epc', difficulty: 2 }, { char: '拒', code: 'ran', difficulty: 2 },
-  { char: '绝', code: 'xqc', difficulty: 2 }, { char: '允', code: 'cq', difficulty: 2 },
-  { char: '许', code: 'ytf', difficulty: 2 }, { char: '禁', code: 'ssf', difficulty: 2 },
-  { char: '止', code: 'hh', difficulty: 2 }, { char: '继', code: 'xo', difficulty: 2 },
-  { char: '续', code: 'xfn', difficulty: 2 }, { char: '停', code: 'wyp', difficulty: 2 },
-  { char: '断', code: 'on', difficulty: 2 }, { char: '连', code: 'lpk', difficulty: 2 },
-  { char: '独', code: 'qtj', difficulty: 2 }, { char: '孤', code: 'br', difficulty: 2 },
-  { char: '双', code: 'cc', difficulty: 2 }, { char: '空', code: 'pw', difficulty: 2 },
-  { char: '满', code: 'iagw', difficulty: 3 }, { char: '实', code: 'pu', difficulty: 2 },
-  { char: '虚', code: 'hao', difficulty: 3 }, { char: '存', code: 'dhb', difficulty: 2 },
-  { char: '亡', code: 'ynv', difficulty: 2 }, { char: '死', code: 'gqx', difficulty: 2 },
-  { char: '始', code: 'vck', difficulty: 2 }, { char: '终', code: 'xtu', difficulty: 2 },
-  { char: '成', code: 'dn', difficulty: 2 }, { char: '功', code: 'al', difficulty: 2 },
-  { char: '失', code: 'rw', difficulty: 2 }, { char: '得', code: 'tj', difficulty: 2 },
-];
+        <div class="input-row">
+          <input id="codeInput" class="code-input" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="输入编码" />
+          <button id="submitBtn" class="primary-btn" type="button">确认</button>
+        </div>
+        <div id="feedback" class="feedback">按 Enter 确认，错了需要重打一遍。</div>
 
-// Merge and deduplicate
-const allChars = [...level1, ...level2, ...level3];
-const seen = new Set();
-const charDB = allChars.filter(item => {
-  if (seen.has(item.char)) return false;
-  seen.add(item.char);
-  return true;
-});
+        <div class="hint-actions">
+          <button id="hintFirst" class="ghost-btn" type="button">提示首码</button>
+          <button id="hintNext" class="ghost-btn" type="button">提示下一码</button>
+          <button id="hintAll" class="ghost-btn" type="button">显示答案</button>
+        </div>
 
-// ====== Wubi keyboard layout ======
-const kbLayout = [
-  ['q','w','e','r','t','y','u','i','o','p'],
-  ['a','s','d','f','g','h','j','k','l'],
-  ['z','x','c','v','b','n','m'],
-];
+        <section class="mistakes">
+          <h3>错题复练</h3>
+          <div id="mistakeList" class="mistake-list">还没有错题。</div>
+        </section>
+      </aside>
 
-// ====== State ======
-const STATE_KEY = 'wubi_trainer_v2';
-function loadState() {
-  try {
-    const raw = localStorage.getItem(STATE_KEY);
-    if (raw) return JSON.parse(raw);
-  } catch(e) {}
-  return {
-    total: 0, correct: 0, streak: 0, maxStreak: 0,
-    wrongMap: {},
-    history: [],
-    mode: 'copy',
-  };
-}
-function saveState(s) { localStorage.setItem(STATE_KEY, JSON.stringify(s)); }
+      <section class="panel table-panel">
+        <div class="table-head">
+          <div>
+            <h2>五笔 86 字根表</h2>
+            <p>按真实键盘排列。每个键展示键位、区位、代表字、口诀与常用字根。</p>
+          </div>
+          <input id="rootSearch" class="search-box" placeholder="搜索键位 / 字根 / 口诀" />
+        </div>
+        <div id="keyboard" class="keyboard" aria-label="五笔86字根键盘"></div>
+        <div id="keyDetail" class="detail-card">点击任意键，查看该键的完整字根与口诀。</div>
+      </section>
+    </section>
+  </main>
 
-let state = loadState();
-let currentChar = null;
-let currentMode = state.mode || 'copy';
-let hintLevel = 0; // 0=none, 1=first code shown, 2=more shown, 3=all shown
-let needRetry = false; // true when user got it wrong and must retype
+  <script>
+    const STATE_KEY = 'wubi_trainer_table_first_v1';
+    const keyboardRows = [
+      ['Q','W','E','R','T','Y','U','I','O','P'],
+      ['A','S','D','F','G','H','J','K','L'],
+      ['Z','X','C','V','B','N','M']
+    ];
+    const fallbackRoots = [
+      {key:'G',zone:'横区',position:11,label:'王',name:'王旁青头',primaryChar:'一',mnemonic:'王旁青头戋五一',roots:['王','一','五','戋','青头']},
+      {key:'F',zone:'横区',position:12,label:'土',name:'土士二干',primaryChar:'地',mnemonic:'土士二干十寸雨',roots:['土','士','二','干','十','寸','雨']},
+      {key:'D',zone:'横区',position:13,label:'大',name:'大犬三羊',primaryChar:'在',mnemonic:'大犬三羊古石厂',roots:['大','犬','三','羊','古','石','厂']},
+      {key:'S',zone:'横区',position:14,label:'木',name:'木丁西',primaryChar:'要',mnemonic:'木丁西',roots:['木','丁','西']},
+      {key:'A',zone:'横区',position:15,label:'工',name:'工戈草头',primaryChar:'工',mnemonic:'工戈草头右框七',roots:['工','戈','艹','廾','匚','七']},
+      {key:'H',zone:'竖区',position:21,label:'目',name:'目具上止',primaryChar:'上',mnemonic:'目具上止卜虎皮',roots:['目','具','上','止','卜','虎皮']},
+      {key:'J',zone:'竖区',position:22,label:'日',name:'日早两竖',primaryChar:'是',mnemonic:'日早两竖与虫依',roots:['日','早','刂','虫']},
+      {key:'K',zone:'竖区',position:23,label:'口',name:'口与川',primaryChar:'中',mnemonic:'口与川，字根稀',roots:['口','川']},
+      {key:'L',zone:'竖区',position:24,label:'田',name:'田甲方框',primaryChar:'国',mnemonic:'田甲方框四车力',roots:['田','甲','囗','四','车','力']},
+      {key:'M',zone:'竖区',position:25,label:'山',name:'山由贝',primaryChar:'同',mnemonic:'山由贝，下框几',roots:['山','由','贝','冂','几']},
+      {key:'T',zone:'撇区',position:31,label:'禾',name:'禾竹一撇',primaryChar:'和',mnemonic:'禾竹一撇双人立，反文条头共三一',roots:['禾','竹','丿','彳','攵','夂']},
+      {key:'R',zone:'撇区',position:32,label:'白',name:'白手看头',primaryChar:'的',mnemonic:'白手看头三二斤',roots:['白','手','扌','斤','看头']},
+      {key:'E',zone:'撇区',position:33,label:'月',name:'月彡乃用',primaryChar:'有',mnemonic:'月彡乃用家衣底',roots:['月','彡','乃','用','豕']},
+      {key:'W',zone:'撇区',position:34,label:'人',name:'人和八',primaryChar:'人',mnemonic:'人和八，三四里',roots:['人','亻','八','癶']},
+      {key:'Q',zone:'撇区',position:35,label:'金',name:'金勺鱼儿',primaryChar:'我',mnemonic:'金勺缺点无尾鱼，犬旁留叉儿一点夕，氏无七',roots:['金','钅','勹','儿','夕','鱼','犭','氏']},
+      {key:'Y',zone:'捺区',position:41,label:'言',name:'言文方广',primaryChar:'主',mnemonic:'言文方广在四一，高头一捺谁人去',roots:['言','讠','文','方','广','亠','丶']},
+      {key:'U',zone:'捺区',position:42,label:'立',name:'立辛两点',primaryChar:'产',mnemonic:'立辛两点六门疒',roots:['立','辛','冫','丷','六','门','疒']},
+      {key:'I',zone:'捺区',position:43,label:'水',name:'水旁兴头',primaryChar:'不',mnemonic:'水旁兴头小倒立',roots:['水','氵','小','兴头']},
+      {key:'O',zone:'捺区',position:44,label:'火',name:'火业四点',primaryChar:'为',mnemonic:'火业头，四点米',roots:['火','业头','灬','米']},
+      {key:'P',zone:'捺区',position:45,label:'之',name:'之宝盖',primaryChar:'这',mnemonic:'之宝盖，摘礻衤',roots:['之','辶','宀','冖','礻','衤']},
+      {key:'N',zone:'折区',position:51,label:'已',name:'已巳己尸',primaryChar:'民',mnemonic:'已半巳满不出己，左框折尸心和羽',roots:['已','巳','己','尸','心','忄','羽','乙']},
+      {key:'B',zone:'折区',position:52,label:'子',name:'子耳了也',primaryChar:'了',mnemonic:'子耳了也框向上',roots:['子','耳','了','也','凵']},
+      {key:'V',zone:'折区',position:53,label:'女',name:'女刀九臼',primaryChar:'发',mnemonic:'女刀九臼山朝西',roots:['女','刀','九','臼','巛']},
+      {key:'C',zone:'折区',position:54,label:'又',name:'又巴马',primaryChar:'以',mnemonic:'又巴马，丢矢矣',roots:['又','巴','马','厶']},
+      {key:'X',zone:'折区',position:55,label:'纟',name:'纟弓匕',primaryChar:'经',mnemonic:'慈母无心弓和匕，幼无力',roots:['纟','弓','匕','幺']}
+    ];
+    const fallbackChars = [
+      {char:'一',code:'g',difficulty:1},{char:'地',code:'f',difficulty:1},{char:'在',code:'d',difficulty:1},{char:'要',code:'s',difficulty:1},{char:'工',code:'a',difficulty:1},
+      {char:'上',code:'h',difficulty:1},{char:'是',code:'j',difficulty:1},{char:'中',code:'k',difficulty:1},{char:'国',code:'l',difficulty:1},{char:'同',code:'m',difficulty:1},
+      {char:'和',code:'t',difficulty:1},{char:'的',code:'r',difficulty:1},{char:'有',code:'e',difficulty:1},{char:'人',code:'w',difficulty:1},{char:'我',code:'q',difficulty:1},
+      {char:'主',code:'y',difficulty:1},{char:'产',code:'u',difficulty:1},{char:'不',code:'i',difficulty:1},{char:'为',code:'o',difficulty:1},{char:'这',code:'p',difficulty:1},
+      {char:'民',code:'n',difficulty:1},{char:'了',code:'b',difficulty:1},{char:'发',code:'v',difficulty:1},{char:'以',code:'c',difficulty:1},{char:'经',code:'x',difficulty:1}
+    ];
 
-// ====== DOM refs ======
-const $charDisplay = document.getElementById('charDisplay');
-const $codeDisplay = document.getElementById('codeDisplay');
-const $charMeta = document.getElementById('charMeta');
-const $charStage = document.getElementById('charStage');
-const $modeLabel = document.getElementById('modeLabel');
-const $codeInput = document.getElementById('codeInput');
-const $submitBtn = document.getElementById('submitBtn');
-const $feedback = document.getElementById('feedback');
-const $lookupKb = document.getElementById('lookupKb');
-const $lookupKbRows = document.getElementById('lookupKbRows');
-const $hintFirst = document.getElementById('hintFirst');
-const $hintNext = document.getElementById('hintNext');
-const $hintAll = document.getElementById('hintAll');
-const $skipBtn = document.getElementById('skipBtn');
-const $totalCount = document.getElementById('totalCount');
-const $accPct = document.getElementById('accPct');
-const $streakVal = document.getElementById('streakVal');
-const $wrongCount = document.getElementById('wrongCount');
-const $wrongList = document.getElementById('wrongList');
-const $reviewBadge = document.getElementById('reviewBadge');
-const $reviewPanel = document.getElementById('reviewPanel');
-const $kbPanel = document.getElementById('kbPanel');
-const $modeBtns = document.querySelectorAll('.mode-btn');
+    let roots = [];
+    let chars = [];
+    let mode = 'lookup';
+    let current = null;
+    let hintIndex = 0;
+    let retry = false;
+    let state = loadState();
 
-// ====== Build lookup keyboard ======
-function buildLookupKb() {
-  let html = '';
-  for (const row of kbLayout) {
-    html += '<div class="kb-row">';
-    for (const key of row) {
-      html += `<span class="kb-key" data-key="${key}">${key.toUpperCase()}</span>`;
-    }
-    html += '</div>';
-  }
-  $lookupKbRows.innerHTML = html;
-}
-buildLookupKb();
+    const $ = (id) => document.getElementById(id);
+    const els = {
+      keyboard: $('keyboard'), keyDetail: $('keyDetail'), targetChar: $('targetChar'), charInfo: $('charInfo'),
+      input: $('codeInput'), submit: $('submitBtn'), feedback: $('feedback'), modeNote: $('modeNote'),
+      total: $('totalCount'), accuracy: $('accuracy'), streak: $('streak'), wrongCount: $('wrongCount'),
+      mistakeList: $('mistakeList'), rootSearch: $('rootSearch')
+    };
 
-function highlightKbKeys(code) {
-  const keys = code.split('');
-  const allKeys = $lookupKbRows.querySelectorAll('.kb-key');
-  allKeys.forEach(el => el.classList.remove('highlight'));
-  keys.forEach(k => {
-    allKeys.forEach(el => {
-      if (el.dataset.key === k) el.classList.add('highlight');
-    });
-  });
-}
-
-// ====== Pick next character ======
-function pickChar() {
-  const wrongEntries = Object.entries(state.wrongMap).filter(([_, v]) => v.count > 0);
-  if (wrongEntries.length > 3 && Math.random() < 0.4) {
-    const [ch] = wrongEntries[Math.floor(Math.random() * wrongEntries.length)];
-    const found = charDB.find(c => c.char === ch);
-    if (found) return found;
-  }
-  const recent = new Set(state.history.slice(-20));
-  const candidates = charDB.filter(c => !recent.has(c.char));
-  const pool = candidates.length > 5 ? candidates : charDB;
-  return pool[Math.floor(Math.random() * pool.length)];
-}
-
-// ====== Show character ======
-function showChar() {
-  hintLevel = 0;
-  needRetry = false;
-  $feedback.innerHTML = '';
-  $codeInput.value = '';
-  $codeInput.classList.remove('wrong-input');
-  $submitBtn.classList.remove('retry');
-  $submitBtn.textContent = '确认';
-  $charStage.classList.remove('correct-flash', 'wrong-flash');
-  $hintFirst.classList.remove('used-hint');
-  $hintNext.classList.remove('used-hint');
-  $hintAll.classList.remove('used-hint');
-  $hintFirst.style.display = '';
-  $hintNext.style.display = '';
-  $hintAll.style.display = '';
-
-  currentChar = pickChar();
-  $charDisplay.textContent = currentChar.char;
-  $charMeta.textContent = `编码长度 ${currentChar.code.length}`;
-
-  // Clear KB highlights
-  $lookupKbRows.querySelectorAll('.kb-key').forEach(el => el.classList.remove('highlight'));
-
-  updateModeUI();
-  $codeInput.focus();
-}
-
-function updateModeUI() {
-  // Mode label
-  $modeLabel.className = 'mode-label ' + currentMode;
-  if (currentMode === 'copy') $modeLabel.textContent = '抄写模式';
-  else if (currentMode === 'lookup') $modeLabel.textContent = '查表模式';
-  else $modeLabel.textContent = '盲打模式';
-
-  // Code display
-  if (currentMode === 'copy') {
-    $codeDisplay.textContent = currentChar ? currentChar.code : '';
-    $codeDisplay.style.display = '';
-    $codeInput.placeholder = '照抄上方编码...';
-  } else {
-    $codeDisplay.style.display = 'none';
-    if (currentMode === 'lookup') {
-      $codeInput.placeholder = '查字根表，输入编码...';
-    } else {
-      $codeInput.placeholder = '凭记忆输入五笔编码...';
-    }
-  }
-
-  // Lookup KB visibility
-  $lookupKb.style.display = currentMode === 'lookup' ? '' : 'none';
-
-  // Hint buttons visibility
-  if (currentMode === 'copy') {
-    $hintFirst.style.display = 'none';
-    $hintNext.style.display = 'none';
-    $hintAll.style.display = 'none';
-  } else if (currentMode === 'lookup') {
-    $hintFirst.style.display = '';
-    $hintNext.style.display = '';
-    $hintAll.style.display = '';
-    $hintFirst.textContent = '🔤 显示首码';
-    $hintNext.textContent = '➕ 显示下一码';
-    $hintAll.textContent = '💡 显示答案';
-  } else { // blind
-    $hintFirst.style.display = 'none';
-    $hintNext.style.display = 'none';
-    $hintAll.style.display = '';
-    $hintAll.textContent = '💡 看答案';
-  }
-}
-
-// ====== Update stats ======
-function updateStats() {
-  const total = state.total;
-  const correct = state.correct;
-  const wrongTotal = Object.values(state.wrongMap).reduce((a, b) => a + b.count, 0);
-  $totalCount.textContent = total;
-  $accPct.textContent = total > 0 ? Math.round((correct / total) * 100) + '%' : '-';
-  $streakVal.textContent = state.streak;
-  $wrongCount.textContent = wrongTotal;
-
-  // Update review badge
-  const wrongEntryCount = Object.keys(state.wrongMap).filter(k => state.wrongMap[k].count > 0).length;
-  if (wrongEntryCount > 0) {
-    $reviewBadge.style.display = '';
-    $reviewBadge.textContent = wrongEntryCount;
-  } else {
-    $reviewBadge.style.display = 'none';
-  }
-}
-
-function updateWrongList() {
-  const entries = Object.entries(state.wrongMap)
-    .filter(([_, v]) => v.count > 0)
-    .sort((a, b) => b[1].count - a[1].count);
-
-  if (entries.length === 0) {
-    $wrongList.innerHTML = '<div class="empty-state">🎉 没有错题，继续加油！</div>';
-    return;
-  }
-
-  $wrongList.innerHTML = entries.map(([ch, info]) => `
-    <div class="wrong-item">
-      <span class="wrong-char">${ch}</span>
-      <span class="wrong-code">${info.code}</span>
-      <span class="wrong-count">错 ${info.count} 次</span>
-    </div>
-  `).join('');
-}
-
-// ====== Handle submit ======
-function handleSubmit() {
-  if (!currentChar) return;
-
-  const input = $codeInput.value.trim().toLowerCase();
-  if (!input) return;
-
-  const correctCode = currentChar.code.toLowerCase();
-
-  if (needRetry) {
-    // User is retrying after a wrong answer
-    state.total++;
-    if (input === correctCode) {
-      // Retry success
-      state.correct++;
-      state.streak++;
-      if (state.streak > (state.maxStreak || 0)) state.maxStreak = state.streak;
-      if (state.wrongMap[currentChar.char]) {
-        delete state.wrongMap[currentChar.char];
+    function loadState() {
+      try {
+        return JSON.parse(localStorage.getItem(STATE_KEY)) || { total: 0, correct: 0, streak: 0, wrongMap: {}, history: [] };
+      } catch (_) {
+        return { total: 0, correct: 0, streak: 0, wrongMap: {}, history: [] };
       }
-      $feedback.innerHTML = '<span class="correct">✅ 正确！继续加油</span>';
-      $charStage.classList.add('correct-flash');
-      setTimeout(() => $charStage.classList.remove('correct-flash'), 400);
-      $codeInput.classList.remove('wrong-input');
-      $submitBtn.classList.remove('retry');
-      $submitBtn.textContent = '确认';
-      needRetry = false;
-      saveState(state); updateStats(); updateWrongList();
-      setTimeout(() => { showChar(); updateStats(); }, 500);
-    } else {
-      // Retry still wrong
-      state.streak = 0;
-      state.wrongMap[currentChar.char].count++;
-      $feedback.innerHTML = `<span class="wrong">❌ 还是不对</span> <span class="hint">正确答案: <strong>${correctCode}</strong>，请重新输入</span>`;
-      $charStage.classList.add('wrong-flash');
-      setTimeout(() => $charStage.classList.remove('wrong-flash'), 400);
-      $codeInput.value = '';
-      $codeInput.focus();
-      saveState(state); updateStats(); updateWrongList();
     }
-    return;
-  }
-
-  // Normal attempt
-  state.total++;
-
-  if (input === correctCode) {
-    // Correct
-    state.correct++;
-    state.streak++;
-    if (state.streak > (state.maxStreak || 0)) state.maxStreak = state.streak;
-    state.history.push(currentChar.char);
-    if (state.wrongMap[currentChar.char]) {
-      delete state.wrongMap[currentChar.char];
+    function saveState() { localStorage.setItem(STATE_KEY, JSON.stringify(state)); }
+    async function loadJson(path, fallback) {
+      try {
+        const response = await fetch(path);
+        if (!response.ok) throw new Error(response.statusText);
+        return await response.json();
+      } catch (error) {
+        console.warn(`Using fallback data for ${path}`, error);
+        return fallback;
+      }
     }
-    $feedback.innerHTML = '<span class="correct">✅ 正确！</span>';
-    $charStage.classList.add('correct-flash');
-    setTimeout(() => $charStage.classList.remove('correct-flash'), 400);
-    saveState(state); updateStats(); updateWrongList();
-    setTimeout(() => { showChar(); updateStats(); }, 500);
-  } else {
-    // Wrong — enter retry mode
-    state.streak = 0;
-    state.history.push(currentChar.char);
-    if (!state.wrongMap[currentChar.char]) {
-      state.wrongMap[currentChar.char] = { code: correctCode, count: 0 };
+    function rootByKey(key) { return roots.find(root => root.key.toLowerCase() === key.toLowerCase()); }
+    function renderKeyboard(filter = '') {
+      const query = filter.trim().toLowerCase();
+      els.keyboard.innerHTML = '';
+      keyboardRows.forEach((row, index) => {
+        const rowEl = document.createElement('div');
+        rowEl.className = `key-row ${index === 1 ? 'home' : ''} ${index === 2 ? 'bottom' : ''}`;
+        if (index === 1) rowEl.appendChild(spacer());
+        if (index === 2) rowEl.appendChild(spacer());
+        row.forEach(key => {
+          const root = rootByKey(key);
+          if (!root) return;
+          const haystack = [root.key, root.zone, root.label, root.name, root.mnemonic, ...root.roots].join(' ').toLowerCase();
+          const hidden = query && !haystack.includes(query);
+          const card = document.createElement('button');
+          card.type = 'button';
+          card.className = 'root-key';
+          card.dataset.key = root.key.toLowerCase();
+          card.hidden = hidden;
+          card.innerHTML = `
+            <div class="key-top"><span class="key-letter">${root.key}</span><span class="key-zone">${root.zone} · ${root.position}</span></div>
+            <div class="key-label">${root.label} <small>${root.name}</small></div>
+            <div class="key-mnemonic">${root.mnemonic}</div>
+            <div class="root-list">${root.roots.map(item => `<span class="root-chip">${item}</span>`).join('')}</div>
+          `;
+          card.addEventListener('click', () => showKeyDetail(root));
+          rowEl.appendChild(card);
+        });
+        if (index === 1) rowEl.appendChild(spacer());
+        if (index === 2) rowEl.appendChild(spacer());
+        els.keyboard.appendChild(rowEl);
+      });
+      highlightKeys(current ? current.code.slice(0, hintIndex) : '');
     }
-    state.wrongMap[currentChar.char].count++;
-
-    needRetry = true;
-    $feedback.innerHTML = `<span class="wrong">❌ 不对</span> <span class="retry-msg">正确答案: <strong>${correctCode}</strong> — 请输入正确编码再继续</span>`;
-    $codeInput.classList.add('wrong-input');
-    $submitBtn.classList.add('retry');
-    $submitBtn.textContent = '重输';
-    $charStage.classList.add('wrong-flash');
-    setTimeout(() => $charStage.classList.remove('wrong-flash'), 400);
-    $codeInput.value = '';
-    $codeInput.focus();
-
-    // Reveal code in copy mode, or show in feedback
-    if (currentMode === 'copy') {
-      $codeDisplay.textContent = correctCode;
+    function spacer() {
+      const el = document.createElement('div');
+      el.className = 'key-spacer';
+      return el;
+    }
+    function showKeyDetail(root) {
+      document.querySelectorAll('.root-key').forEach(el => el.classList.toggle('active', el.dataset.key === root.key.toLowerCase()));
+      els.keyDetail.innerHTML = `<strong>${root.key} 键 · ${root.zone} · ${root.name}</strong><br>${root.mnemonic}<br>字根：${root.roots.join('、')}<br>代表字：${root.primaryChar}`;
+    }
+    function highlightKeys(code) {
+      const active = new Set((code || '').toLowerCase().split(''));
+      document.querySelectorAll('.root-key').forEach(el => {
+        el.classList.toggle('hinted', active.has(el.dataset.key));
+      });
+    }
+    function pickChar() {
+      const wrongItems = Object.entries(state.wrongMap || {}).filter(([, item]) => item.count > 0);
+      if (wrongItems.length && Math.random() < 0.35) {
+        const [char] = wrongItems[Math.floor(Math.random() * wrongItems.length)];
+        const found = chars.find(item => item.char === char);
+        if (found) return found;
+      }
+      const recent = new Set((state.history || []).slice(-24));
+      const pool = chars.filter(item => !recent.has(item.char));
+      const source = pool.length > 12 ? pool : chars;
+      return source[Math.floor(Math.random() * source.length)];
+    }
+    function showNextChar() {
+      current = pickChar();
+      hintIndex = 0;
+      retry = false;
+      els.targetChar.textContent = current.char;
+      els.charInfo.textContent = `五笔86 · ${current.code.length} 码 · 难度 ${current.difficulty || 1}`;
+      els.input.value = '';
+      els.input.classList.remove('error');
+      els.submit.textContent = '确认';
+      setFeedback(mode === 'lookup' ? '对照字根表推导编码，必要时用分步提示。' : '不看表，直接输入完整编码。');
+      highlightKeys('');
+      els.input.focus();
+      updateStats();
+    }
+    function setFeedback(text, type = '') {
+      els.feedback.className = `feedback ${type}`.trim();
+      els.feedback.textContent = text;
+    }
+    function updateStats() {
+      const wrongEntries = Object.entries(state.wrongMap || {}).filter(([, item]) => item.count > 0);
+      els.total.textContent = state.total || 0;
+      els.accuracy.textContent = state.total ? `${Math.round((state.correct || 0) / state.total * 100)}%` : '0%';
+      els.streak.textContent = state.streak || 0;
+      els.wrongCount.textContent = wrongEntries.length;
+      els.mistakeList.innerHTML = wrongEntries.length
+        ? wrongEntries.sort((a, b) => b[1].count - a[1].count).slice(0, 18).map(([char, item]) => `<span class="mistake-pill">${char} ${item.code} ×${item.count}</span>`).join('')
+        : '还没有错题。';
+    }
+    function submitAnswer() {
+      if (!current) return;
+      const input = els.input.value.trim().toLowerCase();
+      if (!input) return;
+      const answer = current.code.toLowerCase();
+      if (retry) {
+        if (input === answer) {
+          state.total += 1;
+          state.correct += 1;
+          state.streak += 1;
+          delete state.wrongMap[current.char];
+          saveAndContinue('重输正确，继续下一题。', 'good');
+        } else {
+          state.streak = 0;
+          state.wrongMap[current.char].count += 1;
+          saveState();
+          updateStats();
+          els.input.value = '';
+          els.input.classList.add('error');
+          setFeedback(`还是不对。正确编码是 ${answer}，请重打一遍。`, 'bad');
+        }
+        return;
+      }
+      state.total += 1;
+      state.history = [...(state.history || []), current.char].slice(-80);
+      if (input === answer) {
+        state.correct += 1;
+        state.streak += 1;
+        delete state.wrongMap[current.char];
+        saveAndContinue('正确，手感慢慢建立起来了。', 'good');
+      } else {
+        state.streak = 0;
+        state.wrongMap[current.char] = state.wrongMap[current.char] || { code: answer, count: 0 };
+        state.wrongMap[current.char].count += 1;
+        retry = true;
+        hintIndex = answer.length;
+        highlightKeys(answer);
+        els.input.value = '';
+        els.input.classList.add('error');
+        els.submit.textContent = '重输';
+        saveState();
+        updateStats();
+        setFeedback(`不对。正确编码是 ${answer}，请重打一遍再继续。`, 'bad');
+      }
+    }
+    function saveAndContinue(text, type) {
+      saveState();
+      updateStats();
+      setFeedback(text, type);
+      els.input.classList.remove('error');
+      setTimeout(showNextChar, 520);
+    }
+    function revealNext(count = 1) {
+      if (!current) return;
+      hintIndex = Math.min(current.code.length, hintIndex + count);
+      const shown = current.code.slice(0, hintIndex);
+      highlightKeys(shown);
+      if (mode === 'lookup') {
+        setFeedback(`已高亮前 ${hintIndex} 码：${shown}`);
+      } else {
+        setFeedback(`提示：${shown}${'·'.repeat(Math.max(0, current.code.length - hintIndex))}`);
+      }
+    }
+    function revealAll() {
+      if (!current) return;
+      hintIndex = current.code.length;
+      highlightKeys(current.code);
+      setFeedback(`完整编码：${current.code}`);
+    }
+    function setMode(nextMode) {
+      mode = nextMode;
+      document.querySelectorAll('.mode-tab').forEach(btn => btn.classList.toggle('active', btn.dataset.mode === mode));
+      els.modeNote.textContent = mode === 'lookup'
+        ? '对照右侧字根表推导编码。提示会逐步高亮对应键位。'
+        : '收起查表依赖，只看汉字输入编码，用来检验是否真正记住。';
+      showNextChar();
+    }
+    async function init() {
+      [roots, chars] = await Promise.all([
+        loadJson('/wubi-trainer/data/wubi86-roots.json', fallbackRoots),
+        loadJson('/wubi-trainer/data/wubi86-chars.json', fallbackChars)
+      ]);
+      renderKeyboard();
+      showKeyDetail(roots[0]);
+      updateStats();
+      showNextChar();
     }
 
-    // Highlight keyboard for lookup mode
-    if (currentMode === 'lookup') {
-      highlightKbKeys(correctCode);
-    }
-
-    saveState(state); updateStats(); updateWrongList();
-  }
-}
-
-// ====== Hint buttons ======
-$hintFirst.addEventListener('click', () => {
-  if (!currentChar) return;
-  if (currentMode === 'lookup') {
-    if (hintLevel < 1) { hintLevel = 1; $hintFirst.classList.add('used-hint'); }
-    $feedback.innerHTML = `<span class="hint">首码: <strong>${currentChar.code[0]}</strong></span>`;
-    highlightKbKeys(currentChar.code[0]);
-  }
-});
-
-$hintNext.addEventListener('click', () => {
-  if (!currentChar || currentMode !== 'lookup') return;
-  if (hintLevel < 2) {
-    hintLevel = 2;
-    $hintNext.classList.add('used-hint');
-  }
-  const shown = Math.min(hintLevel, currentChar.code.length);
-  $feedback.innerHTML = `<span class="hint">前 ${shown} 码: <strong>${currentChar.code.slice(0, shown)}</strong></span>`;
-  highlightKbKeys(currentChar.code.slice(0, shown));
-  if (hintLevel < currentChar.code.length) hintLevel++;
-});
-
-$hintAll.addEventListener('click', () => {
-  if (!currentChar) return;
-  hintLevel = currentChar.code.length;
-  $hintAll.classList.add('used-hint');
-  $feedback.innerHTML = `<span class="hint">完整编码: <strong>${currentChar.code}</strong></span>`;
-  if (currentMode === 'lookup') {
-    highlightKbKeys(currentChar.code);
-  }
-  // In blind mode, also show the code display
-  if (currentMode === 'blind') {
-    $codeDisplay.textContent = currentChar.code;
-    $codeDisplay.style.display = '';
-  }
-});
-
-$skipBtn.addEventListener('click', () => {
-  if (!currentChar) return;
-  if (!needRetry) {
-    state.history.push(currentChar.char);
-    state.streak = 0;
-    if (!state.wrongMap[currentChar.char]) {
-      state.wrongMap[currentChar.char] = { code: currentChar.code, count: 1 };
-    } else {
-      state.wrongMap[currentChar.char].count++;
-    }
-    saveState(state); updateStats(); updateWrongList();
-  }
-  showChar();
-  updateStats();
-});
-
-// ====== Mode switching ======
-$modeBtns.forEach(btn => {
-  btn.addEventListener('click', () => {
-    $modeBtns.forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    currentMode = btn.dataset.mode;
-    state.mode = currentMode;
-    saveState(state);
-    updateModeUI();
-    $feedback.innerHTML = '';
-    $codeInput.value = '';
-    $codeInput.focus();
-  });
-});
-
-// ====== Panel toggles ======
-document.getElementById('reviewBtn').addEventListener('click', () => {
-  updateWrongList();
-  $reviewPanel.classList.add('show');
-});
-document.getElementById('reviewClose').addEventListener('click', () => {
-  $reviewPanel.classList.remove('show');
-});
-$reviewPanel.addEventListener('click', (e) => {
-  if (e.target === $reviewPanel) $reviewPanel.classList.remove('show');
-});
-
-document.getElementById('kbRefBtn').addEventListener('click', () => {
-  $kbPanel.classList.add('show');
-});
-document.getElementById('kbClose').addEventListener('click', () => {
-  $kbPanel.classList.remove('show');
-});
-$kbPanel.addEventListener('click', (e) => {
-  if (e.target === $kbPanel) $kbPanel.classList.remove('show');
-});
-
-// ====== Keyboard events ======
-$codeInput.addEventListener('keydown', e => {
-  if (e.key === 'Enter') handleSubmit();
-  if (e.key === 'Escape') { showChar(); updateStats(); }
-});
-
-// ====== Keyboard shortcuts for mode switch ======
-document.addEventListener('keydown', e => {
-  if (e.ctrlKey || e.metaKey || e.target.tagName === 'INPUT') return;
-  if (e.key === '1') { currentMode = 'copy'; syncModeUI(); }
-  if (e.key === '2') { currentMode = 'lookup'; syncModeUI(); }
-  if (e.key === '3') { currentMode = 'blind'; syncModeUI(); }
-});
-
-function syncModeUI() {
-  state.mode = currentMode;
-  saveState(state);
-  $modeBtns.forEach(b => b.classList.remove('active'));
-  const target = document.querySelector(`.mode-btn[data-mode="${currentMode}"]`);
-  if (target) target.classList.add('active');
-  updateModeUI();
-  $feedback.innerHTML = '';
-  $codeInput.value = '';
-  $codeInput.focus();
-}
-
-// ====== Init ======
-function init() {
-  // Restore mode
-  currentMode = state.mode || 'copy';
-  $modeBtns.forEach(b => b.classList.remove('active'));
-  const target = document.querySelector(`.mode-btn[data-mode="${currentMode}"]`);
-  if (target) target.classList.add('active');
-  updateStats();
-  updateWrongList();
-  showChar();
-}
-
-init();
-</script>
+    document.querySelectorAll('.mode-tab').forEach(btn => btn.addEventListener('click', () => setMode(btn.dataset.mode)));
+    els.submit.addEventListener('click', submitAnswer);
+    els.input.addEventListener('keydown', event => { if (event.key === 'Enter') submitAnswer(); });
+    $('hintFirst').addEventListener('click', () => { hintIndex = 0; revealNext(1); });
+    $('hintNext').addEventListener('click', () => revealNext(1));
+    $('hintAll').addEventListener('click', revealAll);
+    els.rootSearch.addEventListener('input', () => renderKeyboard(els.rootSearch.value));
+    init();
+  </script>
 </body>
 </html>
