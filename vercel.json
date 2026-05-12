@@ -1,9 +1,11 @@
 {
-    "version": 2,
-    "rewrites":
-    [
-        { 
-            "source": "/(.*)", "destination": "/api" 
-        }
-    ]
+  "version": 2,
+  "rewrites": [
+    { "source": "/wubi-trainer", "destination": "/wubi-trainer/index.html" },
+    { "source": "/wubi-trainer/", "destination": "/wubi-trainer/index.html" },
+    { "source": "/ball-physics-simulation", "destination": "/ball-physics-simulation/index.html" },
+    { "source": "/ball-physics-simulation/", "destination": "/ball-physics-simulation/index.html" },
+    { "source": "/api/(.*)", "destination": "/api" },
+    { "source": "/", "destination": "/ball-physics-simulation/index.html" }
+  ]
 }
