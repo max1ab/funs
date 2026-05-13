@@ -6,11 +6,6 @@
 <title>五笔查表练习</title>
 <link rel="stylesheet" href="/design-tokens.css">
 <style>
-  @font-face {
-    font-family: "Wubi Units";
-    src: url("/wubi-trainer/assets/fonts/wubi-units.ttf") format("truetype");
-    font-display: swap;
-  }
   :root {
     --border: #e0d8cc;
     --bg: #f9f5ee;
@@ -56,13 +51,26 @@
     font-size: 12px; color: var(--accent); font-weight: 600;
     min-width: 160px; max-width: 260px; text-align: left; line-height: 1.35;
   }
-  .wubi-units {
-    font-family: "Wubi Units", "SF Mono", "Consolas", monospace;
-    font-size: 18px;
-    letter-spacing: .12em;
+  .code-route {
+    display: inline-flex;
+    gap: 4px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .route-step {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
     color: var(--text);
     white-space: nowrap;
   }
+  .route-key {
+    font-family: "SF Mono", "Consolas", monospace;
+    font-size: 13px;
+    font-weight: 800;
+    color: var(--accent);
+  }
+  .route-label { color: var(--text2); font-size: 11px; }
   .decomp-label { color: var(--text2); font-weight: 500; }
   .decomp-flag { color: var(--text2); font-weight: 500; font-size: 11px; }
   .bar .input-group {
@@ -405,15 +413,25 @@ function submit() {
 function currentAnalysis() {
   return cur ? { ...(analysis[cur.char] || {}), ...cur } : null;
 }
+function escapeHtml(value) {
+  return String(value || '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
+}
+function codeRouteHtml(code) {
+  return String(code || '').toLowerCase().split('').map(key => {
+    const root = byKey(key);
+    const keyText = key.toUpperCase();
+    if (!root) return `<span class="route-step"><span class="route-key">${keyText}</span></span>`;
+    const rootsText = root.roots.slice(0, 3).join('、');
+    return `<span class="route-step"><span class="route-key">${keyText}</span><span>${escapeHtml(root.label)}</span><span class="route-label">(${escapeHtml(rootsText)})</span></span>`;
+  }).join('<span class="route-label">→</span>');
+}
 function formatDecomp() {
   const info = currentAnalysis();
-  if (!info) return '拆法待补';
-  if (info.units) {
-    const flag = info.flag ? `<div class="decomp-flag">${info.flag}</div>` : '';
-    return `<span class="decomp-label">拆解</span> <span class="wubi-units">${info.units}</span>${flag}`;
-  }
-  if (info.decomposition) return `<span class="decomp-label">拆解</span> ${info.decomposition}`;
-  return `<span class="decomp-label">暂无拆解</span> <span class="decomp-flag">编码：${info.code || ''}</span>`;
+  if (!info) return '暂无解析';
+  const flag = info.flag ? `<div class="decomp-flag">${escapeHtml(info.flag)}</div>` : '';
+  const route = codeRouteHtml(info.code);
+  const shortCode = info.shortCode ? `<div class="decomp-flag">简码：${escapeHtml(info.shortCode)}</div>` : '';
+  return `<span class="decomp-label">取码</span> <span class="code-route">${route}</span>${flag}${shortCode}`;
 }
 function hintDecomp() { if (!cur) return; E.dec.innerHTML = formatDecomp(); }
 function hintKeys() { if (!cur) return; hintIdx = cur.code.length; highlightKeys(cur.code); toast(`已高亮 ${cur.code} 键位`,''); }
@@ -421,7 +439,7 @@ function hintCode() {
   const info = currentAnalysis();
   if (!info) return;
   const shortCode = info.shortCode ? ` · 简码 ${info.shortCode}` : '';
-  E.dec.innerHTML = `<span class="decomp-label">编码</span> <span class="wubi-units">${info.code}</span>${shortCode}`;
+  E.dec.innerHTML = `<span class="decomp-label">编码</span> <span class="code-route">${codeRouteHtml(info.code)}</span>${shortCode}`;
   toast(`完整编码：${info.code}`,'');
 }
 function skip() { if (!cur||retry) return; s.history = [...(s.history||[]), cur.char].slice(-80); s.streak=0; s.wrongMap[cur.char]=s.wrongMap[cur.char]||{code:cur.code,count:1}; s.wrongMap[cur.char].count++; save(); next(); }
