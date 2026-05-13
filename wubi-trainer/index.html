@@ -308,7 +308,7 @@ const FALLBACK_CHARS = [
   {char:'民',code:'n'},{char:'了',code:'b'},{char:'发',code:'v'},{char:'以',code:'c'},{char:'经',code:'x'}
 ];
 
-let roots = [], chars = [], cur = null, hintIdx = 0, retry = false;
+let roots = [], chars = [], analysis = {}, cur = null, hintIdx = 0, retry = false;
 let s = (() => { try { return JSON.parse(localStorage.getItem(STATE_KEY))||{}; } catch(_) { return {}; } })();
 s.total = s.total||0; s.correct = s.correct||0; s.streak = s.streak||0;
 s.wrongMap = s.wrongMap||{}; s.history = s.history||[];
@@ -402,30 +402,37 @@ function submit() {
     toast(`编码 ${ans}，请重打`,'bad'); save();
   }
 }
+function currentAnalysis() {
+  return cur ? { ...(analysis[cur.char] || {}), ...cur } : null;
+}
 function formatDecomp() {
-  if (!cur) return '拆法待补';
-  if (cur.units) {
-    const flag = cur.flag ? `<div class="decomp-flag">${cur.flag}</div>` : '';
-    return `<span class="decomp-label">拆解</span> <span class="wubi-units">${cur.units}</span>${flag}`;
+  const info = currentAnalysis();
+  if (!info) return '拆法待补';
+  if (info.units) {
+    const flag = info.flag ? `<div class="decomp-flag">${info.flag}</div>` : '';
+    return `<span class="decomp-label">拆解</span> <span class="wubi-units">${info.units}</span>${flag}`;
   }
-  if (cur.decomposition) return `<span class="decomp-label">拆解</span> ${cur.decomposition}`;
-  return '拆法待补';
+  if (info.decomposition) return `<span class="decomp-label">拆解</span> ${info.decomposition}`;
+  return `<span class="decomp-label">暂无拆解</span> <span class="decomp-flag">编码：${info.code || ''}</span>`;
 }
 function hintDecomp() { if (!cur) return; E.dec.innerHTML = formatDecomp(); }
 function hintKeys() { if (!cur) return; hintIdx = cur.code.length; highlightKeys(cur.code); toast(`已高亮 ${cur.code} 键位`,''); }
 function hintCode() {
-  if (!cur) return;
-  const shortCode = cur.shortCode ? ` · 简码 ${cur.shortCode}` : '';
-  E.dec.innerHTML = `<span class="decomp-label">编码</span> <span class="wubi-units">${cur.code}</span>${shortCode}`;
-  toast(`完整编码：${cur.code}`,'');
+  const info = currentAnalysis();
+  if (!info) return;
+  const shortCode = info.shortCode ? ` · 简码 ${info.shortCode}` : '';
+  E.dec.innerHTML = `<span class="decomp-label">编码</span> <span class="wubi-units">${info.code}</span>${shortCode}`;
+  toast(`完整编码：${info.code}`,'');
 }
 function skip() { if (!cur||retry) return; s.history = [...(s.history||[]), cur.char].slice(-80); s.streak=0; s.wrongMap[cur.char]=s.wrongMap[cur.char]||{code:cur.code,count:1}; s.wrongMap[cur.char].count++; save(); next(); }
 
 async function init() {
-  [roots, chars] = await Promise.all([
+  [roots, chars, analysis] = await Promise.all([
     fetch('/wubi-trainer/data/wubi86-roots.json').then(r => r.json()).catch(() => FALLBACK_ROOTS),
-    fetch('/wubi-trainer/data/wubi86-chars.json').then(r => r.json()).catch(() => FALLBACK_CHARS)
+    fetch('/wubi-trainer/data/wubi86-chars.json').then(r => r.json()).catch(() => FALLBACK_CHARS),
+    fetch('/wubi-trainer/data/wubi86-analysis.json').then(r => r.json()).catch(() => ({}))
   ]);
+  chars = chars.map(item => ({ ...(analysis[item.char] || {}), ...item }));
   renderKB(); next();
 }
 
