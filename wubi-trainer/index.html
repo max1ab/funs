@@ -1,671 +1,548 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>五笔查表练习</title>
-  <link rel="stylesheet" href="/design-tokens.css" />
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: var(--font-sans);
-      color: var(--color-text);
-      background:
-        radial-gradient(circle at 20% 0%, rgba(221, 198, 166, .38), transparent 28rem),
-        linear-gradient(180deg, #fbf7ef 0%, var(--color-bg) 100%);
-    }
-    button, input { font: inherit; }
-    button { cursor: pointer; }
-    .app {
-      width: min(1440px, 100%);
-      margin: 0 auto;
-      padding: 32px 24px 40px;
-    }
-    .site-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 24px;
-      margin-bottom: 24px;
-    }
-    .eyebrow {
-      margin: 0 0 8px;
-      color: var(--color-accent);
-      font-size: 13px;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      font-weight: 700;
-    }
-    h1 {
-      margin: 0;
-      font-size: clamp(28px, 4vw, 48px);
-      letter-spacing: -.04em;
-      line-height: 1.08;
-    }
-    .subtitle {
-      margin: 12px 0 0;
-      max-width: 680px;
-      color: var(--color-text-secondary);
-      line-height: 1.8;
-    }
-    .stats {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(76px, 1fr));
-      gap: 10px;
-      min-width: min(440px, 100%);
-    }
-    .stat {
-      padding: 14px 16px;
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-md);
-      background: rgba(255, 253, 248, .72);
-      backdrop-filter: blur(12px);
-      text-align: center;
-    }
-    .stat strong {
-      display: block;
-      font-family: var(--font-mono);
-      font-size: 22px;
-      line-height: 1;
-    }
-    .stat span {
-      display: block;
-      margin-top: 7px;
-      color: var(--color-text-muted);
-      font-size: 12px;
-    }
-    .workspace {
-      display: grid;
-      grid-template-columns: minmax(340px, 450px) minmax(520px, 1fr);
-      gap: 20px;
-      align-items: start;
-    }
-    .panel {
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-lg);
-      background: rgba(255, 253, 248, .88);
-      box-shadow: var(--shadow-xl);
-    }
-    .practice-panel {
-      position: sticky;
-      top: 20px;
-      padding: 24px;
-    }
-    .mode-tabs {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px;
-      padding: 5px;
-      border: 1px solid var(--color-border);
-      border-radius: 999px;
-      background: var(--color-surface2);
-    }
-    .mode-tab {
-      border: 0;
-      border-radius: 999px;
-      padding: 11px 14px;
-      background: transparent;
-      color: var(--color-text-secondary);
-      font-weight: 700;
-    }
-    .mode-tab.active {
-      background: var(--color-surface);
-      color: var(--color-text);
-      box-shadow: 0 7px 18px rgba(95, 65, 36, .12);
-    }
-    .mode-note {
-      min-height: 44px;
-      margin: 14px 0 20px;
-      color: var(--color-text-secondary);
-      font-size: 14px;
-      line-height: 1.6;
-    }
-    .char-card {
-      display: grid;
-      place-items: center;
-      min-height: 210px;
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-lg);
-      background: linear-gradient(180deg, #fffdfa, #f5ecde);
-      position: relative;
-      overflow: hidden;
-    }
-    .char-card::after {
-      content: "";
-      position: absolute;
-      inset: 18px;
-      border: 1px solid rgba(155, 95, 47, .12);
-      border-radius: 20px;
-      pointer-events: none;
-    }
-    .target-char {
-      font-size: clamp(86px, 16vw, 140px);
-      line-height: 1;
-      font-weight: 500;
-      letter-spacing: -.08em;
-    }
-    .char-info {
-      margin: 14px 0 0;
-      text-align: center;
-      color: var(--color-text-secondary);
-      font-size: 13px;
-    }
-    .input-row {
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 10px;
-      margin-top: 20px;
-    }
-    .code-input {
-      width: 100%;
-      border: 1.5px solid var(--color-border);
-      border-radius: var(--radius-md);
-      background: var(--color-surface);
-      padding: 16px 18px;
-      font-family: var(--font-mono);
-      font-size: 28px;
-      letter-spacing: .22em;
-      text-transform: lowercase;
-      outline: none;
-      color: var(--color-text);
-    }
-    .code-input:focus {
-      border-color: var(--color-accent);
-      box-shadow: 0 0 0 4px rgba(155, 95, 47, .13);
-    }
-    .code-input.error {
-      border-color: var(--color-error);
-      box-shadow: 0 0 0 4px rgba(183, 91, 75, .14);
-    }
-    .primary-btn {
-      border: 0;
-      border-radius: var(--radius-md);
-      padding: 0 22px;
-      background: var(--color-text);
-      color: #fffaf0;
-      font-weight: 800;
-    }
-    .feedback {
-      min-height: 34px;
-      margin: 14px 0 0;
-      color: var(--color-text-secondary);
-      line-height: 1.7;
-      text-align: center;
-    }
-    .feedback.good { color: var(--color-success); font-weight: 700; }
-    .feedback.bad { color: var(--color-error); font-weight: 700; }
-    .hint-actions {
-      display: grid;
-      grid-template-columns: repeat(3, 1fr);
-      gap: 8px;
-      margin-top: 14px;
-    }
-    .ghost-btn {
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-sm);
-      background: transparent;
-      color: var(--color-text-secondary);
-      padding: 10px 8px;
-      font-size: 13px;
-      font-weight: 700;
-    }
-    .ghost-btn:hover { color: var(--color-accent); border-color: var(--color-accent-dim); background: #fff8ef; }
-    .table-panel { padding: 22px; }
-    .table-head {
-      display: flex;
-      justify-content: space-between;
-      gap: 16px;
-      align-items: end;
-      margin-bottom: 18px;
-    }
-    .table-head h2 { margin: 0; font-size: 22px; letter-spacing: -.03em; }
-    .table-head p { margin: 6px 0 0; color: var(--color-text-secondary); font-size: 14px; line-height: 1.6; }
-    .search-box {
-      width: min(260px, 100%);
-      border: 1px solid var(--color-border);
-      border-radius: 999px;
-      background: var(--color-surface);
-      padding: 11px 15px;
-      outline: none;
-    }
-    .keyboard {
-      display: grid;
-      gap: 12px;
-    }
-    .key-row {
-      display: grid;
-      gap: 10px;
-      grid-template-columns: repeat(10, minmax(0, 1fr));
-    }
-    .key-row.home { grid-template-columns: .45fr repeat(9, minmax(0, 1fr)) .45fr; }
-    .key-row.bottom { grid-template-columns: 1.15fr repeat(7, minmax(0, 1fr)) 2.15fr; }
-    .key-spacer { min-width: 0; }
-    .root-key {
-      min-height: 142px;
-      border: 1px solid var(--color-border);
-      border-radius: var(--radius-md);
-      background: #fffaf2;
-      padding: 12px;
-      text-align: left;
-      transition: transform .16s ease, border-color .16s ease, box-shadow .16s ease, background .16s ease;
-    }
-    .root-key:hover, .root-key.active {
-      transform: translateY(-2px);
-      border-color: var(--color-accent);
-      box-shadow: 0 14px 32px rgba(116, 78, 42, .14);
-      background: #fff7e8;
-    }
-    .root-key.hinted {
-      border-color: var(--color-accent);
-      background: var(--color-accent-dim);
-      box-shadow: 0 0 0 4px rgba(155, 95, 47, .12);
-    }
-    .key-top {
-      display: flex;
-      align-items: baseline;
-      justify-content: space-between;
-      gap: 8px;
-      margin-bottom: 8px;
-    }
-    .key-letter {
-      font-family: var(--font-mono);
-      font-size: 22px;
-      font-weight: 900;
-    }
-    .key-zone { color: var(--color-text-muted); font-size: 12px; }
-    .key-label { font-size: 20px; font-weight: 800; margin-bottom: 6px; }
-    .key-mnemonic { color: var(--color-accent); font-size: 13px; line-height: 1.5; margin-bottom: 8px; }
-    .root-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 5px;
-    }
-    .root-chip {
-      display: inline-flex;
-      align-items: center;
-      border: 1px solid rgba(155, 95, 47, .14);
-      border-radius: 999px;
-      background: rgba(255, 253, 248, .74);
-      padding: 3px 7px;
-      font-size: 12px;
-      color: var(--color-text-secondary);
-      line-height: 1.2;
-    }
-    .detail-card {
-      margin-top: 16px;
-      padding: 16px;
-      border: 1px dashed var(--color-border);
-      border-radius: var(--radius-md);
-      background: rgba(241, 234, 223, .55);
-      color: var(--color-text-secondary);
-      line-height: 1.8;
-    }
-    .mistakes {
-      margin-top: 18px;
-      border-top: 1px solid var(--color-border);
-      padding-top: 16px;
-    }
-    .mistakes h3 { margin: 0 0 10px; font-size: 15px; }
-    .mistake-list {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      min-height: 32px;
-      color: var(--color-text-muted);
-      font-size: 13px;
-    }
-    .mistake-pill {
-      border: 1px solid var(--color-border);
-      border-radius: 999px;
-      padding: 6px 10px;
-      background: var(--color-surface);
-      color: var(--color-text-secondary);
-      font-family: var(--font-mono);
-    }
-    @media (max-width: 980px) {
-      .site-header { display: block; }
-      .stats { margin-top: 20px; }
-      .workspace { grid-template-columns: 1fr; }
-      .practice-panel { position: static; }
-    }
-    @media (max-width: 620px) {
-      .app { padding: 20px 12px 28px; }
-      .stats { grid-template-columns: repeat(2, 1fr); }
-      .input-row { grid-template-columns: 1fr; }
-      .primary-btn { min-height: 50px; }
-      .hint-actions { grid-template-columns: 1fr; }
-      .table-head { display: block; }
-      .search-box { width: 100%; margin-top: 14px; }
-      .key-row, .key-row.home, .key-row.bottom { grid-template-columns: 1fr; }
-      .key-spacer { display: none; }
-      .root-key { min-height: auto; }
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>五笔查表练习</title>
+<link rel="stylesheet" href="/design-tokens.css">
+<style>
+  :root {
+    --cw: 600px;
+  }
+  body {
+    min-height: 100vh;
+    background: linear-gradient(175deg, #fbf7f0 0%, #f5efe3 40%, #f2ece0 100%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+  .app {
+    width: min(var(--cw), 100% - 32px);
+    padding: 28px 0 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+
+  /* Header */
+  .header {
+    text-align: center;
+  }
+  .header h1 {
+    font-size: 22px;
+    font-weight: 700;
+    letter-spacing: -.02em;
+    color: var(--color-text);
+  }
+  .header p {
+    margin-top: 4px;
+    font-size: 13px;
+    color: var(--color-text-muted);
+  }
+
+  /* Stats — subtle row */
+  .stats {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+  }
+  .stat {
+    padding: 0 18px;
+    text-align: center;
+  }
+  .stat + .stat { border-left: 1px solid var(--color-border); }
+  .stat strong {
+    display: block;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--color-text);
+  }
+  .stat span {
+    font-size: 11px;
+    color: var(--color-text-muted);
+  }
+
+  /* Mode tabs */
+  .modes {
+    display: flex;
+    gap: 4px;
+    padding: 4px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    background: var(--color-surface);
+  }
+  .mode-tab {
+    flex: 1;
+    padding: 10px;
+    border: 0;
+    border-radius: var(--radius-full);
+    background: transparent;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .mode-tab.active {
+    background: var(--color-text);
+    color: #fbf7f0;
+  }
+
+  /* Character card */
+  .char-card {
+    display: grid;
+    place-items: center;
+    min-height: 200px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    background: linear-gradient(175deg, #fffdfa, #f7f0e4);
+    position: relative;
+  }
+  .char-card::after {
+    content: "";
+    position: absolute;
+    inset: 14px;
+    border: 1px solid rgba(155,95,47,.08);
+    border-radius: 16px;
+    pointer-events: none;
+  }
+  .char-card .char {
+    font-size: clamp(80px, 18vw, 130px);
+    font-weight: 500;
+    line-height: 1;
+    letter-spacing: -.05em;
+    color: var(--color-text);
+  }
+  .char-meta {
+    margin-top: 6px;
+    font-size: 12px;
+    color: var(--color-text-muted);
+    text-align: center;
+  }
+
+  /* Input */
+  .input-row {
+    display: flex;
+    gap: 8px;
+  }
+  .input-row input {
+    flex: 1;
+    padding: 16px 18px;
+    font-family: var(--font-mono);
+    font-size: 26px;
+    letter-spacing: .2em;
+    text-transform: lowercase;
+    border: 1.5px solid var(--color-border);
+    border-radius: var(--radius-md);
+    background: var(--color-surface);
+    color: var(--color-text);
+    outline: none;
+  }
+  .input-row input:focus {
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px rgba(197,113,10,.12);
+  }
+  .input-row input.err {
+    border-color: var(--color-error);
+    box-shadow: 0 0 0 3px var(--color-error-dim);
+  }
+  .input-row button {
+    padding: 0 24px;
+    border: 0;
+    border-radius: var(--radius-md);
+    background: var(--color-text);
+    color: #fbf7f0;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .input-row button.retry { background: var(--color-accent); }
+
+  /* Feedback */
+  .msg {
+    min-height: 22px;
+    text-align: center;
+    font-size: 14px;
+    color: var(--color-text-secondary);
+  }
+  .msg.ok { color: var(--color-success); font-weight: 700; }
+  .msg.bad { color: var(--color-error); font-weight: 700; }
+
+  /* Hint bar */
+  .hints {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+  }
+  .hints button {
+    padding: 7px 14px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    background: transparent;
+    font-size: 12px;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all .15s;
+  }
+  .hints button:hover {
+    border-color: var(--color-accent);
+    color: var(--color-accent);
+  }
+
+  /* Root table — compact keyboard grid */
+  .roots-section summary {
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    padding: 8px 0;
+    list-style: none;
+  }
+  .roots-section summary::-webkit-details-marker { display: none; }
+  .roots-section summary::before { content: "⌨ "; }
+  .roots-section[open] summary { margin-bottom: 10px; }
+
+  .kb-grid {
+    display: grid;
+    gap: 4px;
+    max-width: 460px;
+    margin: 0 auto;
+  }
+  .kb-row {
+    display: grid;
+    gap: 4px;
+  }
+  .kb-row.r0 { grid-template-columns: repeat(10, 1fr); }
+  .kb-row.r1 { grid-template-columns: .5fr repeat(9, 1fr) .5fr; }
+  .kb-row.r2 { grid-template-columns: 1.25fr repeat(7, 1fr) 1.75fr; }
+
+  .kb-key {
+    aspect-ratio: 1;
+    min-width: 32px;
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    background: var(--color-surface);
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: all .15s;
+    padding: 2px;
+    position: relative;
+  }
+  .kb-key:hover {
+    border-color: var(--color-accent);
+    transform: translateY(-1px);
+    box-shadow: 0 3px 12px rgba(155,95,47,.1);
+  }
+  .kb-key.hint {
+    border-color: var(--color-accent);
+    background: var(--color-accent-dim);
+    box-shadow: 0 0 0 3px rgba(197,113,10,.15);
+    transform: scale(1.06);
+    z-index: 2;
+  }
+  .kb-key .kl {
+    font-family: var(--font-mono);
+    font-size: 16px;
+    font-weight: 800;
+    color: var(--color-text);
+    line-height: 1;
+  }
+  .kb-key .kz {
+    font-size: 9px;
+    color: var(--color-text-muted);
+    line-height: 1;
+    margin-top: 1px;
+  }
+  .kb-spacer { min-width: 0; }
+
+  /* Key detail popover */
+  .key-detail {
+    text-align: center;
+    padding: 12px;
+    min-height: 36px;
+    font-size: 13px;
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+    border: 1px dashed var(--color-border);
+    border-radius: var(--radius-sm);
+    background: rgba(241,234,223,.5);
+    margin-top: 8px;
+  }
+  .key-detail strong { color: var(--color-text); }
+  .key-detail .roots {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+    justify-content: center;
+    margin-top: 6px;
+  }
+  .key-detail .root-chip {
+    padding: 2px 8px;
+    border: 1px solid rgba(155,95,47,.14);
+    border-radius: var(--radius-full);
+    font-size: 12px;
+    background: rgba(255,253,248,.7);
+  }
+
+  /* Mistakes */
+  .mistakes {
+    border-top: 1px solid var(--color-border);
+    padding-top: 14px;
+  }
+  .mistakes h3 {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    margin-bottom: 8px;
+  }
+  .mistake-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    min-height: 24px;
+    color: var(--color-text-muted);
+    font-size: 13px;
+  }
+  .mistake-pill {
+    padding: 4px 10px;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-full);
+    background: var(--color-surface);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--color-text-secondary);
+  }
+
+  @media (max-width: 480px) {
+    .kb-key { min-width: 24px; }
+    .kb-key .kl { font-size: 13px; }
+    .kb-key .kz { font-size: 8px; }
+    .input-row input { font-size: 20px; padding: 14px; }
+    .char-card .char { font-size: 72px; }
+  }
+</style>
 </head>
 <body>
-  <main class="app">
-    <header class="site-header">
-      <div>
-        <p class="eyebrow">Wubi 86 Trainer</p>
-        <h1>先查表，再盲打。</h1>
-        <p class="subtitle">用详尽字根表辅助推导编码，再进入盲打检验。网页不做输入法，只训练五笔 86 的字根、键位与编码记忆。</p>
-      </div>
-      <section class="stats" aria-label="练习统计">
-        <div class="stat"><strong id="totalCount">0</strong><span>练习</span></div>
-        <div class="stat"><strong id="accuracy">0%</strong><span>准确率</span></div>
-        <div class="stat"><strong id="streak">0</strong><span>连对</span></div>
-        <div class="stat"><strong id="wrongCount">0</strong><span>错题</span></div>
-      </section>
-    </header>
+<div class="app">
+  <header class="header">
+    <h1>五笔86 · 查表练习</h1>
+    <p>对照字根键盘，推导编码，建立肌肉记忆</p>
+  </header>
 
-    <section class="workspace">
-      <aside class="panel practice-panel">
-        <div class="mode-tabs" role="tablist" aria-label="练习模式">
-          <button class="mode-tab active" data-mode="lookup" type="button">查表推导</button>
-          <button class="mode-tab" data-mode="blind" type="button">盲打检验</button>
-        </div>
-        <p class="mode-note" id="modeNote">对照右侧字根表推导编码。提示不会直接替你完成，只会逐步高亮相关键位。</p>
+  <div class="stats">
+    <div class="stat"><strong id="totalCount">0</strong><span>练习</span></div>
+    <div class="stat"><strong id="accuracy">0%</strong><span>准确率</span></div>
+    <div class="stat"><strong id="streak">0</strong><span>连对</span></div>
+    <div class="stat"><strong id="wrongCount">0</strong><span>错题</span></div>
+  </div>
 
-        <div class="char-card">
-          <div class="target-char" id="targetChar">字</div>
-        </div>
-        <p class="char-info" id="charInfo">五笔86 · 常用字</p>
+  <div class="modes">
+    <button class="mode-tab active" data-mode="lookup">🔍 查表推导</button>
+    <button class="mode-tab" data-mode="blind">🧠 盲打检验</button>
+  </div>
 
-        <div class="input-row">
-          <input id="codeInput" class="code-input" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="输入编码" />
-          <button id="submitBtn" class="primary-btn" type="button">确认</button>
-        </div>
-        <div id="feedback" class="feedback">按 Enter 确认，错了需要重打一遍。</div>
+  <div class="char-card">
+    <div class="char" id="targetChar">字</div>
+  </div>
+  <div class="char-meta" id="charInfo">五笔86 · 常用字</div>
 
-        <div class="hint-actions">
-          <button id="hintFirst" class="ghost-btn" type="button">提示首码</button>
-          <button id="hintNext" class="ghost-btn" type="button">提示下一码</button>
-          <button id="hintAll" class="ghost-btn" type="button">显示答案</button>
-        </div>
+  <div class="msg" id="msg">对照下方字根键盘推导编码，按提示高亮对应键位</div>
 
-        <section class="mistakes">
-          <h3>错题复练</h3>
-          <div id="mistakeList" class="mistake-list">还没有错题。</div>
-        </section>
-      </aside>
+  <div class="input-row">
+    <input id="codeInput" placeholder="输入编码" autocomplete="off" autocapitalize="off" spellcheck="false">
+    <button id="submitBtn">确认</button>
+  </div>
 
-      <section class="panel table-panel">
-        <div class="table-head">
-          <div>
-            <h2>五笔 86 字根表</h2>
-            <p>按真实键盘排列。每个键展示键位、区位、代表字、口诀与常用字根。</p>
-          </div>
-          <input id="rootSearch" class="search-box" placeholder="搜索键位 / 字根 / 口诀" />
-        </div>
-        <div id="keyboard" class="keyboard" aria-label="五笔86字根键盘"></div>
-        <div id="keyDetail" class="detail-card">点击任意键，查看该键的完整字根与口诀。</div>
-      </section>
-    </section>
-  </main>
+  <div class="hints">
+    <button id="hintFirst">首码</button>
+    <button id="hintNext">下一码</button>
+    <button id="hintAll">显示答案</button>
+    <button id="skipBtn">跳过</button>
+  </div>
 
-  <script>
-    const STATE_KEY = 'wubi_trainer_table_first_v1';
-    const keyboardRows = [
-      ['Q','W','E','R','T','Y','U','I','O','P'],
-      ['A','S','D','F','G','H','J','K','L'],
-      ['Z','X','C','V','B','N','M']
-    ];
-    const fallbackRoots = [
-      {key:'G',zone:'横区',position:11,label:'王',name:'王旁青头',primaryChar:'一',mnemonic:'王旁青头戋五一',roots:['王','一','五','戋','青头']},
-      {key:'F',zone:'横区',position:12,label:'土',name:'土士二干',primaryChar:'地',mnemonic:'土士二干十寸雨',roots:['土','士','二','干','十','寸','雨']},
-      {key:'D',zone:'横区',position:13,label:'大',name:'大犬三羊',primaryChar:'在',mnemonic:'大犬三羊古石厂',roots:['大','犬','三','羊','古','石','厂']},
-      {key:'S',zone:'横区',position:14,label:'木',name:'木丁西',primaryChar:'要',mnemonic:'木丁西',roots:['木','丁','西']},
-      {key:'A',zone:'横区',position:15,label:'工',name:'工戈草头',primaryChar:'工',mnemonic:'工戈草头右框七',roots:['工','戈','艹','廾','匚','七']},
-      {key:'H',zone:'竖区',position:21,label:'目',name:'目具上止',primaryChar:'上',mnemonic:'目具上止卜虎皮',roots:['目','具','上','止','卜','虎皮']},
-      {key:'J',zone:'竖区',position:22,label:'日',name:'日早两竖',primaryChar:'是',mnemonic:'日早两竖与虫依',roots:['日','早','刂','虫']},
-      {key:'K',zone:'竖区',position:23,label:'口',name:'口与川',primaryChar:'中',mnemonic:'口与川，字根稀',roots:['口','川']},
-      {key:'L',zone:'竖区',position:24,label:'田',name:'田甲方框',primaryChar:'国',mnemonic:'田甲方框四车力',roots:['田','甲','囗','四','车','力']},
-      {key:'M',zone:'竖区',position:25,label:'山',name:'山由贝',primaryChar:'同',mnemonic:'山由贝，下框几',roots:['山','由','贝','冂','几']},
-      {key:'T',zone:'撇区',position:31,label:'禾',name:'禾竹一撇',primaryChar:'和',mnemonic:'禾竹一撇双人立，反文条头共三一',roots:['禾','竹','丿','彳','攵','夂']},
-      {key:'R',zone:'撇区',position:32,label:'白',name:'白手看头',primaryChar:'的',mnemonic:'白手看头三二斤',roots:['白','手','扌','斤','看头']},
-      {key:'E',zone:'撇区',position:33,label:'月',name:'月彡乃用',primaryChar:'有',mnemonic:'月彡乃用家衣底',roots:['月','彡','乃','用','豕']},
-      {key:'W',zone:'撇区',position:34,label:'人',name:'人和八',primaryChar:'人',mnemonic:'人和八，三四里',roots:['人','亻','八','癶']},
-      {key:'Q',zone:'撇区',position:35,label:'金',name:'金勺鱼儿',primaryChar:'我',mnemonic:'金勺缺点无尾鱼，犬旁留叉儿一点夕，氏无七',roots:['金','钅','勹','儿','夕','鱼','犭','氏']},
-      {key:'Y',zone:'捺区',position:41,label:'言',name:'言文方广',primaryChar:'主',mnemonic:'言文方广在四一，高头一捺谁人去',roots:['言','讠','文','方','广','亠','丶']},
-      {key:'U',zone:'捺区',position:42,label:'立',name:'立辛两点',primaryChar:'产',mnemonic:'立辛两点六门疒',roots:['立','辛','冫','丷','六','门','疒']},
-      {key:'I',zone:'捺区',position:43,label:'水',name:'水旁兴头',primaryChar:'不',mnemonic:'水旁兴头小倒立',roots:['水','氵','小','兴头']},
-      {key:'O',zone:'捺区',position:44,label:'火',name:'火业四点',primaryChar:'为',mnemonic:'火业头，四点米',roots:['火','业头','灬','米']},
-      {key:'P',zone:'捺区',position:45,label:'之',name:'之宝盖',primaryChar:'这',mnemonic:'之宝盖，摘礻衤',roots:['之','辶','宀','冖','礻','衤']},
-      {key:'N',zone:'折区',position:51,label:'已',name:'已巳己尸',primaryChar:'民',mnemonic:'已半巳满不出己，左框折尸心和羽',roots:['已','巳','己','尸','心','忄','羽','乙']},
-      {key:'B',zone:'折区',position:52,label:'子',name:'子耳了也',primaryChar:'了',mnemonic:'子耳了也框向上',roots:['子','耳','了','也','凵']},
-      {key:'V',zone:'折区',position:53,label:'女',name:'女刀九臼',primaryChar:'发',mnemonic:'女刀九臼山朝西',roots:['女','刀','九','臼','巛']},
-      {key:'C',zone:'折区',position:54,label:'又',name:'又巴马',primaryChar:'以',mnemonic:'又巴马，丢矢矣',roots:['又','巴','马','厶']},
-      {key:'X',zone:'折区',position:55,label:'纟',name:'纟弓匕',primaryChar:'经',mnemonic:'慈母无心弓和匕，幼无力',roots:['纟','弓','匕','幺']}
-    ];
-    const fallbackChars = [
-      {char:'一',code:'g',difficulty:1},{char:'地',code:'f',difficulty:1},{char:'在',code:'d',difficulty:1},{char:'要',code:'s',difficulty:1},{char:'工',code:'a',difficulty:1},
-      {char:'上',code:'h',difficulty:1},{char:'是',code:'j',difficulty:1},{char:'中',code:'k',difficulty:1},{char:'国',code:'l',difficulty:1},{char:'同',code:'m',difficulty:1},
-      {char:'和',code:'t',difficulty:1},{char:'的',code:'r',difficulty:1},{char:'有',code:'e',difficulty:1},{char:'人',code:'w',difficulty:1},{char:'我',code:'q',difficulty:1},
-      {char:'主',code:'y',difficulty:1},{char:'产',code:'u',difficulty:1},{char:'不',code:'i',difficulty:1},{char:'为',code:'o',difficulty:1},{char:'这',code:'p',difficulty:1},
-      {char:'民',code:'n',difficulty:1},{char:'了',code:'b',difficulty:1},{char:'发',code:'v',difficulty:1},{char:'以',code:'c',difficulty:1},{char:'经',code:'x',difficulty:1}
-    ];
+  <details class="roots-section" open id="rootsSection">
+    <summary>五笔86 字根键盘（点击键位查看详情）</summary>
+    <div class="kb-grid" id="keyboard"></div>
+    <div class="key-detail" id="keyDetail">点击任一键位查看完整字根和口诀</div>
+  </details>
 
-    let roots = [];
-    let chars = [];
-    let mode = 'lookup';
-    let current = null;
-    let hintIndex = 0;
-    let retry = false;
-    let state = loadState();
+  <div class="mistakes">
+    <h3>错题复练</h3>
+    <div class="mistake-list" id="mistakeList">还没有错题</div>
+  </div>
+</div>
 
-    const $ = (id) => document.getElementById(id);
-    const els = {
-      keyboard: $('keyboard'), keyDetail: $('keyDetail'), targetChar: $('targetChar'), charInfo: $('charInfo'),
-      input: $('codeInput'), submit: $('submitBtn'), feedback: $('feedback'), modeNote: $('modeNote'),
-      total: $('totalCount'), accuracy: $('accuracy'), streak: $('streak'), wrongCount: $('wrongCount'),
-      mistakeList: $('mistakeList'), rootSearch: $('rootSearch')
-    };
+<script>
+const STATE_KEY = 'wubi_trainer_v3';
+const KB_ROWS = [
+  ['Q','W','E','R','T','Y','U','I','O','P'],
+  ['A','S','D','F','G','H','J','K','L'],
+  ['X','C','V','B','N','M']
+];
 
-    function loadState() {
-      try {
-        return JSON.parse(localStorage.getItem(STATE_KEY)) || { total: 0, correct: 0, streak: 0, wrongMap: {}, history: [] };
-      } catch (_) {
-        return { total: 0, correct: 0, streak: 0, wrongMap: {}, history: [] };
-      }
-    }
-    function saveState() { localStorage.setItem(STATE_KEY, JSON.stringify(state)); }
-    async function loadJson(path, fallback) {
-      try {
-        const response = await fetch(path);
-        if (!response.ok) throw new Error(response.statusText);
-        return await response.json();
-      } catch (error) {
-        console.warn(`Using fallback data for ${path}`, error);
-        return fallback;
-      }
-    }
-    function rootByKey(key) { return roots.find(root => root.key.toLowerCase() === key.toLowerCase()); }
-    function renderKeyboard(filter = '') {
-      const query = filter.trim().toLowerCase();
-      els.keyboard.innerHTML = '';
-      keyboardRows.forEach((row, index) => {
-        const rowEl = document.createElement('div');
-        rowEl.className = `key-row ${index === 1 ? 'home' : ''} ${index === 2 ? 'bottom' : ''}`;
-        if (index === 1) rowEl.appendChild(spacer());
-        if (index === 2) rowEl.appendChild(spacer());
-        row.forEach(key => {
-          const root = rootByKey(key);
-          if (!root) return;
-          const haystack = [root.key, root.zone, root.label, root.name, root.mnemonic, ...root.roots].join(' ').toLowerCase();
-          const hidden = query && !haystack.includes(query);
-          const card = document.createElement('button');
-          card.type = 'button';
-          card.className = 'root-key';
-          card.dataset.key = root.key.toLowerCase();
-          card.hidden = hidden;
-          card.innerHTML = `
-            <div class="key-top"><span class="key-letter">${root.key}</span><span class="key-zone">${root.zone} · ${root.position}</span></div>
-            <div class="key-label">${root.label} <small>${root.name}</small></div>
-            <div class="key-mnemonic">${root.mnemonic}</div>
-            <div class="root-list">${root.roots.map(item => `<span class="root-chip">${item}</span>`).join('')}</div>
-          `;
-          card.addEventListener('click', () => showKeyDetail(root));
-          rowEl.appendChild(card);
-        });
-        if (index === 1) rowEl.appendChild(spacer());
-        if (index === 2) rowEl.appendChild(spacer());
-        els.keyboard.appendChild(rowEl);
-      });
-      highlightKeys(current ? current.code.slice(0, hintIndex) : '');
-    }
-    function spacer() {
-      const el = document.createElement('div');
-      el.className = 'key-spacer';
-      return el;
-    }
-    function showKeyDetail(root) {
-      document.querySelectorAll('.root-key').forEach(el => el.classList.toggle('active', el.dataset.key === root.key.toLowerCase()));
-      els.keyDetail.innerHTML = `<strong>${root.key} 键 · ${root.zone} · ${root.name}</strong><br>${root.mnemonic}<br>字根：${root.roots.join('、')}<br>代表字：${root.primaryChar}`;
-    }
-    function highlightKeys(code) {
-      const active = new Set((code || '').toLowerCase().split(''));
-      document.querySelectorAll('.root-key').forEach(el => {
-        el.classList.toggle('hinted', active.has(el.dataset.key));
-      });
-    }
-    function pickChar() {
-      const wrongItems = Object.entries(state.wrongMap || {}).filter(([, item]) => item.count > 0);
-      if (wrongItems.length && Math.random() < 0.35) {
-        const [char] = wrongItems[Math.floor(Math.random() * wrongItems.length)];
-        const found = chars.find(item => item.char === char);
-        if (found) return found;
-      }
-      const recent = new Set((state.history || []).slice(-24));
-      const pool = chars.filter(item => !recent.has(item.char));
-      const source = pool.length > 12 ? pool : chars;
-      return source[Math.floor(Math.random() * source.length)];
-    }
-    function showNextChar() {
-      current = pickChar();
-      hintIndex = 0;
-      retry = false;
-      els.targetChar.textContent = current.char;
-      els.charInfo.textContent = `五笔86 · ${current.code.length} 码 · 难度 ${current.difficulty || 1}`;
-      els.input.value = '';
-      els.input.classList.remove('error');
-      els.submit.textContent = '确认';
-      setFeedback(mode === 'lookup' ? '对照字根表推导编码，必要时用分步提示。' : '不看表，直接输入完整编码。');
-      highlightKeys('');
-      els.input.focus();
-      updateStats();
-    }
-    function setFeedback(text, type = '') {
-      els.feedback.className = `feedback ${type}`.trim();
-      els.feedback.textContent = text;
-    }
-    function updateStats() {
-      const wrongEntries = Object.entries(state.wrongMap || {}).filter(([, item]) => item.count > 0);
-      els.total.textContent = state.total || 0;
-      els.accuracy.textContent = state.total ? `${Math.round((state.correct || 0) / state.total * 100)}%` : '0%';
-      els.streak.textContent = state.streak || 0;
-      els.wrongCount.textContent = wrongEntries.length;
-      els.mistakeList.innerHTML = wrongEntries.length
-        ? wrongEntries.sort((a, b) => b[1].count - a[1].count).slice(0, 18).map(([char, item]) => `<span class="mistake-pill">${char} ${item.code} ×${item.count}</span>`).join('')
-        : '还没有错题。';
-    }
-    function submitAnswer() {
-      if (!current) return;
-      const input = els.input.value.trim().toLowerCase();
-      if (!input) return;
-      const answer = current.code.toLowerCase();
-      if (retry) {
-        if (input === answer) {
-          state.total += 1;
-          state.correct += 1;
-          state.streak += 1;
-          delete state.wrongMap[current.char];
-          saveAndContinue('重输正确，继续下一题。', 'good');
-        } else {
-          state.streak = 0;
-          state.wrongMap[current.char].count += 1;
-          saveState();
-          updateStats();
-          els.input.value = '';
-          els.input.classList.add('error');
-          setFeedback(`还是不对。正确编码是 ${answer}，请重打一遍。`, 'bad');
-        }
-        return;
-      }
-      state.total += 1;
-      state.history = [...(state.history || []), current.char].slice(-80);
-      if (input === answer) {
-        state.correct += 1;
-        state.streak += 1;
-        delete state.wrongMap[current.char];
-        saveAndContinue('正确，手感慢慢建立起来了。', 'good');
-      } else {
-        state.streak = 0;
-        state.wrongMap[current.char] = state.wrongMap[current.char] || { code: answer, count: 0 };
-        state.wrongMap[current.char].count += 1;
-        retry = true;
-        hintIndex = answer.length;
-        highlightKeys(answer);
-        els.input.value = '';
-        els.input.classList.add('error');
-        els.submit.textContent = '重输';
-        saveState();
-        updateStats();
-        setFeedback(`不对。正确编码是 ${answer}，请重打一遍再继续。`, 'bad');
-      }
-    }
-    function saveAndContinue(text, type) {
-      saveState();
-      updateStats();
-      setFeedback(text, type);
-      els.input.classList.remove('error');
-      setTimeout(showNextChar, 520);
-    }
-    function revealNext(count = 1) {
-      if (!current) return;
-      hintIndex = Math.min(current.code.length, hintIndex + count);
-      const shown = current.code.slice(0, hintIndex);
-      highlightKeys(shown);
-      if (mode === 'lookup') {
-        setFeedback(`已高亮前 ${hintIndex} 码：${shown}`);
-      } else {
-        setFeedback(`提示：${shown}${'·'.repeat(Math.max(0, current.code.length - hintIndex))}`);
-      }
-    }
-    function revealAll() {
-      if (!current) return;
-      hintIndex = current.code.length;
-      highlightKeys(current.code);
-      setFeedback(`完整编码：${current.code}`);
-    }
-    function setMode(nextMode) {
-      mode = nextMode;
-      document.querySelectorAll('.mode-tab').forEach(btn => btn.classList.toggle('active', btn.dataset.mode === mode));
-      els.modeNote.textContent = mode === 'lookup'
-        ? '对照右侧字根表推导编码。提示会逐步高亮对应键位。'
-        : '收起查表依赖，只看汉字输入编码，用来检验是否真正记住。';
-      showNextChar();
-    }
-    async function init() {
-      [roots, chars] = await Promise.all([
-        loadJson('/wubi-trainer/data/wubi86-roots.json', fallbackRoots),
-        loadJson('/wubi-trainer/data/wubi86-chars.json', fallbackChars)
-      ]);
-      renderKeyboard();
-      showKeyDetail(roots[0]);
-      updateStats();
-      showNextChar();
-    }
+const FALLBACK_ROOTS = [
+  {key:'G',zone:'横',label:'王',mnemonic:'王旁青头戋五一',roots:['王','一','五','戋','青头']},
+  {key:'F',zone:'横',label:'土',mnemonic:'土士二干十寸雨',roots:['土','士','二','干','十','寸','雨']},
+  {key:'D',zone:'横',label:'大',mnemonic:'大犬三羊古石厂',roots:['大','犬','三','羊','古','石','厂']},
+  {key:'S',zone:'横',label:'木',mnemonic:'木丁西',roots:['木','丁','西']},
+  {key:'A',zone:'横',label:'工',mnemonic:'工戈草头右框七',roots:['工','戈','艹','廾','匚','七']},
+  {key:'H',zone:'竖',label:'目',mnemonic:'目具上止卜虎皮',roots:['目','具','上','止','卜']},
+  {key:'J',zone:'竖',label:'日',mnemonic:'日早两竖与虫依',roots:['日','早','刂','虫']},
+  {key:'K',zone:'竖',label:'口',mnemonic:'口与川，字根稀',roots:['口','川']},
+  {key:'L',zone:'竖',label:'田',mnemonic:'田甲方框四车力',roots:['田','甲','囗','四','车','力']},
+  {key:'M',zone:'竖',label:'山',mnemonic:'山由贝，下框几',roots:['山','由','贝','冂','几']},
+  {key:'T',zone:'撇',label:'禾',mnemonic:'禾竹一撇双人立',roots:['禾','竹','丿','彳','攵','夂']},
+  {key:'R',zone:'撇',label:'白',mnemonic:'白手看头三二斤',roots:['白','手','扌','斤']},
+  {key:'E',zone:'撇',label:'月',mnemonic:'月彡乃用家衣底',roots:['月','彡','乃','用','豕']},
+  {key:'W',zone:'撇',label:'人',mnemonic:'人和八，三四里',roots:['人','亻','八','癶']},
+  {key:'Q',zone:'撇',label:'金',mnemonic:'金勺鱼儿犬夕氏',roots:['金','钅','勹','儿','夕','鱼','犭','氏']},
+  {key:'Y',zone:'捺',label:'言',mnemonic:'言文方广在四一',roots:['言','讠','文','方','广','亠','丶']},
+  {key:'U',zone:'捺',label:'立',mnemonic:'立辛两点六门疒',roots:['立','辛','冫','丷','六','门','疒']},
+  {key:'I',zone:'捺',label:'水',mnemonic:'水旁兴头小倒立',roots:['水','氵','小']},
+  {key:'O',zone:'捺',label:'火',mnemonic:'火业头，四点米',roots:['火','灬','米']},
+  {key:'P',zone:'捺',label:'之',mnemonic:'之宝盖，摘礻衤',roots:['之','辶','宀','冖','礻','衤']},
+  {key:'N',zone:'折',label:'已',mnemonic:'已半巳满不出己',roots:['已','巳','己','尸','心','忄','羽','乙']},
+  {key:'B',zone:'折',label:'子',mnemonic:'子耳了也框向上',roots:['子','耳','了','也','凵']},
+  {key:'V',zone:'折',label:'女',mnemonic:'女刀九臼山朝西',roots:['女','刀','九','臼','巛']},
+  {key:'C',zone:'折',label:'又',mnemonic:'又巴马，丢矢矣',roots:['又','巴','马','厶']},
+  {key:'X',zone:'折',label:'纟',mnemonic:'慈母无心弓和匕',roots:['纟','弓','匕','幺']}
+];
 
-    document.querySelectorAll('.mode-tab').forEach(btn => btn.addEventListener('click', () => setMode(btn.dataset.mode)));
-    els.submit.addEventListener('click', submitAnswer);
-    els.input.addEventListener('keydown', event => { if (event.key === 'Enter') submitAnswer(); });
-    $('hintFirst').addEventListener('click', () => { hintIndex = 0; revealNext(1); });
-    $('hintNext').addEventListener('click', () => revealNext(1));
-    $('hintAll').addEventListener('click', revealAll);
-    els.rootSearch.addEventListener('input', () => renderKeyboard(els.rootSearch.value));
-    init();
-  </script>
+const FALLBACK_CHARS = [
+  {char:'一',code:'g'},{char:'地',code:'f'},{char:'在',code:'d'},{char:'要',code:'s'},{char:'工',code:'a'},
+  {char:'上',code:'h'},{char:'是',code:'j'},{char:'中',code:'k'},{char:'国',code:'l'},{char:'同',code:'m'},
+  {char:'和',code:'t'},{char:'的',code:'r'},{char:'有',code:'e'},{char:'人',code:'w'},{char:'我',code:'q'},
+  {char:'主',code:'y'},{char:'产',code:'u'},{char:'不',code:'i'},{char:'为',code:'o'},{char:'这',code:'p'},
+  {char:'民',code:'n'},{char:'了',code:'b'},{char:'发',code:'v'},{char:'以',code:'c'},{char:'经',code:'x'}
+];
+
+let roots = [], chars = [], mode = 'lookup', cur = null, hintIdx = 0, retry = false;
+let state = (() => { try { return JSON.parse(localStorage.getItem(STATE_KEY)) || {}; } catch(_) { return {}; } })();
+state.total = state.total || 0; state.correct = state.correct || 0; state.streak = state.streak || 0;
+state.wrongMap = state.wrongMap || {}; state.history = state.history || [];
+function save() { localStorage.setItem(STATE_KEY, JSON.stringify(state)); }
+
+const $ = id => document.getElementById(id);
+const els = {
+  kbd: $('keyboard'), kd: $('keyDetail'), tc: $('targetChar'), ci: $('charInfo'),
+  inp: $('codeInput'), sub: $('submitBtn'), msg: $('msg'),
+  ttl: $('totalCount'), acc: $('accuracy'), str: $('streak'), wc: $('wrongCount'),
+  ml: $('mistakeList')
+};
+
+function byKey(k) { return roots.find(r => r.key.toLowerCase() === k.toLowerCase()); }
+
+function renderKbd() {
+  els.kbd.innerHTML = '';
+  KB_ROWS.forEach((row, ri) => {
+    const re = document.createElement('div');
+    re.className = `kb-row r${ri}`;
+    if (ri === 1) re.appendChild(spacer());
+    if (ri === 2) re.appendChild(spacer());
+    row.forEach(key => {
+      const root = byKey(key); if (!root) return;
+      const el = document.createElement('button');
+      el.type = 'button';
+      el.className = 'kb-key';
+      el.dataset.key = root.key.toLowerCase();
+      el.innerHTML = `<span class="kl">${root.key}</span><span class="kz">${root.zone}·${root.label}</span>`;
+      el.addEventListener('click', () => showDetail(root));
+      re.appendChild(el);
+    });
+    if (ri === 1) re.appendChild(spacer());
+    if (ri === 2) re.appendChild(spacer());
+    els.kbd.appendChild(re);
+  });
+  highlightKeys('');
+}
+function spacer() { const d = document.createElement('div'); d.className = 'kb-spacer'; return d; }
+function showDetail(root) {
+  document.querySelectorAll('.kb-key').forEach(el => el.style.outline = el.dataset.key === root.key.toLowerCase() ? '2px solid var(--color-accent)' : '');
+  els.kd.innerHTML = `<strong>${root.key} 键 · ${root.zone}区 · ${root.label}（${root.mnemonic.split('').slice(0,6).join('')}…）</strong><br>口诀：${root.mnemonic}<div class="roots">${root.roots.map(r => `<span class="root-chip">${r}</span>`).join('')}</div>`;
+}
+function highlightKeys(code) {
+  const set = new Set((code || '').toLowerCase().split(''));
+  document.querySelectorAll('.kb-key').forEach(el => {
+    el.classList.toggle('hint', set.has(el.dataset.key));
+  });
+}
+
+function pick() {
+  const wrong = Object.entries(state.wrongMap).filter(([,v]) => v.count > 0);
+  if (wrong.length && Math.random() < 0.35) {
+    const [ch] = wrong[Math.floor(Math.random() * wrong.length)];
+    const f = chars.find(c => c.char === ch);
+    if (f) return f;
+  }
+  const recent = new Set((state.history || []).slice(-24));
+  const pool = chars.filter(c => !recent.has(c.char));
+  return (pool.length > 12 ? pool : chars)[Math.floor(Math.random() * (pool.length > 12 ? pool : chars).length)];
+}
+function next() {
+  cur = pick(); hintIdx = 0; retry = false;
+  els.tc.textContent = cur.char;
+  els.ci.textContent = `五笔86 · ${cur.code.length} 码`;
+  els.inp.value = ''; els.inp.classList.remove('err'); els.sub.textContent = '确认'; els.sub.classList.remove('retry');
+  setMsg(mode === 'lookup' ? '对照字根键盘推导编码，用分步提示高亮键位' : '不看键盘，凭记忆输入完整编码');
+  highlightKeys('');
+  els.inp.focus(); updStats();
+}
+function setMsg(t, cls = '') { els.msg.className = `msg ${cls}`.trim(); els.msg.textContent = t; }
+function updStats() {
+  const wrong = Object.entries(state.wrongMap).filter(([,v]) => v.count > 0);
+  els.ttl.textContent = state.total;
+  els.acc.textContent = state.total ? Math.round(state.correct / state.total * 100) + '%' : '0%';
+  els.str.textContent = state.streak;
+  els.wc.textContent = wrong.length;
+  els.ml.innerHTML = wrong.length
+    ? wrong.sort((a,b) => b[1].count - a[1].count).slice(0,15).map(([ch,v]) => `<span class="mistake-pill">${ch} ${v.code} ×${v.count}</span>`).join('')
+    : '还没有错题';
+}
+function submit() {
+  if (!cur) return;
+  const inp = els.inp.value.trim().toLowerCase(); if (!inp) return;
+  const ans = cur.code.toLowerCase();
+  if (retry) {
+    state.total++; save();
+    if (inp === ans) { state.correct++; state.streak++; delete state.wrongMap[cur.char]; cont('正确！继续', 'ok'); }
+    else { state.streak = 0; state.wrongMap[cur.char].count++; els.inp.value = ''; els.inp.classList.add('err'); setMsg(`还是不对。正确编码 ${ans}，请重打`, 'bad'); save(); updStats(); }
+    return;
+  }
+  state.total++; state.history = [...(state.history||[]), cur.char].slice(-80); save();
+  if (inp === ans) { state.correct++; state.streak++; delete state.wrongMap[cur.char]; cont('正确，手感在建立', 'ok'); }
+  else {
+    state.streak = 0; state.wrongMap[cur.char] = state.wrongMap[cur.char] || {code:ans,count:0};
+    state.wrongMap[cur.char].count++; retry = true; hintIdx = ans.length; highlightKeys(ans);
+    els.inp.value = ''; els.inp.classList.add('err'); els.sub.textContent = '重输'; els.sub.classList.add('retry');
+    setMsg(`不对。正确编码 ${ans}，请重打一遍`, 'bad'); save(); updStats();
+  }
+}
+function cont(t, cls) { setMsg(t, cls); save(); updStats(); els.inp.classList.remove('err'); setTimeout(next, 500); }
+function hint(n) { if (!cur) return; hintIdx = Math.min(cur.code.length, hintIdx + n); highlightKeys(cur.code.slice(0, hintIdx)); setMsg(`已提示前 ${hintIdx} 码：${cur.code.slice(0, hintIdx)}`); }
+function hintAll() { if (!cur) return; hintIdx = cur.code.length; highlightKeys(cur.code); setMsg(`完整编码：${cur.code}`); }
+function skip() { if (!cur || retry) return; state.history = [...(state.history||[]), cur.char].slice(-80); state.streak = 0; state.wrongMap[cur.char] = state.wrongMap[cur.char] || {code:cur.code,count:1}; state.wrongMap[cur.char].count++; save(); updStats(); next(); }
+function setMode(m) { mode = m; document.querySelectorAll('.mode-tab').forEach(b => b.classList.toggle('active', b.dataset.mode === mode)); els.rootsSection.open = mode === 'lookup'; next(); }
+
+async function init() {
+  [roots, chars] = await Promise.all([
+    fetch('/wubi-trainer/data/wubi86-roots.json').then(r => r.json()).catch(() => FALLBACK_ROOTS),
+    fetch('/wubi-trainer/data/wubi86-chars.json').then(r => r.json()).catch(() => FALLBACK_CHARS)
+  ]);
+  renderKbd(); showDetail(roots[0]); updStats(); next();
+}
+
+document.querySelectorAll('.mode-tab').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
+els.sub.addEventListener('click', submit);
+els.inp.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
+$('hintFirst').addEventListener('click', () => { hintIdx = 0; hint(1); });
+$('hintNext').addEventListener('click', () => hint(1));
+$('hintAll').addEventListener('click', hintAll);
+$('skipBtn').addEventListener('click', skip);
+init();
+</script>
 </body>
 </html>
