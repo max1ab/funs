@@ -2,396 +2,274 @@
 <html lang="zh-CN">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <title>五笔查表练习</title>
 <link rel="stylesheet" href="/design-tokens.css">
 <style>
   :root {
-    --cw: 600px;
+    --top-h: 210px;
+    --accent: #b45f1a;
+    --accent-dim: rgba(180,95,26,.12);
+    --border: #e0d8cc;
+    --bg: #f9f5ee;
+    --surface: #fffdf9;
+    --text: #2d261c;
+    --text2: #8a7e6b;
+    --text3: #b0a590;
   }
-  body {
-    min-height: 100vh;
-    background: linear-gradient(175deg, #fbf7f0 0%, #f5efe3 40%, #f2ece0 100%);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-  }
-  .app {
-    width: min(var(--cw), 100% - 32px);
-    padding: 28px 0 48px;
-    display: flex;
-    flex-direction: column;
-    gap: 20px;
-  }
-
-  /* Header */
-  .header {
-    text-align: center;
-  }
-  .header h1 {
-    font-size: 22px;
-    font-weight: 700;
-    letter-spacing: -.02em;
-    color: var(--color-text);
-  }
-  .header p {
-    margin-top: 4px;
-    font-size: 13px;
-    color: var(--color-text-muted);
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    height: 100%; overflow: hidden;
+    font-family: -apple-system,"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;
+    background: var(--bg); color: var(--text);
+    -webkit-font-smoothing: antialiased;
   }
 
-  /* Stats — subtle row */
-  .stats {
-    display: flex;
-    justify-content: center;
-    gap: 0;
-  }
-  .stat {
-    padding: 0 18px;
-    text-align: center;
-  }
-  .stat + .stat { border-left: 1px solid var(--color-border); }
-  .stat strong {
-    display: block;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--color-text);
-  }
-  .stat span {
-    font-size: 11px;
-    color: var(--color-text-muted);
-  }
-
-  /* Mode tabs */
-  .modes {
-    display: flex;
-    gap: 4px;
-    padding: 4px;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-full);
-    background: var(--color-surface);
-  }
-  .mode-tab {
-    flex: 1;
-    padding: 10px;
-    border: 0;
-    border-radius: var(--radius-full);
-    background: transparent;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--color-text-secondary);
-    cursor: pointer;
-    transition: all .2s;
-  }
-  .mode-tab.active {
-    background: var(--color-text);
-    color: #fbf7f0;
-  }
-
-  /* Character card */
-  .char-card {
+  /* ── Page = fixed full viewport ── */
+  .page {
     display: grid;
-    place-items: center;
-    min-height: 200px;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
-    background: linear-gradient(175deg, #fffdfa, #f7f0e4);
-    position: relative;
+    grid-template-rows: var(--top-h) 1fr;
+    height: 100vh; height: 100dvh;
+    overflow: hidden;
   }
-  .char-card::after {
-    content: "";
-    position: absolute;
-    inset: 14px;
-    border: 1px solid rgba(155,95,47,.08);
-    border-radius: 16px;
-    pointer-events: none;
+
+  /* ── Top: practice strip ── */
+  .top {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, #fffdf9, #f7f2e8);
+    overflow: hidden;
   }
-  .char-card .char {
-    font-size: clamp(80px, 18vw, 130px);
+  .top .char-area {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 120px;
+  }
+  .top .big-char {
+    font-size: 64px;
     font-weight: 500;
     line-height: 1;
-    letter-spacing: -.05em;
-    color: var(--color-text);
+    letter-spacing: -.03em;
   }
-  .char-meta {
-    margin-top: 6px;
-    font-size: 12px;
-    color: var(--color-text-muted);
-    text-align: center;
+  .top .char-info {
+    font-size: 11px;
+    color: var(--text2);
+    line-height: 1.4;
   }
-
-  /* Input */
-  .input-row {
+  .top .char-info span {
+    display: block;
+    font-family: var(--font-mono, monospace);
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--text);
+    letter-spacing: .15em;
+  }
+  .top .input-group {
+    flex: 1;
     display: flex;
     gap: 8px;
+    max-width: 380px;
   }
-  .input-row input {
+  .top .input-group input {
     flex: 1;
-    padding: 16px 18px;
-    font-family: var(--font-mono);
-    font-size: 26px;
+    padding: 12px 16px;
+    font-family: "SF Mono","Consolas","Courier New",monospace;
+    font-size: 24px;
     letter-spacing: .2em;
     text-transform: lowercase;
-    border: 1.5px solid var(--color-border);
-    border-radius: var(--radius-md);
-    background: var(--color-surface);
-    color: var(--color-text);
+    border: 1.5px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text);
     outline: none;
+    min-width: 0;
   }
-  .input-row input:focus {
-    border-color: var(--color-accent);
-    box-shadow: 0 0 0 3px rgba(197,113,10,.12);
-  }
-  .input-row input.err {
-    border-color: var(--color-error);
-    box-shadow: 0 0 0 3px var(--color-error-dim);
-  }
-  .input-row button {
-    padding: 0 24px;
-    border: 0;
-    border-radius: var(--radius-md);
-    background: var(--color-text);
-    color: #fbf7f0;
-    font-weight: 700;
-    font-size: 15px;
-    cursor: pointer;
+  .top .input-group input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
+  .top .input-group input.err { border-color: #d14343; }
+  .top .input-group button {
+    padding: 0 20px;
+    border: 0; border-radius: 8px;
+    background: var(--text); color: #f9f5ee;
+    font-weight: 700; font-size: 15px; cursor: pointer;
     white-space: nowrap;
   }
-  .input-row button.retry { background: var(--color-accent); }
-
-  /* Feedback */
-  .msg {
-    min-height: 22px;
-    text-align: center;
-    font-size: 14px;
-    color: var(--color-text-secondary);
-  }
-  .msg.ok { color: var(--color-success); font-weight: 700; }
-  .msg.bad { color: var(--color-error); font-weight: 700; }
-
-  /* Hint bar */
-  .hints {
+  .top .hints {
     display: flex;
     gap: 6px;
-    justify-content: center;
   }
-  .hints button {
-    padding: 7px 14px;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-sm);
+  .top .hints button {
+    padding: 8px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
     background: transparent;
-    font-size: 12px;
-    color: var(--color-text-secondary);
-    cursor: pointer;
+    font-size: 12px; color: var(--text2);
+    cursor: pointer; white-space: nowrap;
     transition: all .15s;
   }
-  .hints button:hover {
-    border-color: var(--color-accent);
-    color: var(--color-accent);
+  .top .hints button:hover { border-color: var(--accent); color: var(--accent); }
+  .top .decomp {
+    font-size: 12px; color: var(--accent); font-weight: 600;
+    white-space: nowrap;
+    min-width: 80px; text-align: center;
   }
 
-  /* Root table — scannable reference */
-  .roots-section summary {
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 600;
-    color: var(--color-text-secondary);
-    padding: 8px 0;
-    list-style: none;
+  /* ── Bottom: root table fills remaining viewport ── */
+  .bottom {
+    overflow-y: auto;
+    padding: 4px 12px 12px;
   }
-  .roots-section summary::-webkit-details-marker { display: none; }
-  .roots-section summary::before { content: "⌨ "; }
-  .roots-section[open] summary { margin-bottom: 10px; }
-
   .root-table {
     width: 100%;
     border-collapse: collapse;
     font-size: 13px;
+    table-layout: fixed;
   }
   .root-table th, .root-table td {
-    padding: 6px 8px;
+    padding: 4px 8px;
     text-align: left;
-    vertical-align: top;
-    border-bottom: 1px solid var(--color-border);
+    vertical-align: middle;
+    border-bottom: 1px solid rgba(0,0,0,.06);
   }
   .root-table th {
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--color-text-muted);
-    text-transform: uppercase;
-    letter-spacing: .05em;
-    position: sticky;
-    top: 0;
-    background: #f7f2e8;
+    font-size: 10px; font-weight: 600; color: var(--text3);
+    text-transform: uppercase; letter-spacing: .08em;
+    position: sticky; top: 0; background: #f0ebe0; z-index: 1;
   }
   .root-table .zone-row td {
-    background: rgba(220, 200, 170, 0.2);
-    font-weight: 700;
-    font-size: 12px;
-    color: var(--color-accent);
-    padding: 8px;
-    letter-spacing: .05em;
+    background: rgba(180,95,26,.08);
+    font-weight: 700; font-size: 11px; color: var(--accent);
+    padding: 5px 8px; letter-spacing: .08em;
+  }
+  .root-table .zone-row td small {
+    font-weight: 400; color: var(--text3); font-size: 10px;
   }
   .root-table tr.key-row.hint {
-    background: var(--color-accent-dim);
-    outline: 2px solid var(--color-accent);
+    background: var(--accent-dim);
+    outline: 2px solid var(--accent);
     outline-offset: -2px;
   }
   .root-table .key-cell {
-    font-family: var(--font-mono);
-    font-weight: 800;
-    font-size: 16px;
-    width: 32px;
-    text-align: center;
-    color: var(--color-text);
+    font-family: "SF Mono","Consolas",monospace;
+    font-weight: 800; font-size: 18px;
+    width: 40px; text-align: center; color: var(--text);
   }
   .root-table .label-cell {
-    font-weight: 600;
-    white-space: nowrap;
+    font-weight: 700; font-size: 16px;
+    width: 40px; text-align: center;
   }
   .root-table .roots-cell {
-    line-height: 1.8;
+    line-height: 1.6;
   }
   .root-table .roots-cell .rc {
     display: inline-block;
-    padding: 1px 6px;
-    margin: 1px;
-    border: 1px solid rgba(155,95,47,.12);
-    border-radius: 3px;
-    font-size: 12px;
-    background: rgba(255,253,248,.6);
+    padding: 1px 6px; margin: 1px;
+    border: 1px solid rgba(180,95,26,.1);
+    border-radius: 3px; font-size: 12px;
+    background: rgba(255,253,249,.6);
   }
   .root-table .mnemonic-cell {
-    color: var(--color-text-muted);
-    font-size: 12px;
-    line-height: 1.5;
-    min-width: 120px;
+    color: var(--text3); font-size: 11px;
+    width: 160px; line-height: 1.5;
   }
 
+  /* Feedack */
+  .msg {
+    position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
+    padding: 8px 18px; border-radius: 20px;
+    font-size: 13px; font-weight: 600;
+    background: var(--text); color: #f9f5ee;
+    z-index: 10; pointer-events: none;
+    opacity: 0; transition: opacity .3s;
+  }
+  .msg.show { opacity: 1; }
+  .msg.ok { background: #2d8a56; }
+  .msg.bad { background: #d14343; }
 
-  /* Mistakes */
-  .mistakes {
-    border-top: 1px solid var(--color-border);
-    padding-top: 14px;
-  }
-  .mistakes h3 {
-    font-size: 13px;
-    font-weight: 600;
-    color: var(--color-text-secondary);
-    margin-bottom: 8px;
-  }
-  .mistake-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 6px;
-    min-height: 24px;
-    color: var(--color-text-muted);
-    font-size: 13px;
-  }
-  .mistake-pill {
-    padding: 4px 10px;
-    border: 1px solid var(--color-border);
-    border-radius: var(--radius-full);
-    background: var(--color-surface);
-    font-family: var(--font-mono);
-    font-size: 12px;
-    color: var(--color-text-secondary);
-  }
-
-  @media (max-width: 480px) {
-    .input-row input { font-size: 20px; padding: 14px; }
-    .char-card .char { font-size: 72px; }
-    .root-table { font-size: 11px; }
+  @media (max-width: 760px) {
+    :root { --top-h: 180px; }
+    .top { gap: 12px; padding: 10px 12px; flex-wrap: wrap; }
+    .top .big-char { font-size: 48px; }
+    .top .input-group { max-width: 200px; }
+    .top .input-group input { font-size: 20px; padding: 10px; }
+    .top .hints button { padding: 6px 8px; font-size: 11px; }
     .root-table .mnemonic-cell { display: none; }
-    .root-table th, .root-table td { padding: 4px 5px; }
+    .root-table { font-size: 12px; }
+    .root-table .key-cell { font-size: 15px; width: 30px; }
+    .root-table .label-cell { font-size: 14px; width: 30px; }
+    .root-table th, .root-table td { padding: 3px 4px; }
   }
 </style>
 </head>
 <body>
-<div class="app">
-  <header class="header">
-    <h1>五笔86 · 查表练习</h1>
-    <p>对照字根总表，推导编码，建立肌肉记忆</p>
-  </header>
 
-  <div class="stats">
-    <div class="stat"><strong id="totalCount">0</strong><span>练习</span></div>
-    <div class="stat"><strong id="accuracy">0%</strong><span>准确率</span></div>
-    <div class="stat"><strong id="streak">0</strong><span>连对</span></div>
-    <div class="stat"><strong id="wrongCount">0</strong><span>错题</span></div>
-  </div>
-
-  <div class="modes">
-    <button class="mode-tab active" data-mode="lookup">🔍 查表推导</button>
-    <button class="mode-tab" data-mode="blind">🧠 盲打检验</button>
-  </div>
-
-  <div class="char-card">
-    <div class="char" id="targetChar">字</div>
-  </div>
-  <div class="char-meta" id="charInfo">五笔86 · 常用字</div>
-
-  <div class="msg" id="msg">对照下方字根键盘推导编码，按提示高亮对应键位</div>
-
-  <div class="input-row">
-    <input id="codeInput" placeholder="输入编码" autocomplete="off" autocapitalize="off" spellcheck="false">
-    <button id="submitBtn">确认</button>
-  </div>
-
-  <div class="hints">
-    <button id="hintFirst">首码</button>
-    <button id="hintNext">下一码</button>
-    <button id="hintAll">显示答案</button>
-    <button id="skipBtn">跳过</button>
-  </div>
-
-  <details class="roots-section" open id="rootsSection">
-    <summary>五笔86 字根总表（五区扫读）</summary>
-    <div style="overflow-x:auto;">
-      <table class="root-table" id="rootTable"></table>
+<div class="page">
+  <!-- ════ Top: Practice strip ════ -->
+  <div class="top">
+    <div class="char-area">
+      <div class="big-char" id="targetChar">字</div>
+      <div class="char-info">
+        <span id="codePreview"></span>
+        <span id="charMeta">五笔86</span>
+      </div>
     </div>
-  </details>
 
-  <div class="mistakes">
-    <h3>错题复练</h3>
-    <div class="mistake-list" id="mistakeList">还没有错题</div>
+    <div class="decomp" id="decomp"></div>
+
+    <div class="input-group">
+      <input id="codeInput" placeholder="编码" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <button id="submitBtn">确认</button>
+    </div>
+
+    <div class="hints">
+      <button id="hintDecomp">怎么拆</button>
+      <button id="hintKeys">在哪键</button>
+      <button id="hintCode">完整码</button>
+      <button id="skipBtn">跳过</button>
+    </div>
+  </div>
+
+  <!-- ════ Bottom: Root table ════ -->
+  <div class="bottom">
+    <table class="root-table" id="rootTable"></table>
   </div>
 </div>
 
+<div class="msg" id="msg"></div>
+
 <script>
-const STATE_KEY = 'wubi_trainer_v3';
-const KB_ROWS = [
-  ['Q','W','E','R','T','Y','U','I','O','P'],
-  ['A','S','D','F','G','H','J','K','L'],
-  ['X','C','V','B','N','M']
-];
+const STATE_KEY = 'wubi_table_body_v1';
+const ZONES = ['横区','竖区','撇区','捺区','折区'];
 
 const FALLBACK_ROOTS = [
-  {key:'G',zone:'横',label:'王',mnemonic:'王旁青头戋五一',roots:['王','一','五','戋','青头']},
-  {key:'F',zone:'横',label:'土',mnemonic:'土士二干十寸雨',roots:['土','士','二','干','十','寸','雨']},
-  {key:'D',zone:'横',label:'大',mnemonic:'大犬三羊古石厂',roots:['大','犬','三','羊','古','石','厂']},
-  {key:'S',zone:'横',label:'木',mnemonic:'木丁西',roots:['木','丁','西']},
-  {key:'A',zone:'横',label:'工',mnemonic:'工戈草头右框七',roots:['工','戈','艹','廾','匚','七']},
-  {key:'H',zone:'竖',label:'目',mnemonic:'目具上止卜虎皮',roots:['目','具','上','止','卜']},
-  {key:'J',zone:'竖',label:'日',mnemonic:'日早两竖与虫依',roots:['日','早','刂','虫']},
-  {key:'K',zone:'竖',label:'口',mnemonic:'口与川，字根稀',roots:['口','川']},
-  {key:'L',zone:'竖',label:'田',mnemonic:'田甲方框四车力',roots:['田','甲','囗','四','车','力']},
-  {key:'M',zone:'竖',label:'山',mnemonic:'山由贝，下框几',roots:['山','由','贝','冂','几']},
-  {key:'T',zone:'撇',label:'禾',mnemonic:'禾竹一撇双人立',roots:['禾','竹','丿','彳','攵','夂']},
-  {key:'R',zone:'撇',label:'白',mnemonic:'白手看头三二斤',roots:['白','手','扌','斤']},
-  {key:'E',zone:'撇',label:'月',mnemonic:'月彡乃用家衣底',roots:['月','彡','乃','用','豕']},
-  {key:'W',zone:'撇',label:'人',mnemonic:'人和八，三四里',roots:['人','亻','八','癶']},
-  {key:'Q',zone:'撇',label:'金',mnemonic:'金勺鱼儿犬夕氏',roots:['金','钅','勹','儿','夕','鱼','犭','氏']},
-  {key:'Y',zone:'捺',label:'言',mnemonic:'言文方广在四一',roots:['言','讠','文','方','广','亠','丶']},
-  {key:'U',zone:'捺',label:'立',mnemonic:'立辛两点六门疒',roots:['立','辛','冫','丷','六','门','疒']},
-  {key:'I',zone:'捺',label:'水',mnemonic:'水旁兴头小倒立',roots:['水','氵','小']},
-  {key:'O',zone:'捺',label:'火',mnemonic:'火业头，四点米',roots:['火','灬','米']},
-  {key:'P',zone:'捺',label:'之',mnemonic:'之宝盖，摘礻衤',roots:['之','辶','宀','冖','礻','衤']},
-  {key:'N',zone:'折',label:'已',mnemonic:'已半巳满不出己',roots:['已','巳','己','尸','心','忄','羽','乙']},
-  {key:'B',zone:'折',label:'子',mnemonic:'子耳了也框向上',roots:['子','耳','了','也','凵']},
-  {key:'V',zone:'折',label:'女',mnemonic:'女刀九臼山朝西',roots:['女','刀','九','臼','巛']},
-  {key:'C',zone:'折',label:'又',mnemonic:'又巴马，丢矢矣',roots:['又','巴','马','厶']},
-  {key:'X',zone:'折',label:'纟',mnemonic:'慈母无心弓和匕',roots:['纟','弓','匕','幺']}
+  {key:'G',zone:'横区',label:'王',mnemonic:'王旁青头戋五一',roots:['王','一','五','戋','青头']},
+  {key:'F',zone:'横区',label:'土',mnemonic:'土士二干十寸雨',roots:['土','士','二','干','十','寸','雨']},
+  {key:'D',zone:'横区',label:'大',mnemonic:'大犬三羊古石厂',roots:['大','犬','三','羊','古','石','厂']},
+  {key:'S',zone:'横区',label:'木',mnemonic:'木丁西',roots:['木','丁','西']},
+  {key:'A',zone:'横区',label:'工',mnemonic:'工戈草头右框七',roots:['工','戈','艹','廾','匚','七']},
+  {key:'H',zone:'竖区',label:'目',mnemonic:'目具上止卜虎皮',roots:['目','具','上','止','卜']},
+  {key:'J',zone:'竖区',label:'日',mnemonic:'日早两竖与虫依',roots:['日','早','刂','虫']},
+  {key:'K',zone:'竖区',label:'口',mnemonic:'口与川，字根稀',roots:['口','川']},
+  {key:'L',zone:'竖区',label:'田',mnemonic:'田甲方框四车力',roots:['田','甲','囗','四','车','力']},
+  {key:'M',zone:'竖区',label:'山',mnemonic:'山由贝，下框几',roots:['山','由','贝','冂','几']},
+  {key:'T',zone:'撇区',label:'禾',mnemonic:'禾竹一撇双人立',roots:['禾','竹','丿','彳','攵','夂']},
+  {key:'R',zone:'撇区',label:'白',mnemonic:'白手看头三二斤',roots:['白','手','扌','斤']},
+  {key:'E',zone:'撇区',label:'月',mnemonic:'月彡乃用家衣底',roots:['月','彡','乃','用','豕']},
+  {key:'W',zone:'撇区',label:'人',mnemonic:'人和八，三四里',roots:['人','亻','八','癶']},
+  {key:'Q',zone:'撇区',label:'金',mnemonic:'金勺鱼儿犬夕氏',roots:['金','钅','勹','儿','夕','鱼','犭','氏']},
+  {key:'Y',zone:'捺区',label:'言',mnemonic:'言文方广在四一',roots:['言','讠','文','方','广','亠','丶']},
+  {key:'U',zone:'捺区',label:'立',mnemonic:'立辛两点六门疒',roots:['立','辛','冫','丷','六','门','疒']},
+  {key:'I',zone:'捺区',label:'水',mnemonic:'水旁兴头小倒立',roots:['水','氵','小']},
+  {key:'O',zone:'捺区',label:'火',mnemonic:'火业头，四点米',roots:['火','灬','米']},
+  {key:'P',zone:'捺区',label:'之',mnemonic:'之宝盖，摘礻衤',roots:['之','辶','宀','冖','礻','衤']},
+  {key:'N',zone:'折区',label:'已',mnemonic:'已半巳满不出己',roots:['已','巳','己','尸','心','忄','羽','乙']},
+  {key:'B',zone:'折区',label:'子',mnemonic:'子耳了也框向上',roots:['子','耳','了','也','凵']},
+  {key:'V',zone:'折区',label:'女',mnemonic:'女刀九臼山朝西',roots:['女','刀','九','臼','巛']},
+  {key:'C',zone:'折区',label:'又',mnemonic:'又巴马，丢矢矣',roots:['又','巴','马','厶']},
+  {key:'X',zone:'折区',label:'纟',mnemonic:'慈母无心弓和匕',roots:['纟','弓','匕','幺']}
 ];
 
 const FALLBACK_CHARS = [
@@ -402,118 +280,102 @@ const FALLBACK_CHARS = [
   {char:'民',code:'n'},{char:'了',code:'b'},{char:'发',code:'v'},{char:'以',code:'c'},{char:'经',code:'x'}
 ];
 
-let roots = [], chars = [], mode = 'lookup', cur = null, hintIdx = 0, retry = false;
-let state = (() => { try { return JSON.parse(localStorage.getItem(STATE_KEY)) || {}; } catch(_) { return {}; } })();
-state.total = state.total || 0; state.correct = state.correct || 0; state.streak = state.streak || 0;
-state.wrongMap = state.wrongMap || {}; state.history = state.history || [];
+let roots = [], chars = [], cur = null, hintIdx = 0, retry = false;
+let state = (() => { try { return JSON.parse(localStorage.getItem(STATE_KEY))||{}; } catch(_) { return {}; } })();
+state.total = state.total||0; state.correct = state.correct||0; state.streak = state.streak||0;
+state.wrongMap = state.wrongMap||{}; state.history = state.history||[];
 function save() { localStorage.setItem(STATE_KEY, JSON.stringify(state)); }
 
 const $ = id => document.getElementById(id);
-const els = {
-  rt: $('rootTable'), tc: $('targetChar'), ci: $('charInfo'),
-  inp: $('codeInput'), sub: $('submitBtn'), msg: $('msg'),
-  ttl: $('totalCount'), acc: $('accuracy'), str: $('streak'), wc: $('wrongCount'),
-  ml: $('mistakeList')
+const E = {
+  rt: $('rootTable'), tc: $('targetChar'), cp: $('codePreview'), cm: $('charMeta'),
+  inp: $('codeInput'), sub: $('submitBtn'), msg: $('msg'), dec: $('decomp')
 };
 
-const ZONES = ['横区','竖区','撇区','捺区','折区'];
-function byKey(k) { return roots.find(r => r.key.toLowerCase() === k.toLowerCase()); }
-
 function renderTable() {
-  let html = '<thead><tr><th>键</th><th>代表字</th><th>字根</th><th>口诀</th></tr></thead><tbody>';
-  ZONES.forEach(zone => {
-    html += `<tr class="zone-row"><td colspan="4">${zone}</td></tr>`;
-    const zoneKeys = roots.filter(r => r.zone === zone);
-    zoneKeys.forEach(r => {
-      html += `<tr class="key-row" data-key="${r.key.toLowerCase()}">`
+  let h = '<thead><tr><th>键</th><th>字</th><th>字根</th><th>口诀</th></tr></thead><tbody>';
+  ZONES.forEach(z => {
+    const zk = roots.filter(r => r.zone === z);
+    h += `<tr class="zone-row"><td colspan="4">${z} <small>${zk.map(r=>r.key).join(' ')}</small></td></tr>`;
+    zk.forEach(r => {
+      h += `<tr class="key-row" data-key="${r.key.toLowerCase()}">`
         + `<td class="key-cell">${r.key}</td>`
         + `<td class="label-cell">${r.label}</td>`
         + `<td class="roots-cell">${r.roots.map(x => `<span class="rc">${x}</span>`).join('')}</td>`
-        + `<td class="mnemonic-cell">${r.mnemonic}</td>`
-        + `</tr>`;
+        + `<td class="mnemonic-cell">${r.mnemonic}</td></tr>`;
     });
   });
-  html += '</tbody>';
-  els.rt.innerHTML = html;
+  E.rt.innerHTML = h + '</tbody>';
   highlightKeys('');
 }
 function highlightKeys(code) {
-  const set = new Set((code || '').toLowerCase().split(''));
-  document.querySelectorAll('.key-row').forEach(el => {
-    el.classList.toggle('hint', set.has(el.dataset.key));
-  });
+  const set = new Set((code||'').toLowerCase().split(''));
+  document.querySelectorAll('.key-row').forEach(el => el.classList.toggle('hint', set.has(el.dataset.key)));
 }
 
 function pick() {
   const wrong = Object.entries(state.wrongMap).filter(([,v]) => v.count > 0);
-  if (wrong.length && Math.random() < 0.35) {
-    const [ch] = wrong[Math.floor(Math.random() * wrong.length)];
+  if (wrong.length && Math.random() < .35) {
+    const [ch] = wrong[Math.floor(Math.random()*wrong.length)];
     const f = chars.find(c => c.char === ch);
     if (f) return f;
   }
-  const recent = new Set((state.history || []).slice(-24));
+  const recent = new Set((state.history||[]).slice(-24));
   const pool = chars.filter(c => !recent.has(c.char));
-  return (pool.length > 12 ? pool : chars)[Math.floor(Math.random() * (pool.length > 12 ? pool : chars).length)];
+  return (pool.length > 12 ? pool : chars)[Math.floor(Math.random()*(pool.length > 12 ? pool : chars).length)];
 }
 function next() {
   cur = pick(); hintIdx = 0; retry = false;
-  els.tc.textContent = cur.char;
-  els.ci.textContent = `五笔86 · ${cur.code.length} 码`;
-  els.inp.value = ''; els.inp.classList.remove('err'); els.sub.textContent = '确认'; els.sub.classList.remove('retry');
-  setMsg(mode === 'lookup' ? '对照字根总表推导编码，用分步提示高亮键位' : '不看键盘，凭记忆输入完整编码');
+  E.tc.textContent = cur.char;
+  E.cm.textContent = `五笔86 · ${cur.code.length} 码`;
+  E.cp.textContent = '';
+  E.dec.textContent = '';
+  E.inp.value = ''; E.inp.classList.remove('err'); E.sub.textContent = '确认';
   highlightKeys('');
-  els.inp.focus(); updStats();
+  flash('');
+  E.inp.focus();
 }
-function setMsg(t, cls = '') { els.msg.className = `msg ${cls}`.trim(); els.msg.textContent = t; }
-function updStats() {
-  const wrong = Object.entries(state.wrongMap).filter(([,v]) => v.count > 0);
-  els.ttl.textContent = state.total;
-  els.acc.textContent = state.total ? Math.round(state.correct / state.total * 100) + '%' : '0%';
-  els.str.textContent = state.streak;
-  els.wc.textContent = wrong.length;
-  els.ml.innerHTML = wrong.length
-    ? wrong.sort((a,b) => b[1].count - a[1].count).slice(0,15).map(([ch,v]) => `<span class="mistake-pill">${ch} ${v.code} ×${v.count}</span>`).join('')
-    : '还没有错题';
+function flash(t, cls) {
+  E.msg.textContent = t; E.msg.className = `msg ${cls}` + (t ? ' show' : '');
+  if (t) setTimeout(() => { E.msg.classList.remove('show'); }, 2000);
 }
 function submit() {
   if (!cur) return;
-  const inp = els.inp.value.trim().toLowerCase(); if (!inp) return;
+  const inp = E.inp.value.trim().toLowerCase(); if (!inp) return;
   const ans = cur.code.toLowerCase();
   if (retry) {
     state.total++; save();
-    if (inp === ans) { state.correct++; state.streak++; delete state.wrongMap[cur.char]; cont('正确！继续', 'ok'); }
-    else { state.streak = 0; state.wrongMap[cur.char].count++; els.inp.value = ''; els.inp.classList.add('err'); setMsg(`还是不对。正确编码 ${ans}，请重打`, 'bad'); save(); updStats(); }
+    if (inp === ans) { state.correct++; state.streak++; delete state.wrongMap[cur.char]; flash('正确！','ok'); E.inp.classList.remove('err'); setTimeout(next, 600); }
+    else { state.streak = 0; state.wrongMap[cur.char].count++; E.inp.value = ''; E.inp.classList.add('err'); flash(`还是不对，编码 ${ans}`,'bad'); save(); }
     return;
   }
   state.total++; state.history = [...(state.history||[]), cur.char].slice(-80); save();
-  if (inp === ans) { state.correct++; state.streak++; delete state.wrongMap[cur.char]; cont('正确，手感在建立', 'ok'); }
+  if (inp === ans) { state.correct++; state.streak++; delete state.wrongMap[cur.char]; flash('正确！','ok'); setTimeout(next, 600); }
   else {
-    state.streak = 0; state.wrongMap[cur.char] = state.wrongMap[cur.char] || {code:ans,count:0};
+    state.streak = 0; state.wrongMap[cur.char] = state.wrongMap[cur.char]||{code:ans,count:0};
     state.wrongMap[cur.char].count++; retry = true; hintIdx = ans.length; highlightKeys(ans);
-    els.inp.value = ''; els.inp.classList.add('err'); els.sub.textContent = '重输'; els.sub.classList.add('retry');
-    setMsg(`不对。正确编码 ${ans}，请重打一遍`, 'bad'); save(); updStats();
+    E.inp.value = ''; E.inp.classList.add('err'); E.sub.textContent = '重输';
+    flash(`编码 ${ans}，请重打`,'bad'); save();
   }
 }
-function cont(t, cls) { setMsg(t, cls); save(); updStats(); els.inp.classList.remove('err'); setTimeout(next, 500); }
-function hint(n) { if (!cur) return; hintIdx = Math.min(cur.code.length, hintIdx + n); highlightKeys(cur.code.slice(0, hintIdx)); setMsg(`已提示前 ${hintIdx} 码：${cur.code.slice(0, hintIdx)}`); }
-function hintAll() { if (!cur) return; hintIdx = cur.code.length; highlightKeys(cur.code); setMsg(`完整编码：${cur.code}`); }
-function skip() { if (!cur || retry) return; state.history = [...(state.history||[]), cur.char].slice(-80); state.streak = 0; state.wrongMap[cur.char] = state.wrongMap[cur.char] || {code:cur.code,count:1}; state.wrongMap[cur.char].count++; save(); updStats(); next(); }
-function setMode(m) { mode = m; document.querySelectorAll('.mode-tab').forEach(b => b.classList.toggle('active', b.dataset.mode === mode)); els.rootsSection.open = mode === 'lookup'; next(); }
+function hintDecomp() { if (!cur) return; E.dec.textContent = cur.decomposition || '（拆法数据待补）'; }
+function hintKeys() { if (!cur) return; hintIdx = cur.code.length; highlightKeys(cur.code); flash(`已高亮 ${cur.code} 对应键位`,''); }
+function hintCode() { if (!cur) return; E.cp.textContent = cur.code; flash(`完整编码：${cur.code}`,''); }
+function skip() { if (!cur||retry) return; state.history = [...(state.history||[]), cur.char].slice(-80); state.streak=0; state.wrongMap[cur.char]=state.wrongMap[cur.char]||{code:cur.code,count:1}; state.wrongMap[cur.char].count++; save(); next(); }
 
 async function init() {
   [roots, chars] = await Promise.all([
     fetch('/wubi-trainer/data/wubi86-roots.json').then(r => r.json()).catch(() => FALLBACK_ROOTS),
     fetch('/wubi-trainer/data/wubi86-chars.json').then(r => r.json()).catch(() => FALLBACK_CHARS)
   ]);
-  renderTable(); updStats(); next();
+  renderTable(); next();
 }
 
-document.querySelectorAll('.mode-tab').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
-els.sub.addEventListener('click', submit);
-els.inp.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
-$('hintFirst').addEventListener('click', () => { hintIdx = 0; hint(1); });
-$('hintNext').addEventListener('click', () => hint(1));
-$('hintAll').addEventListener('click', hintAll);
+E.sub.addEventListener('click', submit);
+E.inp.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
+$('hintDecomp').addEventListener('click', hintDecomp);
+$('hintKeys').addEventListener('click', hintKeys);
+$('hintCode').addEventListener('click', hintCode);
 $('skipBtn').addEventListener('click', skip);
 init();
 </script>
