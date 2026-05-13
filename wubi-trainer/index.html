@@ -7,15 +7,16 @@
 <link rel="stylesheet" href="/design-tokens.css">
 <style>
   :root {
-    --top-h: 210px;
-    --accent: #b45f1a;
-    --accent-dim: rgba(180,95,26,.12);
     --border: #e0d8cc;
     --bg: #f9f5ee;
     --surface: #fffdf9;
+    --accent: #b55a10;
+    --accent-dim: rgba(181,90,16,.12);
     --text: #2d261c;
     --text2: #8a7e6b;
     --text3: #b0a590;
+    --green: #2d8a56;
+    --red: #d14343;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body {
@@ -25,159 +26,123 @@
     -webkit-font-smoothing: antialiased;
   }
 
-  /* ── Page = fixed full viewport ── */
   .page {
     display: grid;
-    grid-template-rows: var(--top-h) 1fr;
+    grid-template-rows: auto 1fr;
     height: 100vh; height: 100dvh;
     overflow: hidden;
   }
 
-  /* ── Top: practice strip ── */
-  .top {
+  /* ── Top bar ── */
+  .bar {
     display: flex;
     align-items: center;
-    gap: 24px;
-    padding: 16px 20px;
+    gap: 16px;
+    padding: 12px 16px;
     border-bottom: 1px solid var(--border);
     background: linear-gradient(180deg, #fffdf9, #f7f2e8);
-    overflow: hidden;
+    flex-wrap: wrap;
   }
-  .top .char-area {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    min-width: 120px;
+  .bar .big-char {
+    font-size: 56px; font-weight: 500; line-height: 1;
+    letter-spacing: -.03em; min-width: 80px; text-align: center;
   }
-  .top .big-char {
-    font-size: 64px;
-    font-weight: 500;
-    line-height: 1;
-    letter-spacing: -.03em;
+  .bar .decomp {
+    font-size: 13px; color: var(--accent); font-weight: 600;
+    min-width: 90px; text-align: center; line-height: 1.3;
   }
-  .top .char-info {
-    font-size: 11px;
-    color: var(--text2);
-    line-height: 1.4;
+  .bar .input-group {
+    display: flex; gap: 6px; flex: 1; max-width: 340px; min-width: 180px;
   }
-  .top .char-info span {
-    display: block;
-    font-family: var(--font-mono, monospace);
-    font-size: 22px;
-    font-weight: 700;
-    color: var(--text);
-    letter-spacing: .15em;
-  }
-  .top .input-group {
-    flex: 1;
-    display: flex;
-    gap: 8px;
-    max-width: 380px;
-  }
-  .top .input-group input {
-    flex: 1;
-    padding: 12px 16px;
+  .bar .input-group input {
+    flex: 1; padding: 10px 14px;
     font-family: "SF Mono","Consolas","Courier New",monospace;
-    font-size: 24px;
-    letter-spacing: .2em;
-    text-transform: lowercase;
+    font-size: 22px; letter-spacing: .2em; text-transform: lowercase;
+    border: 1.5px solid var(--border); border-radius: 8px;
+    background: var(--surface); color: var(--text); outline: none; min-width: 0;
+  }
+  .bar .input-group input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
+  .bar .input-group input.err { border-color: var(--red); }
+  .bar .input-group button {
+    padding: 0 18px; border: 0; border-radius: 8px;
+    background: var(--text); color: #f9f5ee;
+    font-weight: 700; font-size: 14px; cursor: pointer; white-space: nowrap;
+  }
+  .bar .hints {
+    display: flex; gap: 5px;
+  }
+  .bar .hints button {
+    padding: 7px 10px; border: 1px solid var(--border); border-radius: 6px;
+    background: transparent; font-size: 11px; color: var(--text2);
+    cursor: pointer; white-space: nowrap; transition: all .15s;
+  }
+  .bar .hints button:hover { border-color: var(--accent); color: var(--accent); }
+
+  /* ── Keyboard body ── */
+  .kb-body {
+    display: flex; align-items: center; justify-content: center;
+    padding: 12px 8px; overflow: hidden;
+  }
+  .kb {
+    display: grid;
+    gap: 4px;
+    width: 100%; max-width: 860px;
+  }
+  .kb-row {
+    display: grid; gap: 4px;
+  }
+  .kb-row.r0 { grid-template-columns: repeat(10, 1fr); }
+  .kb-row.r1 { grid-template-columns: .6fr repeat(9, 1fr) .6fr; }
+  .kb-row.r2 { grid-template-columns: 1.3fr repeat(7, 1fr) 1.7fr; }
+
+  .kb-key {
     border: 1.5px solid var(--border);
-    border-radius: 8px;
+    border-radius: 6px;
     background: var(--surface);
-    color: var(--text);
-    outline: none;
+    padding: 6px 4px 4px;
+    display: flex;
+    flex-direction: column;
+    transition: all .15s;
+    position: relative;
     min-width: 0;
   }
-  .top .input-group input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
-  .top .input-group input.err { border-color: #d14343; }
-  .top .input-group button {
-    padding: 0 20px;
-    border: 0; border-radius: 8px;
-    background: var(--text); color: #f9f5ee;
-    font-weight: 700; font-size: 15px; cursor: pointer;
-    white-space: nowrap;
+  .kb-key.hint {
+    border-color: var(--accent);
+    background: #fef5e8;
+    box-shadow: 0 0 0 2px rgba(181,90,16,.25);
+    z-index: 2;
+    transform: scale(1.04);
   }
-  .top .hints {
-    display: flex;
-    gap: 6px;
+  .kb-key .k-top {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 3px;
   }
-  .top .hints button {
-    padding: 8px 12px;
-    border: 1px solid var(--border);
-    border-radius: 6px;
-    background: transparent;
-    font-size: 12px; color: var(--text2);
-    cursor: pointer; white-space: nowrap;
-    transition: all .15s;
-  }
-  .top .hints button:hover { border-color: var(--accent); color: var(--accent); }
-  .top .decomp {
-    font-size: 12px; color: var(--accent); font-weight: 600;
-    white-space: nowrap;
-    min-width: 80px; text-align: center;
-  }
-
-  /* ── Bottom: root table fills remaining viewport ── */
-  .bottom {
-    overflow-y: auto;
-    padding: 4px 12px 12px;
-  }
-  .root-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: 13px;
-    table-layout: fixed;
-  }
-  .root-table th, .root-table td {
-    padding: 4px 8px;
-    text-align: left;
-    vertical-align: middle;
-    border-bottom: 1px solid rgba(0,0,0,.06);
-  }
-  .root-table th {
-    font-size: 10px; font-weight: 600; color: var(--text3);
-    text-transform: uppercase; letter-spacing: .08em;
-    position: sticky; top: 0; background: #f0ebe0; z-index: 1;
-  }
-  .root-table .zone-row td {
-    background: rgba(180,95,26,.08);
-    font-weight: 700; font-size: 11px; color: var(--accent);
-    padding: 5px 8px; letter-spacing: .08em;
-  }
-  .root-table .zone-row td small {
-    font-weight: 400; color: var(--text3); font-size: 10px;
-  }
-  .root-table tr.key-row.hint {
-    background: var(--accent-dim);
-    outline: 2px solid var(--accent);
-    outline-offset: -2px;
-  }
-  .root-table .key-cell {
+  .kb-key .k-letter {
     font-family: "SF Mono","Consolas",monospace;
-    font-weight: 800; font-size: 18px;
-    width: 40px; text-align: center; color: var(--text);
+    font-size: clamp(13px, 1.8vw, 20px);
+    font-weight: 800; color: var(--text); line-height: 1;
   }
-  .root-table .label-cell {
-    font-weight: 700; font-size: 16px;
-    width: 40px; text-align: center;
+  .kb-key .k-zone {
+    font-size: clamp(8px, 1vw, 10px);
+    color: var(--text3); line-height: 1;
   }
-  .root-table .roots-cell {
-    line-height: 1.6;
+  .kb-key .k-label {
+    font-size: clamp(14px, 2vw, 22px);
+    font-weight: 700; line-height: 1; margin-bottom: 3px;
+    text-align: center;
   }
-  .root-table .roots-cell .rc {
-    display: inline-block;
-    padding: 1px 6px; margin: 1px;
-    border: 1px solid rgba(180,95,26,.1);
-    border-radius: 3px; font-size: 12px;
-    background: rgba(255,253,249,.6);
+  .kb-key .k-roots {
+    display: flex; flex-wrap: wrap; gap: 2px;
+    justify-content: center; line-height: 1.3;
   }
-  .root-table .mnemonic-cell {
-    color: var(--text3); font-size: 11px;
-    width: 160px; line-height: 1.5;
+  .kb-key .k-roots span {
+    font-size: clamp(8px, 1vw, 11px);
+    color: var(--text2); padding: 0 2px;
   }
+  .kb-spacer { min-width: 0; }
 
-  /* Feedack */
-  .msg {
+  /* Toast */
+  .toast {
     position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
     padding: 8px 18px; border-radius: 20px;
     font-size: 13px; font-weight: 600;
@@ -185,45 +150,33 @@
     z-index: 10; pointer-events: none;
     opacity: 0; transition: opacity .3s;
   }
-  .msg.show { opacity: 1; }
-  .msg.ok { background: #2d8a56; }
-  .msg.bad { background: #d14343; }
+  .toast.show { opacity: 1; }
+  .toast.ok { background: var(--green); }
+  .toast.bad { background: var(--red); }
 
-  @media (max-width: 760px) {
-    :root { --top-h: 180px; }
-    .top { gap: 12px; padding: 10px 12px; flex-wrap: wrap; }
-    .top .big-char { font-size: 48px; }
-    .top .input-group { max-width: 200px; }
-    .top .input-group input { font-size: 20px; padding: 10px; }
-    .top .hints button { padding: 6px 8px; font-size: 11px; }
-    .root-table .mnemonic-cell { display: none; }
-    .root-table { font-size: 12px; }
-    .root-table .key-cell { font-size: 15px; width: 30px; }
-    .root-table .label-cell { font-size: 14px; width: 30px; }
-    .root-table th, .root-table td { padding: 3px 4px; }
+  @media (max-width: 640px) {
+    .bar { gap: 8px; padding: 8px 10px; }
+    .bar .big-char { font-size: 42px; min-width: 60px; }
+    .bar .input-group input { font-size: 18px; padding: 8px 10px; }
+    .bar .hints button { padding: 5px 7px; font-size: 10px; }
+    .kb-body { padding: 8px 4px; }
+    .kb { gap: 2px; max-width: 100%; }
+    .kb-row { gap: 2px; }
+    .kb-key { padding: 4px 2px 2px; border-radius: 4px; }
   }
 </style>
 </head>
 <body>
 
 <div class="page">
-  <!-- ════ Top: Practice strip ════ -->
-  <div class="top">
-    <div class="char-area">
-      <div class="big-char" id="targetChar">字</div>
-      <div class="char-info">
-        <span id="codePreview"></span>
-        <span id="charMeta">五笔86</span>
-      </div>
-    </div>
-
+  <!-- ════ Practice bar ════ -->
+  <div class="bar">
+    <div class="big-char" id="targetChar">字</div>
     <div class="decomp" id="decomp"></div>
-
     <div class="input-group">
       <input id="codeInput" placeholder="编码" autocomplete="off" autocapitalize="off" spellcheck="false">
       <button id="submitBtn">确认</button>
     </div>
-
     <div class="hints">
       <button id="hintDecomp">怎么拆</button>
       <button id="hintKeys">在哪键</button>
@@ -232,44 +185,48 @@
     </div>
   </div>
 
-  <!-- ════ Bottom: Root table ════ -->
-  <div class="bottom">
-    <table class="root-table" id="rootTable"></table>
+  <!-- ════ Keyboard body ════ -->
+  <div class="kb-body">
+    <div class="kb" id="keyboard"></div>
   </div>
 </div>
 
-<div class="msg" id="msg"></div>
+<div class="toast" id="toast"></div>
 
 <script>
-const STATE_KEY = 'wubi_table_body_v1';
-const ZONES = ['横区','竖区','撇区','捺区','折区'];
+const STATE_KEY = 'wubi_kb_v2';
+const KB_ROWS = [
+  ['Q','W','E','R','T','Y','U','I','O','P'],
+  ['A','S','D','F','G','H','J','K','L'],
+  ['X','C','V','B','N','M']
+];
 
 const FALLBACK_ROOTS = [
-  {key:'G',zone:'横区',label:'王',mnemonic:'王旁青头戋五一',roots:['王','一','五','戋','青头']},
-  {key:'F',zone:'横区',label:'土',mnemonic:'土士二干十寸雨',roots:['土','士','二','干','十','寸','雨']},
-  {key:'D',zone:'横区',label:'大',mnemonic:'大犬三羊古石厂',roots:['大','犬','三','羊','古','石','厂']},
-  {key:'S',zone:'横区',label:'木',mnemonic:'木丁西',roots:['木','丁','西']},
-  {key:'A',zone:'横区',label:'工',mnemonic:'工戈草头右框七',roots:['工','戈','艹','廾','匚','七']},
-  {key:'H',zone:'竖区',label:'目',mnemonic:'目具上止卜虎皮',roots:['目','具','上','止','卜']},
-  {key:'J',zone:'竖区',label:'日',mnemonic:'日早两竖与虫依',roots:['日','早','刂','虫']},
-  {key:'K',zone:'竖区',label:'口',mnemonic:'口与川，字根稀',roots:['口','川']},
-  {key:'L',zone:'竖区',label:'田',mnemonic:'田甲方框四车力',roots:['田','甲','囗','四','车','力']},
-  {key:'M',zone:'竖区',label:'山',mnemonic:'山由贝，下框几',roots:['山','由','贝','冂','几']},
-  {key:'T',zone:'撇区',label:'禾',mnemonic:'禾竹一撇双人立',roots:['禾','竹','丿','彳','攵','夂']},
-  {key:'R',zone:'撇区',label:'白',mnemonic:'白手看头三二斤',roots:['白','手','扌','斤']},
-  {key:'E',zone:'撇区',label:'月',mnemonic:'月彡乃用家衣底',roots:['月','彡','乃','用','豕']},
-  {key:'W',zone:'撇区',label:'人',mnemonic:'人和八，三四里',roots:['人','亻','八','癶']},
-  {key:'Q',zone:'撇区',label:'金',mnemonic:'金勺鱼儿犬夕氏',roots:['金','钅','勹','儿','夕','鱼','犭','氏']},
-  {key:'Y',zone:'捺区',label:'言',mnemonic:'言文方广在四一',roots:['言','讠','文','方','广','亠','丶']},
-  {key:'U',zone:'捺区',label:'立',mnemonic:'立辛两点六门疒',roots:['立','辛','冫','丷','六','门','疒']},
-  {key:'I',zone:'捺区',label:'水',mnemonic:'水旁兴头小倒立',roots:['水','氵','小']},
-  {key:'O',zone:'捺区',label:'火',mnemonic:'火业头，四点米',roots:['火','灬','米']},
-  {key:'P',zone:'捺区',label:'之',mnemonic:'之宝盖，摘礻衤',roots:['之','辶','宀','冖','礻','衤']},
-  {key:'N',zone:'折区',label:'已',mnemonic:'已半巳满不出己',roots:['已','巳','己','尸','心','忄','羽','乙']},
-  {key:'B',zone:'折区',label:'子',mnemonic:'子耳了也框向上',roots:['子','耳','了','也','凵']},
-  {key:'V',zone:'折区',label:'女',mnemonic:'女刀九臼山朝西',roots:['女','刀','九','臼','巛']},
-  {key:'C',zone:'折区',label:'又',mnemonic:'又巴马，丢矢矣',roots:['又','巴','马','厶']},
-  {key:'X',zone:'折区',label:'纟',mnemonic:'慈母无心弓和匕',roots:['纟','弓','匕','幺']}
+  {key:'G',zone:'横',label:'王',roots:['王','一','五','戋','青头']},
+  {key:'F',zone:'横',label:'土',roots:['土','士','二','干','十','寸','雨']},
+  {key:'D',zone:'横',label:'大',roots:['大','犬','三','羊','古','石','厂']},
+  {key:'S',zone:'横',label:'木',roots:['木','丁','西']},
+  {key:'A',zone:'横',label:'工',roots:['工','戈','艹','廾','匚','七']},
+  {key:'H',zone:'竖',label:'目',roots:['目','具','上','止','卜']},
+  {key:'J',zone:'竖',label:'日',roots:['日','早','刂','虫']},
+  {key:'K',zone:'竖',label:'口',roots:['口','川']},
+  {key:'L',zone:'竖',label:'田',roots:['田','甲','囗','四','车','力']},
+  {key:'M',zone:'竖',label:'山',roots:['山','由','贝','冂','几']},
+  {key:'T',zone:'撇',label:'禾',roots:['禾','竹','丿','彳','攵','夂']},
+  {key:'R',zone:'撇',label:'白',roots:['白','手','扌','斤']},
+  {key:'E',zone:'撇',label:'月',roots:['月','彡','乃','用','豕']},
+  {key:'W',zone:'撇',label:'人',roots:['人','亻','八','癶']},
+  {key:'Q',zone:'撇',label:'金',roots:['金','钅','勹','儿','夕','鱼','犭','氏']},
+  {key:'Y',zone:'捺',label:'言',roots:['言','讠','文','方','广','亠','丶']},
+  {key:'U',zone:'捺',label:'立',roots:['立','辛','冫','丷','六','门','疒']},
+  {key:'I',zone:'捺',label:'水',roots:['水','氵','小']},
+  {key:'O',zone:'捺',label:'火',roots:['火','灬','米']},
+  {key:'P',zone:'捺',label:'之',roots:['之','辶','宀','冖','礻','衤']},
+  {key:'N',zone:'折',label:'已',roots:['已','巳','己','尸','心','忄','羽','乙']},
+  {key:'B',zone:'折',label:'子',roots:['子','耳','了','也','凵']},
+  {key:'V',zone:'折',label:'女',roots:['女','刀','九','臼','巛']},
+  {key:'C',zone:'折',label:'又',roots:['又','巴','马','厶']},
+  {key:'X',zone:'折',label:'纟',roots:['纟','弓','匕','幺']}
 ];
 
 const FALLBACK_CHARS = [
@@ -281,94 +238,99 @@ const FALLBACK_CHARS = [
 ];
 
 let roots = [], chars = [], cur = null, hintIdx = 0, retry = false;
-let state = (() => { try { return JSON.parse(localStorage.getItem(STATE_KEY))||{}; } catch(_) { return {}; } })();
-state.total = state.total||0; state.correct = state.correct||0; state.streak = state.streak||0;
-state.wrongMap = state.wrongMap||{}; state.history = state.history||[];
-function save() { localStorage.setItem(STATE_KEY, JSON.stringify(state)); }
+let s = (() => { try { return JSON.parse(localStorage.getItem(STATE_KEY))||{}; } catch(_) { return {}; } })();
+s.total = s.total||0; s.correct = s.correct||0; s.streak = s.streak||0;
+s.wrongMap = s.wrongMap||{}; s.history = s.history||[];
+function save() { localStorage.setItem(STATE_KEY, JSON.stringify(s)); }
 
 const $ = id => document.getElementById(id);
 const E = {
-  rt: $('rootTable'), tc: $('targetChar'), cp: $('codePreview'), cm: $('charMeta'),
-  inp: $('codeInput'), sub: $('submitBtn'), msg: $('msg'), dec: $('decomp')
+  kb: $('keyboard'), tc: $('targetChar'), dec: $('decomp'),
+  inp: $('codeInput'), sub: $('submitBtn'), toast: $('toast')
 };
 
-function renderTable() {
-  let h = '<thead><tr><th>键</th><th>字</th><th>字根</th><th>口诀</th></tr></thead><tbody>';
-  ZONES.forEach(z => {
-    const zk = roots.filter(r => r.zone === z);
-    h += `<tr class="zone-row"><td colspan="4">${z} <small>${zk.map(r=>r.key).join(' ')}</small></td></tr>`;
-    zk.forEach(r => {
-      h += `<tr class="key-row" data-key="${r.key.toLowerCase()}">`
-        + `<td class="key-cell">${r.key}</td>`
-        + `<td class="label-cell">${r.label}</td>`
-        + `<td class="roots-cell">${r.roots.map(x => `<span class="rc">${x}</span>`).join('')}</td>`
-        + `<td class="mnemonic-cell">${r.mnemonic}</td></tr>`;
+function byKey(k) { return roots.find(r => r.key.toLowerCase() === k.toLowerCase()); }
+function spacer() { const d = document.createElement('div'); d.className = 'kb-spacer'; return d; }
+
+function renderKB() {
+  E.kb.innerHTML = '';
+  KB_ROWS.forEach((row, ri) => {
+    const re = document.createElement('div');
+    re.className = `kb-row r${ri}`;
+    if (ri === 1) re.appendChild(spacer());
+    if (ri === 2) re.appendChild(spacer());
+    row.forEach(key => {
+      const r = byKey(key); if (!r) return;
+      const el = document.createElement('div');
+      el.className = 'kb-key';
+      el.dataset.key = r.key.toLowerCase();
+      el.innerHTML = `<div class="k-top"><span class="k-letter">${r.key}</span><span class="k-zone">${r.zone}区</span></div>`
+        + `<div class="k-label">${r.label}</div>`
+        + `<div class="k-roots">${r.roots.map(x => `<span>${x}</span>`).join('')}</div>`;
+      re.appendChild(el);
     });
+    if (ri === 1) re.appendChild(spacer());
+    if (ri === 2) re.appendChild(spacer());
+    E.kb.appendChild(re);
   });
-  E.rt.innerHTML = h + '</tbody>';
   highlightKeys('');
 }
 function highlightKeys(code) {
   const set = new Set((code||'').toLowerCase().split(''));
-  document.querySelectorAll('.key-row').forEach(el => el.classList.toggle('hint', set.has(el.dataset.key)));
+  document.querySelectorAll('.kb-key').forEach(el => el.classList.toggle('hint', set.has(el.dataset.key)));
 }
 
 function pick() {
-  const wrong = Object.entries(state.wrongMap).filter(([,v]) => v.count > 0);
+  const wrong = Object.entries(s.wrongMap).filter(([,v]) => v.count > 0);
   if (wrong.length && Math.random() < .35) {
     const [ch] = wrong[Math.floor(Math.random()*wrong.length)];
     const f = chars.find(c => c.char === ch);
     if (f) return f;
   }
-  const recent = new Set((state.history||[]).slice(-24));
+  const recent = new Set((s.history||[]).slice(-24));
   const pool = chars.filter(c => !recent.has(c.char));
   return (pool.length > 12 ? pool : chars)[Math.floor(Math.random()*(pool.length > 12 ? pool : chars).length)];
 }
 function next() {
   cur = pick(); hintIdx = 0; retry = false;
-  E.tc.textContent = cur.char;
-  E.cm.textContent = `五笔86 · ${cur.code.length} 码`;
-  E.cp.textContent = '';
-  E.dec.textContent = '';
+  E.tc.textContent = cur.char; E.dec.textContent = '';
   E.inp.value = ''; E.inp.classList.remove('err'); E.sub.textContent = '确认';
-  highlightKeys('');
-  flash('');
-  E.inp.focus();
+  highlightKeys(''); toast(''); E.inp.focus();
 }
-function flash(t, cls) {
-  E.msg.textContent = t; E.msg.className = `msg ${cls}` + (t ? ' show' : '');
-  if (t) setTimeout(() => { E.msg.classList.remove('show'); }, 2000);
+function toast(t, cls) {
+  E.toast.textContent = t; E.toast.className = `toast ${cls}` + (t ? ' show' : '');
+  if (t) setTimeout(() => { E.toast.classList.remove('show'); }, 2000);
 }
 function submit() {
   if (!cur) return;
   const inp = E.inp.value.trim().toLowerCase(); if (!inp) return;
   const ans = cur.code.toLowerCase();
   if (retry) {
-    state.total++; save();
-    if (inp === ans) { state.correct++; state.streak++; delete state.wrongMap[cur.char]; flash('正确！','ok'); E.inp.classList.remove('err'); setTimeout(next, 600); }
-    else { state.streak = 0; state.wrongMap[cur.char].count++; E.inp.value = ''; E.inp.classList.add('err'); flash(`还是不对，编码 ${ans}`,'bad'); save(); }
+    s.total++; save();
+    if (inp === ans) { s.correct++; s.streak++; delete s.wrongMap[cur.char]; toast('正确！','ok'); E.inp.classList.remove('err'); setTimeout(next, 500); }
+    else { s.streak = 0; s.wrongMap[cur.char].count++; E.inp.value = ''; E.inp.classList.add('err'); toast(`还是不对，编码 ${ans}`,'bad'); save(); }
     return;
   }
-  state.total++; state.history = [...(state.history||[]), cur.char].slice(-80); save();
-  if (inp === ans) { state.correct++; state.streak++; delete state.wrongMap[cur.char]; flash('正确！','ok'); setTimeout(next, 600); }
+  s.total++; s.history = [...(s.history||[]), cur.char].slice(-80); save();
+  if (inp === ans) { s.correct++; s.streak++; delete s.wrongMap[cur.char]; toast('正确！','ok'); setTimeout(next, 500); }
   else {
-    state.streak = 0; state.wrongMap[cur.char] = state.wrongMap[cur.char]||{code:ans,count:0};
-    state.wrongMap[cur.char].count++; retry = true; hintIdx = ans.length; highlightKeys(ans);
+    s.streak = 0; s.wrongMap[cur.char] = s.wrongMap[cur.char]||{code:ans,count:0};
+    s.wrongMap[cur.char].count++; retry = true; hintIdx = ans.length; highlightKeys(ans);
     E.inp.value = ''; E.inp.classList.add('err'); E.sub.textContent = '重输';
-    flash(`编码 ${ans}，请重打`,'bad'); save();
+    toast(`编码 ${ans}，请重打`,'bad'); save();
   }
 }
-function hintDecomp() { if (!cur) return; E.dec.textContent = cur.decomposition || '（拆法数据待补）'; }
-function hintKeys() { if (!cur) return; hintIdx = cur.code.length; highlightKeys(cur.code); flash(`已高亮 ${cur.code} 对应键位`,''); }
-function hintCode() { if (!cur) return; E.cp.textContent = cur.code; flash(`完整编码：${cur.code}`,''); }
-function skip() { if (!cur||retry) return; state.history = [...(state.history||[]), cur.char].slice(-80); state.streak=0; state.wrongMap[cur.char]=state.wrongMap[cur.char]||{code:cur.code,count:1}; state.wrongMap[cur.char].count++; save(); next(); }
+function hintDecomp() { if (!cur) return; E.dec.textContent = cur.decomposition || '拆法待补'; }
+function hintKeys() { if (!cur) return; hintIdx = cur.code.length; highlightKeys(cur.code); toast(`已高亮 ${cur.code} 键位`,''); }
+function hintCode() { if (!cur) return; E.dec.textContent = `编码：${cur.code}`; toast(`完整编码：${cur.code}`,''); }
+function skip() { if (!cur||retry) return; s.history = [...(s.history||[]), cur.char].slice(-80); s.streak=0; s.wrongMap[cur.char]=s.wrongMap[cur.char]||{code:cur.code,count:1}; s.wrongMap[cur.char].count++; save(); next(); }
 
 async function init() {
   [roots, chars] = await Promise.all([
     fetch('/wubi-trainer/data/wubi86-roots.json').then(r => r.json()).catch(() => FALLBACK_ROOTS),
     fetch('/wubi-trainer/data/wubi86-chars.json').then(r => r.json()).catch(() => FALLBACK_CHARS)
   ]);
-  renderTable(); next();
+  renderKB(); next();
 }
 
 E.sub.addEventListener('click', submit);
