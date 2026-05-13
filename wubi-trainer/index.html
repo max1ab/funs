@@ -28,7 +28,7 @@
 
   .page {
     display: grid;
-    grid-template-rows: auto 1fr;
+    grid-template-rows: auto 1fr auto;
     height: 100vh; height: 100dvh;
     overflow: hidden;
   }
@@ -77,6 +77,14 @@
     cursor: pointer; white-space: nowrap; transition: all .15s;
   }
   .bar .hints button:hover { border-color: var(--accent); color: var(--accent); }
+  .top-stats {
+    margin-left: auto;
+    color: var(--text2);
+    font-size: 12px;
+    line-height: 1.4;
+    white-space: nowrap;
+  }
+  .top-stats strong { color: var(--text); font-weight: 700; }
 
   /* ── Keyboard body ── */
   .kb-body {
@@ -106,6 +114,11 @@
     position: relative;
     min-width: 0;
   }
+  .kb-key.zone-heng { background: #fff0e7; border-color: #ebc0ad; }
+  .kb-key.zone-shu { background: #eef6e9; border-color: #bdd6b5; }
+  .kb-key.zone-pie { background: #eaf5fb; border-color: #b8d4e2; }
+  .kb-key.zone-na { background: #f6e8f1; border-color: #ddb8cf; }
+  .kb-key.zone-zhe { background: #f7f1d5; border-color: #ddd08f; }
   .kb-key.hint {
     border-color: var(--accent);
     background: #fef5e8;
@@ -141,6 +154,34 @@
   }
   .kb-spacer { min-width: 0; }
 
+  /* ── Bottom bar ── */
+  .bottom-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 8px 14px;
+    border-top: 1px solid var(--border);
+    background: rgba(255,253,249,.92);
+  }
+  .step-actions { display: flex; gap: 6px; align-items: center; }
+  .step-actions button {
+    padding: 7px 12px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--text2);
+    font-size: 12px;
+    cursor: pointer;
+  }
+  .step-actions button:hover { border-color: var(--accent); color: var(--accent); }
+  .progress-line {
+    color: var(--text2);
+    font-size: 12px;
+    text-align: right;
+    white-space: nowrap;
+  }
+
   /* Toast */
   .toast {
     position: fixed; bottom: 16px; left: 50%; transform: translateX(-50%);
@@ -158,11 +199,16 @@
     .bar { gap: 8px; padding: 8px 10px; }
     .bar .big-char { font-size: 42px; min-width: 60px; }
     .bar .input-group input { font-size: 18px; padding: 8px 10px; }
-    .bar .hints button { padding: 5px 7px; font-size: 10px; }
+    .bar .hints { display: none; }
+    .top-stats { width: 100%; margin-left: 0; text-align: center; font-size: 11px; }
     .kb-body { padding: 8px 4px; }
     .kb { gap: 2px; max-width: 100%; }
     .kb-row { gap: 2px; }
     .kb-key { padding: 4px 2px 2px; border-radius: 4px; }
+    .bottom-bar { padding: 6px 8px; gap: 8px; }
+    .step-actions { gap: 4px; }
+    .step-actions button { padding: 6px 8px; font-size: 11px; }
+    .progress-line { font-size: 11px; }
   }
 </style>
 </head>
@@ -183,11 +229,22 @@
       <button id="hintCode">完整码</button>
       <button id="skipBtn">跳过</button>
     </div>
+    <div class="top-stats" id="topStats">已练 <strong>0</strong> 字 · 准确率 <strong>0%</strong></div>
   </div>
 
   <!-- ════ Keyboard body ════ -->
   <div class="kb-body">
     <div class="kb" id="keyboard"></div>
+  </div>
+
+  <div class="bottom-bar">
+    <div class="step-actions">
+      <button id="bottomHintDecomp">怎么拆</button>
+      <button id="bottomHintKeys">在哪键</button>
+      <button id="bottomHintCode">完整码</button>
+      <button id="bottomSkipBtn">跳过</button>
+    </div>
+    <div class="progress-line" id="progressLine">已练 0 · 准确率 0% · 连对 0</div>
   </div>
 </div>
 
@@ -241,16 +298,18 @@ let roots = [], chars = [], cur = null, hintIdx = 0, retry = false;
 let s = (() => { try { return JSON.parse(localStorage.getItem(STATE_KEY))||{}; } catch(_) { return {}; } })();
 s.total = s.total||0; s.correct = s.correct||0; s.streak = s.streak||0;
 s.wrongMap = s.wrongMap||{}; s.history = s.history||[];
-function save() { localStorage.setItem(STATE_KEY, JSON.stringify(s)); }
+function save() { localStorage.setItem(STATE_KEY, JSON.stringify(s)); updateStats(); }
 
 const $ = id => document.getElementById(id);
 const E = {
   kb: $('keyboard'), tc: $('targetChar'), dec: $('decomp'),
-  inp: $('codeInput'), sub: $('submitBtn'), toast: $('toast')
+  inp: $('codeInput'), sub: $('submitBtn'), toast: $('toast'),
+  topStats: $('topStats'), progress: $('progressLine')
 };
 
 function byKey(k) { return roots.find(r => r.key.toLowerCase() === k.toLowerCase()); }
 function spacer() { const d = document.createElement('div'); d.className = 'kb-spacer'; return d; }
+function zoneClass(zone) { return ({横:'zone-heng', 竖:'zone-shu', 撇:'zone-pie', 捺:'zone-na', 折:'zone-zhe'})[zone] || ''; }
 
 function renderKB() {
   E.kb.innerHTML = '';
@@ -262,7 +321,7 @@ function renderKB() {
     row.forEach(key => {
       const r = byKey(key); if (!r) return;
       const el = document.createElement('div');
-      el.className = 'kb-key';
+      el.className = `kb-key ${zoneClass(r.zone)}`;
       el.dataset.key = r.key.toLowerCase();
       el.innerHTML = `<div class="k-top"><span class="k-letter">${r.key}</span><span class="k-zone">${r.zone}区</span></div>`
         + `<div class="k-label">${r.label}</div>`
@@ -280,6 +339,15 @@ function highlightKeys(code) {
   document.querySelectorAll('.kb-key').forEach(el => el.classList.toggle('hint', set.has(el.dataset.key)));
 }
 
+
+function updateStats() {
+  const total = s.total || 0;
+  const accuracy = total ? Math.round((s.correct || 0) / total * 100) : 0;
+  const wrongCount = Object.values(s.wrongMap || {}).filter(v => v.count > 0).length;
+  if (E.topStats) E.topStats.innerHTML = `已练 <strong>${total}</strong> 字 · 准确率 <strong>${accuracy}%</strong>`;
+  if (E.progress) E.progress.textContent = `已练 ${total} · 准确率 ${accuracy}% · 连对 ${s.streak || 0} · 错题 ${wrongCount}`;
+}
+
 function pick() {
   const wrong = Object.entries(s.wrongMap).filter(([,v]) => v.count > 0);
   if (wrong.length && Math.random() < .35) {
@@ -295,7 +363,7 @@ function next() {
   cur = pick(); hintIdx = 0; retry = false;
   E.tc.textContent = cur.char; E.dec.textContent = '';
   E.inp.value = ''; E.inp.classList.remove('err'); E.sub.textContent = '确认';
-  highlightKeys(''); toast(''); E.inp.focus();
+  highlightKeys(''); toast(''); updateStats(); E.inp.focus();
 }
 function toast(t, cls) {
   E.toast.textContent = t; E.toast.className = `toast ${cls}` + (t ? ' show' : '');
@@ -339,6 +407,10 @@ $('hintDecomp').addEventListener('click', hintDecomp);
 $('hintKeys').addEventListener('click', hintKeys);
 $('hintCode').addEventListener('click', hintCode);
 $('skipBtn').addEventListener('click', skip);
+$('bottomHintDecomp').addEventListener('click', hintDecomp);
+$('bottomHintKeys').addEventListener('click', hintKeys);
+$('bottomHintCode').addEventListener('click', hintCode);
+$('bottomSkipBtn').addEventListener('click', skip);
 init();
 </script>
 </body>
