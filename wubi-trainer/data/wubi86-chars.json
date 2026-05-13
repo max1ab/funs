@@ -1,1767 +1,3001 @@
 [
   {
     "char": "一",
-    "code": "g",
-    "difficulty": 1
+    "code": "ggll",
+    "difficulty": 1,
+    "shortCode": "g/ggl",
+    "units": "〖※※※〗",
+    "segments": "0/0"
   },
   {
     "char": "地",
-    "code": "f",
-    "difficulty": 1
+    "code": "fbn",
+    "difficulty": 1,
+    "shortCode": "f/fb",
+    "units": "〖※※〗",
+    "flag": "折·左右〔乛 ⿰〕",
+    "segments": "0-2/3-5"
   },
   {
     "char": "在",
-    "code": "d",
-    "difficulty": 1
+    "code": "dhfd",
+    "difficulty": 1,
+    "shortCode": "d/dhf",
+    "units": "〖※※※〗",
+    "flag": "横·杂合〔一 ⿻〕",
+    "segments": "0,1/2/3-5"
   },
   {
     "char": "要",
-    "code": "s",
-    "difficulty": 1
+    "code": "svf",
+    "difficulty": 1,
+    "shortCode": "s/sv",
+    "units": "〖※※〗",
+    "flag": "横·上下〔一 ⿱〕",
+    "segments": "0-5/6-8"
   },
   {
     "char": "工",
-    "code": "a",
-    "difficulty": 1
+    "code": "aaaa",
+    "difficulty": 1,
+    "shortCode": "a/aaa",
+    "units": "〖※※※〗",
+    "segments": "0-2/0-2/0-2/0-2"
   },
   {
     "char": "上",
-    "code": "h",
-    "difficulty": 1
+    "code": "hhgg",
+    "difficulty": 1,
+    "shortCode": "h",
+    "units": "〖※※※〗",
+    "segments": "0-2/0/1/2"
   },
   {
     "char": "是",
-    "code": "j",
-    "difficulty": 1
+    "code": "jghu",
+    "difficulty": 1,
+    "shortCode": "j/jgh",
+    "units": "〖※※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0-3/4/5-8"
   },
   {
     "char": "中",
-    "code": "k",
-    "difficulty": 1
+    "code": "khk",
+    "difficulty": 1,
+    "shortCode": "k/kh",
+    "units": "〖※※〗",
+    "flag": "竖·杂合〔丨 ⿻〕",
+    "segments": "0-2/3"
   },
   {
     "char": "国",
-    "code": "l",
-    "difficulty": 1
+    "code": "lgyi",
+    "difficulty": 1,
+    "shortCode": "l/lgy",
+    "units": "〖※※※〗",
+    "flag": "捺·杂合〔丶 ⿻〕",
+    "segments": "0,1,7/2-5/6"
   },
   {
     "char": "同",
-    "code": "m",
-    "difficulty": 1
+    "code": "mgkd",
+    "difficulty": 1,
+    "shortCode": "m/mg/mgk",
+    "units": "〖※※※〗",
+    "flag": "横·杂合〔一 ⿻〕",
+    "segments": "0,1/2/3-5"
   },
   {
     "char": "和",
-    "code": "t",
-    "difficulty": 1
+    "code": "tkg",
+    "difficulty": 1,
+    "shortCode": "t",
+    "units": "〖※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0-4/5-7"
   },
   {
     "char": "的",
-    "code": "r",
-    "difficulty": 1
+    "code": "rqyy",
+    "difficulty": 1,
+    "shortCode": "r/rqy",
+    "units": "〖※※※〗",
+    "flag": "捺·左右〔丶 ⿰〕",
+    "segments": "0-4/5,6/7"
   },
   {
     "char": "有",
-    "code": "e",
-    "difficulty": 1
+    "code": "def",
+    "difficulty": 1,
+    "shortCode": "e",
+    "units": "〖※※〗",
+    "flag": "横·上下〔一 ⿱〕",
+    "segments": "0,1/2-5"
   },
   {
     "char": "人",
-    "code": "w",
-    "difficulty": 1
+    "code": "wwww",
+    "difficulty": 1,
+    "shortCode": "w",
+    "units": "〖※※※〗",
+    "segments": "0,1/0,1/0,1/0,1"
   },
   {
     "char": "我",
-    "code": "q",
-    "difficulty": 1
+    "code": "trnt",
+    "difficulty": 1,
+    "shortCode": "q/trn",
+    "moreCode": "⊙trny",
+    "units": "〖※※※〗",
+    "segments": "0/1-3/4/5"
   },
   {
     "char": "主",
-    "code": "y",
-    "difficulty": 1
+    "code": "ygd",
+    "difficulty": 1,
+    "shortCode": "y/yg",
+    "units": "〖※※〗",
+    "flag": "横·杂合〔一 ⿻〕",
+    "segments": "0/1-4"
   },
   {
     "char": "产",
-    "code": "u",
-    "difficulty": 1
+    "code": "ute",
+    "difficulty": 1,
+    "shortCode": "u/ut",
+    "units": "〖※※〗",
+    "flag": "丿·杂合〔丿 ⿻〕",
+    "segments": "0-4/5"
   },
   {
     "char": "不",
-    "code": "i",
-    "difficulty": 1
+    "code": "gii",
+    "difficulty": 1,
+    "shortCode": "i/gi",
+    "units": "〖※※〗",
+    "flag": "捺·杂合〔丶 ⿻〕",
+    "segments": "0/1-3"
   },
   {
     "char": "为",
-    "code": "o",
-    "difficulty": 1
+    "code": "ylyi",
+    "difficulty": 1,
+    "shortCode": "o/yl/yly",
+    "units": "〖※※※〗",
+    "flag": "捺·杂合〔丶 ⿻〕",
+    "segments": "0/1,2/3"
   },
   {
     "char": "这",
-    "code": "p",
-    "difficulty": 1
+    "code": "ypi",
+    "difficulty": 1,
+    "shortCode": "p/yp",
+    "units": "〖※※〗",
+    "flag": "捺·杂合〔丶 ⿻〕",
+    "segments": "0-3/4-6"
   },
   {
     "char": "民",
-    "code": "n",
-    "difficulty": 1
+    "code": "nav",
+    "difficulty": 1,
+    "shortCode": "n/na",
+    "units": "〖※※〗",
+    "flag": "折·杂合〔乛 ⿻〕",
+    "segments": "0-2/3,4"
   },
   {
     "char": "了",
-    "code": "b",
-    "difficulty": 1
+    "code": "bnh",
+    "difficulty": 1,
+    "shortCode": "b",
+    "units": "〖※※〗",
+    "segments": "0,1/0/1"
   },
   {
     "char": "发",
-    "code": "v",
-    "difficulty": 1
+    "code": "ntcy",
+    "difficulty": 1,
+    "shortCode": "v/ntc",
+    "units": "〖※※※〗",
+    "segments": "0/1/2,3/4"
   },
   {
     "char": "以",
-    "code": "c",
-    "difficulty": 1
+    "code": "nywy",
+    "difficulty": 1,
+    "shortCode": "c/nyw",
+    "units": "〖※※※〗",
+    "flag": "捺·左右〔丶 ⿰〕",
+    "segments": "0/1/2,3"
   },
   {
     "char": "经",
-    "code": "x",
-    "difficulty": 1
+    "code": "xcag",
+    "difficulty": 1,
+    "shortCode": "x/xc/xca",
+    "units": "〖※※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0-2/3,4/5-7"
   },
   {
     "char": "大",
-    "code": "dd",
-    "difficulty": 1
+    "code": "dddd",
+    "difficulty": 1,
+    "shortCode": "dd",
+    "units": "〖※※※〗",
+    "segments": "0-2/0-2/0-2/0-2"
   },
   {
     "char": "小",
-    "code": "ih",
-    "difficulty": 1
+    "code": "ihty",
+    "difficulty": 1,
+    "shortCode": "ih/iht",
+    "units": "〖※※※〗",
+    "segments": "0-2/0/1/2"
   },
   {
     "char": "多",
-    "code": "qq",
-    "difficulty": 1
+    "code": "qqu",
+    "difficulty": 1,
+    "shortCode": "qq",
+    "units": "〖※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0-2/3-5"
   },
   {
     "char": "少",
-    "code": "it",
-    "difficulty": 1
+    "code": "itr",
+    "difficulty": 1,
+    "shortCode": "it",
+    "units": "〖※※〗",
+    "flag": "丿·上下〔丿 ⿱〕",
+    "segments": "0-2/3"
   },
   {
     "char": "天",
-    "code": "gd",
-    "difficulty": 2
+    "code": "gdi",
+    "difficulty": 2,
+    "shortCode": "gd",
+    "units": "〖※※〗",
+    "flag": "捺·杂合〔丶 ⿻〕",
+    "segments": "0/1-3"
   },
   {
     "char": "学",
-    "code": "ip",
-    "difficulty": 2
+    "code": "ipbf",
+    "difficulty": 2,
+    "shortCode": "ip/ipb",
+    "units": "〖※※※〗",
+    "flag": "横·上下〔一 ⿱〕",
+    "segments": "0-2/3-4/5-7"
   },
   {
     "char": "生",
-    "code": "tg",
-    "difficulty": 2
+    "code": "tgd",
+    "difficulty": 2,
+    "shortCode": "tg",
+    "units": "〖※※〗",
+    "flag": "横·杂合〔一 ⿻〕",
+    "segments": "0/1-4"
   },
   {
     "char": "会",
-    "code": "wf",
-    "difficulty": 2
+    "code": "wfcu",
+    "difficulty": 2,
+    "shortCode": "wf/wfc",
+    "units": "〖※※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0,1/2,3/4,5"
   },
   {
     "char": "年",
-    "code": "rh",
-    "difficulty": 2
+    "code": "rhfk",
+    "difficulty": 2,
+    "shortCode": "rh",
+    "units": "〖※※※〗",
+    "flag": "竖·杂合〔丨 ⿻〕",
+    "segments": "0-2/3/4,5"
   },
   {
     "char": "月",
-    "code": "eee",
-    "difficulty": 2
+    "code": "eeee",
+    "difficulty": 2,
+    "shortCode": "eee",
+    "units": "〖※※※〗",
+    "segments": "0-3/0-3/0-3/0-3"
   },
   {
     "char": "日",
-    "code": "jjj",
-    "difficulty": 1
+    "code": "jjjj",
+    "difficulty": 1,
+    "units": "〖※※※〗",
+    "segments": "0-3/0-3/0-3/0-3"
   },
   {
     "char": "时",
-    "code": "jf",
-    "difficulty": 2
+    "code": "jfy",
+    "difficulty": 2,
+    "shortCode": "jf",
+    "units": "〖※※〗",
+    "flag": "捺·左右〔丶 ⿰〕",
+    "segments": "0-3/4-6"
   },
   {
     "char": "间",
-    "code": "uj",
-    "difficulty": 2
+    "code": "ujd",
+    "difficulty": 2,
+    "shortCode": "uj",
+    "units": "〖※※〗",
+    "flag": "横·杂合〔一 ⿻〕",
+    "segments": "0-2/3-6"
   },
   {
     "char": "出",
-    "code": "bm",
-    "difficulty": 2
+    "code": "bmk",
+    "difficulty": 2,
+    "shortCode": "bm",
+    "units": "〖※※〗",
+    "flag": "竖·杂合〔丨 ⿻〕",
+    "segments": "0,1/2-4"
   },
   {
     "char": "来",
-    "code": "go",
-    "difficulty": 2
+    "code": "goi",
+    "difficulty": 2,
+    "shortCode": "go",
+    "units": "〖※※〗",
+    "flag": "捺·杂合〔丶 ⿻〕",
+    "segments": "0/1-6"
   },
   {
     "char": "去",
     "code": "fcu",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0-2/3,4"
   },
   {
     "char": "看",
     "code": "rhf",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※〗",
+    "flag": "横·上下〔一 ⿱〕",
+    "segments": "0-3/4-8"
   },
   {
     "char": "说",
-    "code": "yu",
-    "difficulty": 2
+    "code": "yukq",
+    "difficulty": 2,
+    "shortCode": "yu/yuk",
+    "units": "〖※※※〗",
+    "segments": "0,1/2,3/4-6/7,8"
   },
   {
     "char": "话",
-    "code": "ytd",
-    "difficulty": 2
+    "code": "ytdg",
+    "difficulty": 2,
+    "shortCode": "ytd",
+    "units": "〖※※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0-1/2/3-7"
   },
   {
     "char": "写",
-    "code": "pgn",
-    "difficulty": 2
+    "code": "pgng",
+    "difficulty": 2,
+    "shortCode": "pgn",
+    "units": "〖※※※〗",
+    "segments": "0,1/2/3/4"
   },
   {
     "char": "字",
-    "code": "pb",
-    "difficulty": 2
+    "code": "pbf",
+    "difficulty": 2,
+    "shortCode": "pb",
+    "units": "〖※※〗",
+    "flag": "横·上下〔一 ⿱〕",
+    "segments": "0-2/3-5"
   },
   {
     "char": "好",
-    "code": "vb",
-    "difficulty": 2
+    "code": "vbg",
+    "difficulty": 2,
+    "shortCode": "vb",
+    "units": "〖※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0-2/3-5"
   },
   {
     "char": "女",
-    "code": "vvv",
-    "difficulty": 1
+    "code": "vvvv",
+    "difficulty": 1,
+    "shortCode": "vvv",
+    "units": "〖※※※〗",
+    "segments": "0-2/0-2/0-2/0-2"
   },
   {
     "char": "子",
-    "code": "bb",
-    "difficulty": 1
+    "code": "bbbb",
+    "difficulty": 1,
+    "shortCode": "bb/bbb",
+    "units": "〖※※※〗",
+    "segments": "0-2/0-2/0-2/0-2"
   },
   {
     "char": "男",
-    "code": "ll",
-    "difficulty": 2
+    "code": "llb",
+    "difficulty": 2,
+    "shortCode": "ll",
+    "moreCode": "⊙llr",
+    "units": "〖※※〗",
+    "flag": "折·上下〔乛 ⿱〕",
+    "segments": "0-4/5,6"
   },
   {
     "char": "水",
-    "code": "ii",
-    "difficulty": 1
+    "code": "iiii",
+    "difficulty": 1,
+    "shortCode": "ii/iii",
+    "units": "〖※※※〗",
+    "segments": "0-3/0-3/0-3/0-3"
   },
   {
     "char": "火",
-    "code": "ooo",
-    "difficulty": 1
+    "code": "oooo",
+    "difficulty": 1,
+    "shortCode": "ooo",
+    "units": "〖※※※〗",
+    "segments": "0-3/0-3/0-3/0-3"
   },
   {
     "char": "土",
-    "code": "fff",
-    "difficulty": 1
+    "code": "ffff",
+    "difficulty": 1,
+    "units": "〖※※※〗",
+    "segments": "0-2/0-2/0-2/0-2"
   },
   {
     "char": "木",
-    "code": "sss",
-    "difficulty": 1
+    "code": "ssss",
+    "difficulty": 1,
+    "units": "〖※※※〗",
+    "segments": "0-3/0-3/0-3/0-3"
   },
   {
     "char": "金",
-    "code": "qqq",
-    "difficulty": 1
+    "code": "qqqq",
+    "difficulty": 1,
+    "units": "〖※※※〗",
+    "segments": "0-7/0-7/0-7/0-7"
   },
   {
     "char": "山",
-    "code": "mmm",
-    "difficulty": 1
+    "code": "mmmm",
+    "difficulty": 1,
+    "shortCode": "mmm",
+    "units": "〖※※※〗",
+    "segments": "0-2/0-2/0-2/0-2"
   },
   {
     "char": "石",
     "code": "dgtg",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※※〗",
+    "segments": "0-4/0/1/4"
   },
   {
     "char": "田",
-    "code": "lll",
-    "difficulty": 1
+    "code": "llll",
+    "difficulty": 1,
+    "shortCode": "lll",
+    "units": "〖※※※〗",
+    "segments": "0-4/0-4/0-4/0-4"
   },
   {
     "char": "白",
-    "code": "rrr",
-    "difficulty": 1
+    "code": "rrrr",
+    "difficulty": 1,
+    "shortCode": "rrr",
+    "units": "〖※※※〗",
+    "segments": "0-4/0-4/0-4/0-4"
   },
   {
     "char": "目",
     "code": "hhhh",
-    "difficulty": 1
+    "difficulty": 1,
+    "shortCode": "hhh",
+    "units": "〖※※※〗",
+    "segments": "0-4/0-4/0-4/0-4"
   },
   {
     "char": "口",
-    "code": "kkk",
-    "difficulty": 1
+    "code": "kkkk",
+    "difficulty": 1,
+    "units": "〖※※※〗",
+    "segments": "0-2/0-2/0-2/0-2"
   },
   {
     "char": "手",
-    "code": "rt",
-    "difficulty": 2
+    "code": "rtgh",
+    "difficulty": 2,
+    "shortCode": "rt/rtg",
+    "units": "〖※※※〗",
+    "segments": "0-3/0/1/3"
   },
   {
     "char": "心",
-    "code": "ny",
-    "difficulty": 2
+    "code": "nyny",
+    "difficulty": 2,
+    "shortCode": "ny",
+    "units": "〖※※※〗",
+    "segments": "0-3/0/1/3"
   },
   {
     "char": "力",
-    "code": "lt",
-    "difficulty": 2
+    "code": "ltn",
+    "difficulty": 2,
+    "shortCode": "lt",
+    "moreCode": "⊙lnt",
+    "units": "〖※※〗",
+    "segments": "*0,1/1/0"
   },
   {
     "char": "电",
-    "code": "jn",
-    "difficulty": 2
+    "code": "jnv",
+    "difficulty": 2,
+    "shortCode": "jn",
+    "units": "〖※※〗",
+    "flag": "折·杂合〔乛 ⿻〕",
+    "segments": "0-3/4"
   },
   {
     "char": "车",
-    "code": "lg",
-    "difficulty": 2
+    "code": "lgnh",
+    "difficulty": 2,
+    "shortCode": "lg/lgn",
+    "units": "〖※※※〗",
+    "segments": "0-3/0/1/3"
   },
   {
     "char": "马",
-    "code": "cn",
-    "difficulty": 2
+    "code": "cnng",
+    "difficulty": 2,
+    "shortCode": "cn/cnn",
+    "units": "〖※※※〗",
+    "segments": "0-2/0/1/2"
   },
   {
     "char": "牛",
     "code": "rhk",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※〗",
+    "flag": "竖·杂合〔丨 ⿻〕",
+    "segments": "0-2/3"
   },
   {
     "char": "羊",
     "code": "udj",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※〗",
+    "flag": "竖·上下〔丨 ⿱〕",
+    "segments": "0,1/2-5"
   },
   {
     "char": "鱼",
     "code": "qgf",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※〗",
+    "flag": "横·上下〔一 ⿱〕",
+    "segments": "0-6/7"
   },
   {
     "char": "虫",
     "code": "jhny",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※※〗",
+    "segments": "0-5/0/1/5"
   },
   {
     "char": "花",
-    "code": "awx",
-    "difficulty": 2
+    "code": "awxb",
+    "difficulty": 2,
+    "shortCode": "awx",
+    "units": "〖※※※〗",
+    "flag": "折·上下〔乛 ⿱〕",
+    "segments": "0-2/3-4/5-6"
   },
   {
     "char": "草",
     "code": "ajj",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※〗",
+    "flag": "竖·上下〔丨 ⿱〕",
+    "segments": "0-2/3-8"
   },
   {
     "char": "树",
-    "code": "scf",
-    "difficulty": 2
+    "code": "scfy",
+    "difficulty": 2,
+    "shortCode": "scf",
+    "units": "〖※※※〗",
+    "flag": "捺·左右〔丶 ⿰〕",
+    "segments": "0-3/4-5/6-8"
   },
   {
     "char": "开",
-    "code": "ga",
-    "difficulty": 2
+    "code": "gak",
+    "difficulty": 2,
+    "shortCode": "ga",
+    "units": "〖※※〗",
+    "flag": "竖·杂合〔丨 ⿻〕",
+    "segments": "0/1-3"
   },
   {
     "char": "关",
-    "code": "ud",
-    "difficulty": 2
+    "code": "udu",
+    "difficulty": 2,
+    "shortCode": "ud",
+    "units": "〖※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0-2/3-5"
   },
   {
     "char": "门",
-    "code": "uyh",
-    "difficulty": 2
+    "code": "uyhn",
+    "difficulty": 2,
+    "shortCode": "uyh",
+    "units": "〖※※※〗",
+    "segments": "0-2/0/1/2"
   },
   {
     "char": "前",
-    "code": "ue",
-    "difficulty": 3
+    "code": "uejj",
+    "difficulty": 3,
+    "shortCode": "ue/uej",
+    "units": "〖※※※〗",
+    "flag": "竖·上下〔丨 ⿱〕",
+    "segments": "0-2/3-6/7,8"
   },
   {
     "char": "后",
-    "code": "rg",
-    "difficulty": 2
+    "code": "rgkd",
+    "difficulty": 2,
+    "shortCode": "rg/rgk",
+    "units": "〖※※※〗",
+    "flag": "横·杂合〔一 ⿻〕",
+    "segments": "0,1/2/3-5"
   },
   {
     "char": "左",
-    "code": "da",
-    "difficulty": 2
+    "code": "daf",
+    "difficulty": 2,
+    "shortCode": "da",
+    "units": "〖※※〗",
+    "flag": "横·上下〔一 ⿱〕",
+    "segments": "0,1/2-4"
   },
   {
     "char": "右",
-    "code": "dk",
-    "difficulty": 2
+    "code": "dkf",
+    "difficulty": 2,
+    "shortCode": "dk",
+    "units": "〖※※〗",
+    "flag": "横·上下〔一 ⿱〕",
+    "segments": "0,1/2-4"
   },
   {
     "char": "东",
-    "code": "ai",
-    "difficulty": 2
+    "code": "aii",
+    "difficulty": 2,
+    "shortCode": "ai",
+    "units": "〖※※〗",
+    "flag": "捺·杂合〔丶 ⿻〕",
+    "segments": "0,1/2-4"
   },
   {
     "char": "西",
     "code": "sghg",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※※〗",
+    "segments": "0-5/0/1/5"
   },
   {
     "char": "南",
-    "code": "fm",
-    "difficulty": 2
+    "code": "fmuf",
+    "difficulty": 2,
+    "shortCode": "fm/fmu",
+    "units": "〖※※※〗",
+    "segments": "0-1/2-3/4-6/7-8"
   },
   {
     "char": "北",
-    "code": "ux",
-    "difficulty": 2
+    "code": "uxn",
+    "difficulty": 2,
+    "shortCode": "ux",
+    "units": "〖※※〗",
+    "flag": "折·左右〔乛 ⿰〕",
+    "segments": "0-2/3,4"
   },
   {
     "char": "高",
-    "code": "ym",
-    "difficulty": 2
+    "code": "ymkf",
+    "difficulty": 2,
+    "shortCode": "ym/ymk",
+    "units": "〖※※※〗",
+    "flag": "横·上下〔一 ⿱〕",
+    "segments": "0-4/5,6/7-9"
   },
   {
     "char": "低",
-    "code": "wqa",
-    "difficulty": 3
+    "code": "wqay",
+    "difficulty": 3,
+    "shortCode": "wqa",
+    "units": "〖※※※〗",
+    "segments": "0-1/2-3/4-5/6"
   },
   {
     "char": "长",
-    "code": "ta",
-    "difficulty": 2
+    "code": "tayi",
+    "difficulty": 2,
+    "shortCode": "ta/tay",
+    "units": "〖※※※〗",
+    "flag": "捺·杂合〔丶 ⿻〕",
+    "segments": "0/1,2/3"
   },
   {
     "char": "短",
-    "code": "tdg",
-    "difficulty": 2
+    "code": "tdgu",
+    "difficulty": 2,
+    "shortCode": "tdg",
+    "units": "〖※※※〗",
+    "segments": "0-1/2-4/5/9-11"
   },
   {
     "char": "新",
-    "code": "usr",
-    "difficulty": 3
+    "code": "usrh",
+    "difficulty": 3,
+    "shortCode": "usr",
+    "units": "〖※※※〗",
+    "flag": "竖·左右〔丨 ⿰〕",
+    "segments": "0-4/5-8/9-12"
   },
   {
     "char": "旧",
-    "code": "hj",
-    "difficulty": 2
+    "code": "hjg",
+    "difficulty": 2,
+    "shortCode": "hj",
+    "units": "〖※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0/1-4"
   },
   {
     "char": "快",
-    "code": "nnw",
-    "difficulty": 2
+    "code": "nnwy",
+    "difficulty": 2,
+    "shortCode": "nnw",
+    "units": "〖※※※〗",
+    "flag": "捺·左右〔丶 ⿰〕",
+    "segments": "0-2/3-4/5-6"
   },
   {
     "char": "慢",
-    "code": "nj",
-    "difficulty": 2
+    "code": "njlc",
+    "difficulty": 2,
+    "shortCode": "nj/njl",
+    "units": "〖※※※〗",
+    "segments": "0-2/3-6/7-11/12-13"
   },
   {
     "char": "明",
-    "code": "je",
-    "difficulty": 2
+    "code": "jeg",
+    "difficulty": 2,
+    "shortCode": "je",
+    "units": "〖※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0-3/4-7"
   },
   {
     "char": "暗",
-    "code": "ju",
-    "difficulty": 2
+    "code": "jujg",
+    "difficulty": 2,
+    "shortCode": "ju/juj",
+    "units": "〖※※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0-3/4-8/9-12"
   },
   {
     "char": "早",
-    "code": "jh",
-    "difficulty": 2
+    "code": "jhnh",
+    "difficulty": 2,
+    "shortCode": "jh/jhn",
+    "units": "〖※※※〗",
+    "segments": "0-5/0/1/5"
   },
   {
     "char": "晚",
-    "code": "jq",
-    "difficulty": 2
+    "code": "jqkq",
+    "difficulty": 2,
+    "shortCode": "jq/jqk",
+    "units": "〖※※※〗",
+    "segments": "0-3/4-5/6-8/9-10"
   },
   {
     "char": "春",
-    "code": "dw",
-    "difficulty": 2
+    "code": "dwjf",
+    "difficulty": 2,
+    "shortCode": "dw/dwj",
+    "units": "〖※※※〗",
+    "flag": "横·上下〔一 ⿱〕",
+    "segments": "0-2/3-4/5-8"
   },
   {
     "char": "夏",
-    "code": "dht",
-    "difficulty": 2
+    "code": "dhtu",
+    "difficulty": 2,
+    "shortCode": "dht",
+    "units": "〖※※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0-1/2-6/7-9"
   },
   {
     "char": "秋",
-    "code": "to",
-    "difficulty": 2
+    "code": "toy",
+    "difficulty": 2,
+    "shortCode": "to",
+    "units": "〖※※〗",
+    "flag": "捺·左右〔丶 ⿰〕",
+    "segments": "0-4/5-8"
   },
   {
     "char": "冬",
     "code": "tuu",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0-2/3,4"
   },
   {
     "char": "风",
-    "code": "mq",
-    "difficulty": 2
+    "code": "mqi",
+    "difficulty": 2,
+    "shortCode": "mq",
+    "units": "〖※※〗",
+    "flag": "捺·杂合〔丶 ⿻〕",
+    "segments": "0,1/2,3"
   },
   {
     "char": "雨",
     "code": "fghy",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※※〗",
+    "segments": "0-7/0/1/7"
   },
   {
     "char": "雪",
-    "code": "fv",
-    "difficulty": 2
+    "code": "fvf",
+    "difficulty": 2,
+    "shortCode": "fv",
+    "units": "〖※※〗",
+    "flag": "横·上下〔一 ⿱〕",
+    "segments": "0-7/8-10"
   },
   {
     "char": "云",
     "code": "fcu",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0,1/2,3"
   },
   {
     "char": "行",
-    "code": "tf",
-    "difficulty": 2
+    "code": "tfhh",
+    "difficulty": 2,
+    "shortCode": "tf",
+    "units": "〖※※※〗",
+    "flag": "竖·左右〔丨 ⿰〕",
+    "segments": "0-2/3,4/5"
   },
   {
     "char": "走",
     "code": "fhu",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0-2/3-6"
   },
   {
     "char": "跑",
-    "code": "khq",
-    "difficulty": 3
+    "code": "khqn",
+    "difficulty": 3,
+    "shortCode": "khq",
+    "units": "〖※※※〗",
+    "segments": "0-2/3-6/7-8/9-11"
   },
   {
     "char": "吃",
-    "code": "ktn",
-    "difficulty": 2
+    "code": "ktnn",
+    "difficulty": 2,
+    "shortCode": "ktn",
+    "units": "〖※※※〗",
+    "flag": "折·左右〔乛 ⿰〕",
+    "segments": "0-2/3-4/5"
   },
   {
     "char": "喝",
-    "code": "kjq",
-    "difficulty": 2
+    "code": "kjqn",
+    "difficulty": 2,
+    "shortCode": "kjq",
+    "units": "〖※※※〗",
+    "segments": "0-2/3-6/7-8/11"
   },
   {
     "char": "饭",
-    "code": "qnr",
-    "difficulty": 2
+    "code": "qnrc",
+    "difficulty": 2,
+    "shortCode": "qnr",
+    "units": "〖※※※〗",
+    "segments": "0-1/2/3-4/5-6"
   },
   {
     "char": "菜",
-    "code": "ae",
-    "difficulty": 2
+    "code": "aesu",
+    "difficulty": 2,
+    "shortCode": "ae/aes",
+    "units": "〖※※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0-2/3-6/7-10"
   },
   {
     "char": "茶",
-    "code": "aw",
-    "difficulty": 2
+    "code": "awsu",
+    "difficulty": 2,
+    "shortCode": "aws",
+    "units": "〖※※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0-2/3-4/5-8"
   },
   {
     "char": "酒",
     "code": "isgg",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0-2/3-7,9/8"
   },
   {
     "char": "家",
-    "code": "pe",
-    "difficulty": 2
+    "code": "peu",
+    "difficulty": 2,
+    "shortCode": "pe",
+    "units": "〖※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0-2/3-9"
   },
   {
     "char": "住",
     "code": "wygg",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0-1/2/3-6"
   },
   {
     "char": "房",
-    "code": "yny",
-    "difficulty": 2
+    "code": "ynyv",
+    "difficulty": 2,
+    "shortCode": "yny",
+    "moreCode": "⊙ynye",
+    "units": "〖※※※〗",
+    "flag": "折·杂合〔乛 ⿻〕",
+    "segments": "0/1-3/4-7"
   },
   {
     "char": "书",
-    "code": "nnh",
-    "difficulty": 2
+    "code": "nnhy",
+    "difficulty": 2,
+    "shortCode": "nnh",
+    "units": "〖※※※〗",
+    "segments": "0/1/2/3"
   },
   {
     "char": "画",
-    "code": "gl",
-    "difficulty": 2
+    "code": "glbj",
+    "difficulty": 2,
+    "shortCode": "gl/glb",
+    "units": "〖※※※〗",
+    "flag": "竖·上下〔丨 ⿱〕",
+    "segments": "0/1-5/6-7"
   },
   {
     "char": "音",
     "code": "ujf",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※〗",
+    "flag": "横·上下〔一 ⿱〕",
+    "segments": "0-4/5-8"
   },
   {
     "char": "乐",
-    "code": "qi",
-    "difficulty": 2
+    "code": "qii",
+    "difficulty": 2,
+    "shortCode": "qi",
+    "units": "〖※※〗",
+    "flag": "捺·杂合〔丶 ⿻〕",
+    "segments": "0,1/2-4"
   },
   {
     "char": "体",
-    "code": "wsg",
-    "difficulty": 2
+    "code": "wsgg",
+    "difficulty": 2,
+    "shortCode": "wsg",
+    "units": "〖※※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0-1/2-5/6"
   },
   {
     "char": "育",
-    "code": "yce",
-    "difficulty": 2
+    "code": "ycef",
+    "difficulty": 2,
+    "shortCode": "yce",
+    "units": "〖※※※〗",
+    "flag": "横·上下〔一 ⿱〕",
+    "segments": "0-1/2-3/4-7"
   },
   {
     "char": "教",
     "code": "ftbt",
-    "difficulty": 3
+    "difficulty": 3,
+    "units": "〖※※※〗",
+    "segments": "0-2/3/4-6/7-10"
   },
   {
     "char": "师",
-    "code": "jgm",
-    "difficulty": 2
+    "code": "jgmh",
+    "difficulty": 2,
+    "shortCode": "jgm",
+    "units": "〖※※※〗",
+    "segments": "0-1/2/3-4/5"
   },
   {
     "char": "医",
-    "code": "atd",
-    "difficulty": 2
+    "code": "atdi",
+    "difficulty": 2,
+    "shortCode": "atd",
+    "units": "〖※※※〗",
+    "flag": "捺·杂合〔丶 ⿻〕",
+    "segments": "0,6/1-2/3-5"
   },
   {
     "char": "病",
-    "code": "ugm",
-    "difficulty": 2
+    "code": "ugmw",
+    "difficulty": 2,
+    "shortCode": "ugm",
+    "units": "〖※※※〗",
+    "segments": "0-4/5/6-7/8-9"
   },
   {
     "char": "药",
-    "code": "ax",
-    "difficulty": 2
+    "code": "axqy",
+    "difficulty": 2,
+    "shortCode": "ax/axq",
+    "units": "〖※※※〗",
+    "segments": "0-2/3-5/6-7/8"
   },
   {
     "char": "钱",
-    "code": "qg",
-    "difficulty": 2
+    "code": "qgt",
+    "difficulty": 2,
+    "shortCode": "qg",
+    "moreCode": "⊙qgy",
+    "units": "〖※※〗",
+    "flag": "丿·左右〔丿 ⿰〕",
+    "segments": "0-4/5-9"
   },
   {
     "char": "买",
     "code": "nudu",
-    "difficulty": 3
+    "difficulty": 3,
+    "units": "〖※※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0/1-2/3-5"
   },
   {
     "char": "卖",
     "code": "fnud",
-    "difficulty": 3
+    "difficulty": 3,
+    "units": "〖※※※〗",
+    "segments": "0-1/2/3-4/5-7"
   },
   {
     "char": "安",
-    "code": "pv",
-    "difficulty": 2
+    "code": "pvf",
+    "difficulty": 2,
+    "shortCode": "pv",
+    "units": "〖※※〗",
+    "flag": "横·上下〔一 ⿱〕",
+    "segments": "0-2/3-5"
   },
   {
     "char": "全",
-    "code": "wg",
-    "difficulty": 2
+    "code": "wgf",
+    "difficulty": 2,
+    "shortCode": "wg",
+    "units": "〖※※〗",
+    "flag": "横·上下〔一 ⿱〕",
+    "segments": "0,1/2-5"
   },
   {
     "char": "美",
     "code": "ugdu",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0-1/2-5/6-8"
   },
   {
     "char": "爱",
-    "code": "ep",
-    "difficulty": 2
+    "code": "epdc",
+    "difficulty": 2,
+    "shortCode": "ep/epd",
+    "units": "〖※※※〗",
+    "segments": "0-3/4-5/6-7/8-9"
   },
   {
     "char": "想",
-    "code": "shn",
-    "difficulty": 3
+    "code": "shnu",
+    "difficulty": 3,
+    "shortCode": "shn",
+    "units": "〖※※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0-3/4-8/9-12"
   },
   {
     "char": "知",
-    "code": "td",
-    "difficulty": 2
+    "code": "tdkg",
+    "difficulty": 2,
+    "shortCode": "td/tdk",
+    "units": "〖※※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0,1/2-4/5-7"
   },
   {
     "char": "道",
     "code": "uthp",
-    "difficulty": 3
+    "difficulty": 3,
+    "units": "〖※※※〗",
+    "segments": "0-2/3/4-8/9-11"
   },
   {
     "char": "问",
     "code": "ukd",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※〗",
+    "flag": "横·杂合〔一 ⿻〕",
+    "segments": "0-2/3-5"
   },
   {
     "char": "答",
-    "code": "tw",
-    "difficulty": 2
+    "code": "twgk",
+    "difficulty": 2,
+    "shortCode": "tw/twg",
+    "units": "〖※※※〗",
+    "segments": "0-5/6-7/8/9-11"
   },
   {
     "char": "听",
-    "code": "kr",
-    "difficulty": 2
+    "code": "krh",
+    "difficulty": 2,
+    "shortCode": "kr",
+    "units": "〖※※〗",
+    "flag": "竖·左右〔丨 ⿰〕",
+    "segments": "0-2/3-6"
   },
   {
     "char": "见",
     "code": "mqb",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※〗",
+    "flag": "折·上下〔乛 ⿱〕",
+    "segments": "0,1/2,3"
   },
   {
     "char": "远",
-    "code": "fqp",
-    "difficulty": 2
+    "code": "fqpv",
+    "difficulty": 2,
+    "shortCode": "fqp",
+    "units": "〖※※※〗",
+    "flag": "折·杂合〔乛 ⿻〕",
+    "segments": "0-1/2-3/4-6"
   },
   {
     "char": "近",
-    "code": "rp",
-    "difficulty": 2
+    "code": "rpk",
+    "difficulty": 2,
+    "shortCode": "rp",
+    "units": "〖※※〗",
+    "flag": "竖·杂合〔丨 ⿻〕",
+    "segments": "0-3/4-6"
   },
   {
     "char": "真",
-    "code": "fhw",
-    "difficulty": 2
+    "code": "fhwu",
+    "difficulty": 2,
+    "shortCode": "fhw",
+    "units": "〖※※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0-1/2-7/8-9"
   },
   {
     "char": "假",
-    "code": "wnh",
-    "difficulty": 2
+    "code": "wnhc",
+    "difficulty": 2,
+    "shortCode": "wnh",
+    "units": "〖※※※〗",
+    "segments": "0-1/2-3/4/9-11"
   },
   {
     "char": "对",
-    "code": "cf",
-    "difficulty": 2
+    "code": "cfy",
+    "difficulty": 2,
+    "shortCode": "cf",
+    "units": "〖※※〗",
+    "flag": "捺·左右〔丶 ⿰〕",
+    "segments": "0,1/2-4"
   },
   {
     "char": "错",
-    "code": "qaj",
-    "difficulty": 2
+    "code": "qajg",
+    "difficulty": 2,
+    "shortCode": "qaj",
+    "units": "〖※※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0-4/5-8/9-12"
   },
   {
     "char": "红",
-    "code": "xa",
-    "difficulty": 2
+    "code": "xag",
+    "difficulty": 2,
+    "shortCode": "xa",
+    "units": "〖※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0-2/3-5"
   },
   {
     "char": "绿",
-    "code": "xv",
-    "difficulty": 2
+    "code": "xviy",
+    "difficulty": 2,
+    "shortCode": "xv/xvi",
+    "units": "〖※※※〗",
+    "flag": "捺·左右〔丶 ⿰〕",
+    "segments": "0-2/3-5/6-10"
   },
   {
     "char": "蓝",
-    "code": "ajt",
-    "difficulty": 2
+    "code": "ajtl",
+    "difficulty": 2,
+    "shortCode": "ajt",
+    "units": "〖※※※〗",
+    "segments": "0-2/3-4/5-6/8-12"
   },
   {
     "char": "黄",
-    "code": "amw",
-    "difficulty": 2
+    "code": "amwu",
+    "difficulty": 2,
+    "shortCode": "amw",
+    "units": "〖※※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0-3/4-8/9-10"
   },
   {
     "char": "黑",
-    "code": "lfo",
-    "difficulty": 2
+    "code": "lfou",
+    "difficulty": 2,
+    "shortCode": "lfo",
+    "units": "〖※※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0-4/5-7/8-11"
   },
   {
     "char": "香",
     "code": "tjf",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※〗",
+    "flag": "横·上下〔一 ⿱〕",
+    "segments": "0-4/5-8"
   },
   {
     "char": "甜",
-    "code": "tda",
-    "difficulty": 2
+    "code": "tdaf",
+    "difficulty": 2,
+    "units": "〖※※※〗"
   },
   {
     "char": "苦",
     "code": "adf",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※〗",
+    "flag": "横·上下〔一 ⿱〕",
+    "segments": "0-2/3-7"
   },
   {
     "char": "辣",
-    "code": "ugk",
-    "difficulty": 2
+    "code": "ugki",
+    "difficulty": 2,
+    "shortCode": "ugk",
+    "units": "〖※※※〗"
   },
   {
     "char": "冷",
     "code": "uwyc",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※※〗",
+    "segments": "0-1/2-3/4/5-6"
   },
   {
     "char": "热",
     "code": "rvyo",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※※〗",
+    "segments": "0-2/3-4/5/6-9"
   },
   {
     "char": "温",
-    "code": "ijl",
-    "difficulty": 2
+    "code": "ijlg",
+    "difficulty": 2,
+    "shortCode": "ijl",
+    "units": "〖※※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0-2/3-6/7-11"
   },
   {
     "char": "暖",
-    "code": "jef",
-    "difficulty": 2
+    "code": "jefc",
+    "difficulty": 2,
+    "shortCode": "jef",
+    "units": "〖※※※〗",
+    "segments": "0-3/4-7/8-9/11-12"
   },
   {
     "char": "父",
     "code": "wqu",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0,1/2,3"
   },
   {
     "char": "母",
-    "code": "xgu",
-    "difficulty": 2
+    "code": "xgui",
+    "difficulty": 2,
+    "moreCode": "⊙xyyi",
+    "units": "〖※※※〗",
+    "flag": "捺·杂合〔丶 ⿻〕",
+    "segments": "0,1/3/2,4"
   },
   {
     "char": "孩",
     "code": "bynw",
-    "difficulty": 3
+    "difficulty": 3,
+    "units": "〖※※※〗",
+    "segments": "0-2/3-4/5/7-8"
   },
   {
     "char": "朋",
-    "code": "ee",
-    "difficulty": 2
+    "code": "eeg",
+    "difficulty": 2,
+    "shortCode": "ee",
+    "units": "〖※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0-3/4-7"
   },
   {
     "char": "友",
-    "code": "dc",
-    "difficulty": 2
+    "code": "dcu",
+    "difficulty": 2,
+    "shortCode": "dc",
+    "units": "〖※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0,1/2,3"
   },
   {
     "char": "老",
-    "code": "ftx",
-    "difficulty": 2
+    "code": "ftxb",
+    "difficulty": 2,
+    "shortCode": "ftx",
+    "units": "〖※※※〗",
+    "flag": "折·上下〔乛 ⿱〕",
+    "segments": "0-2/3/4-5"
   },
   {
     "char": "作",
-    "code": "wt",
-    "difficulty": 2
+    "code": "wthf",
+    "difficulty": 2,
+    "shortCode": "wt",
+    "units": "〖※※※〗",
+    "segments": "0,1/2,3/4/5,6"
   },
   {
     "char": "休",
-    "code": "ws",
-    "difficulty": 2
+    "code": "wsy",
+    "difficulty": 2,
+    "shortCode": "ws",
+    "units": "〖※※〗",
+    "flag": "捺·左右〔丶 ⿰〕",
+    "segments": "0,1/2-5"
   },
   {
     "char": "息",
-    "code": "thn",
-    "difficulty": 2
+    "code": "thnu",
+    "difficulty": 2,
+    "shortCode": "thn",
+    "units": "〖※※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0/1-5/6-9"
   },
   {
     "char": "读",
-    "code": "yfn",
-    "difficulty": 2
+    "code": "yfnd",
+    "difficulty": 2,
+    "shortCode": "yfn",
+    "units": "〖※※※〗",
+    "segments": "0-1/2-3/4/7-9"
   },
   {
     "char": "文",
     "code": "yygy",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※※〗",
+    "segments": "0-3/0/1/3"
   },
   {
     "char": "化",
-    "code": "wx",
-    "difficulty": 2
+    "code": "wxn",
+    "difficulty": 2,
+    "shortCode": "wx",
+    "units": "〖※※〗",
+    "flag": "折·左右〔乛 ⿰〕",
+    "segments": "0,1/2,3"
   },
   {
     "char": "科",
-    "code": "tu",
-    "difficulty": 2
+    "code": "tufh",
+    "difficulty": 2,
+    "shortCode": "tu",
+    "units": "〖※※※〗",
+    "flag": "竖·左右〔丨 ⿰〕",
+    "segments": "0-4/5-6/7-8"
   },
   {
     "char": "技",
-    "code": "rfc",
-    "difficulty": 2
+    "code": "rfcy",
+    "difficulty": 2,
+    "shortCode": "rfc",
+    "units": "〖※※※〗",
+    "flag": "捺·左右〔丶 ⿰〕",
+    "segments": "0-2/3-4/5-6"
   },
   {
     "char": "数",
-    "code": "ovt",
-    "difficulty": 2
+    "code": "ovty",
+    "difficulty": 2,
+    "shortCode": "ovt",
+    "units": "〖※※※〗",
+    "flag": "捺·左右〔丶 ⿰〕",
+    "segments": "0-5/6-8/9-12"
   },
   {
     "char": "计",
-    "code": "yf",
-    "difficulty": 2
+    "code": "yfh",
+    "difficulty": 2,
+    "shortCode": "yf",
+    "units": "〖※※〗",
+    "flag": "竖·左右〔丨 ⿰〕",
+    "segments": "0,1/2,3"
   },
   {
     "char": "算",
-    "code": "tha",
-    "difficulty": 2
+    "code": "thaj",
+    "difficulty": 2,
+    "shortCode": "tha",
+    "units": "〖※※※〗",
+    "flag": "竖·上下〔丨 ⿱〕",
+    "segments": "0-5/6-10/11-13"
   },
   {
     "char": "机",
-    "code": "sm",
-    "difficulty": 2
+    "code": "smn",
+    "difficulty": 2,
+    "shortCode": "sm",
+    "units": "〖※※〗",
+    "flag": "折·左右〔乛 ⿰〕",
+    "segments": "0-3/4,5"
   },
   {
     "char": "网",
-    "code": "mqq",
-    "difficulty": 2
+    "code": "mqqi",
+    "difficulty": 2,
+    "shortCode": "mqq",
+    "units": "〖※※※〗",
+    "flag": "捺·杂合〔丶 ⿻〕",
+    "segments": "0-1/2-3/4-5"
   },
   {
     "char": "络",
-    "code": "xtk",
-    "difficulty": 2
+    "code": "xtkg",
+    "difficulty": 2,
+    "shortCode": "xtk",
+    "units": "〖※※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0-2/3-5/6-8"
   },
   {
     "char": "世",
-    "code": "an",
-    "difficulty": 2
+    "code": "anv",
+    "difficulty": 2,
+    "shortCode": "an",
+    "units": "〖※※〗",
+    "flag": "折·杂合〔乛 ⿻〕",
+    "segments": "0-3/4"
   },
   {
     "char": "界",
-    "code": "lwj",
-    "difficulty": 2
+    "code": "lwjj",
+    "difficulty": 2,
+    "shortCode": "lwj",
+    "units": "〖※※※〗",
+    "flag": "竖·上下〔丨 ⿱〕",
+    "segments": "0-4/5-6/7-8"
   },
   {
     "char": "华",
-    "code": "wxf",
-    "difficulty": 2
+    "code": "wxfj",
+    "difficulty": 2,
+    "shortCode": "wxf",
+    "units": "〖※※※〗",
+    "flag": "竖·上下〔丨 ⿱〕",
+    "segments": "0-1/2-3/4-5"
   },
   {
     "char": "族",
-    "code": "ytt",
-    "difficulty": 2
+    "code": "yttd",
+    "difficulty": 2,
+    "shortCode": "ytt",
+    "units": "〖※※※〗",
+    "segments": "0-3/4-5/6-7/8-10"
   },
   {
     "char": "政",
-    "code": "ght",
-    "difficulty": 2
+    "code": "ghty",
+    "difficulty": 2,
+    "shortCode": "ght",
+    "units": "〖※※※〗",
+    "flag": "捺·左右〔丶 ⿰〕",
+    "segments": "0/1-4/5-8"
   },
   {
     "char": "府",
-    "code": "ywf",
-    "difficulty": 3
+    "code": "ywfi",
+    "difficulty": 3,
+    "shortCode": "ywf",
+    "units": "〖※※※〗",
+    "flag": "捺·杂合〔丶 ⿻〕",
+    "segments": "0-2/3-4/5-7"
   },
   {
     "char": "法",
-    "code": "if",
-    "difficulty": 2
+    "code": "ifcy",
+    "difficulty": 2,
+    "shortCode": "if/ifc",
+    "units": "〖※※※〗",
+    "flag": "捺·左右〔丶 ⿰〕",
+    "segments": "0-2/3-5/6,7"
   },
   {
     "char": "律",
     "code": "tvfh",
-    "difficulty": 3
+    "difficulty": 3,
+    "units": "〖※※※〗",
+    "segments": "0-2/3-5/6-7/8"
   },
   {
     "char": "公",
-    "code": "wc",
-    "difficulty": 2
+    "code": "wcu",
+    "difficulty": 2,
+    "shortCode": "wc",
+    "units": "〖※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0,1/2,3"
   },
   {
     "char": "司",
-    "code": "ngk",
-    "difficulty": 2
+    "code": "ngkd",
+    "difficulty": 2,
+    "shortCode": "ngk",
+    "units": "〖※※※〗",
+    "flag": "横·杂合〔一 ⿻〕",
+    "segments": "0/1/2-4"
   },
   {
     "char": "企",
     "code": "whf",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※〗",
+    "flag": "横·上下〔一 ⿱〕",
+    "segments": "0,1/2-5"
   },
   {
     "char": "业",
-    "code": "og",
-    "difficulty": 2
+    "code": "ogd",
+    "difficulty": 2,
+    "shortCode": "og",
+    "units": "〖※※〗",
+    "flag": "横·杂合〔一 ⿻〕",
+    "segments": "0-3/4"
   },
   {
     "char": "济",
-    "code": "iyj",
-    "difficulty": 2
+    "code": "iyjh",
+    "difficulty": 2,
+    "shortCode": "iyj",
+    "units": "〖※※※〗",
+    "flag": "竖·左右〔丨 ⿰〕",
+    "segments": "0-2/3-6/7-8"
   },
   {
     "char": "市",
     "code": "ymhj",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※※〗",
+    "flag": "竖·上下〔丨 ⿱〕",
+    "segments": "0,1/2,3/4"
   },
   {
     "char": "场",
     "code": "fnrt",
-    "difficulty": 3
+    "difficulty": 3,
+    "units": "〖※※※〗",
+    "flag": "丿·左右〔丿 ⿰〕",
+    "segments": "0-2/3/4-5"
   },
   {
     "char": "银",
-    "code": "qve",
-    "difficulty": 2
+    "code": "qvey",
+    "difficulty": 2,
+    "shortCode": "qve",
+    "units": "〖※※※〗",
+    "flag": "捺·左右〔丶 ⿰〕",
+    "segments": "0-4/5-7/8-10"
   },
   {
     "char": "铁",
-    "code": "qr",
-    "difficulty": 2
+    "code": "qrwy",
+    "difficulty": 2,
+    "shortCode": "qr/qrw",
+    "units": "〖※※※〗",
+    "flag": "捺·左右〔丶 ⿰〕",
+    "segments": "0-4/5-7/8-9"
   },
   {
     "char": "钢",
-    "code": "qmq",
-    "difficulty": 2
+    "code": "qmqy",
+    "difficulty": 2,
+    "shortCode": "qmq",
+    "units": "〖※※※〗",
+    "flag": "捺·左右〔丶 ⿰〕",
+    "segments": "0-4/5-6/7-8"
   },
   {
     "char": "纸",
-    "code": "xqa",
-    "difficulty": 2
+    "code": "xqan",
+    "difficulty": 2,
+    "shortCode": "xqa",
+    "units": "〖※※※〗",
+    "flag": "折·左右〔乛 ⿰〕",
+    "segments": "0-2/3-4/5-6"
   },
   {
     "char": "笔",
-    "code": "tt",
-    "difficulty": 2
+    "code": "ttfn",
+    "difficulty": 2,
+    "shortCode": "tt/ttf",
+    "units": "〖※※※〗",
+    "segments": "0-5/6/7-8/9"
   },
   {
     "char": "桌",
-    "code": "hjs",
-    "difficulty": 2
+    "code": "hjsu",
+    "difficulty": 2,
+    "shortCode": "hjs",
+    "units": "〖※※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0-1/2-5/6-9"
   },
   {
     "char": "椅",
-    "code": "sds",
-    "difficulty": 2
+    "code": "sdsk",
+    "difficulty": 2,
+    "shortCode": "sds",
+    "units": "〖※※※〗"
   },
   {
     "char": "灯",
-    "code": "os",
-    "difficulty": 2
+    "code": "osh",
+    "difficulty": 2,
+    "shortCode": "os",
+    "units": "〖※※〗",
+    "flag": "竖·左右〔丨 ⿰〕",
+    "segments": "0-3/4,5"
   },
   {
     "char": "光",
-    "code": "iq",
-    "difficulty": 2
+    "code": "iqb",
+    "difficulty": 2,
+    "shortCode": "iq",
+    "units": "〖※※〗",
+    "flag": "折·上下〔乛 ⿱〕",
+    "segments": "0-3/4,5"
   },
   {
     "char": "影",
     "code": "jyie",
-    "difficulty": 3
+    "difficulty": 3,
+    "units": "〖※※※〗",
+    "segments": "0-3/4-8/9-11/12-14"
   },
   {
     "char": "声",
     "code": "fnr",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※〗",
+    "flag": "丿·上下〔丿 ⿱〕",
+    "segments": "0-2/3-6"
   },
   {
     "char": "感",
-    "code": "dgin",
-    "difficulty": 3
+    "code": "dgkn",
+    "difficulty": 3,
+    "units": "〖※※※〗",
+    "segments": "0-1/2/3-5/9-12"
   },
   {
     "char": "情",
-    "code": "nge",
-    "difficulty": 2
+    "code": "ngeg",
+    "difficulty": 2,
+    "shortCode": "nge",
+    "units": "〖※※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0-2/3-6/7-10"
   },
   {
     "char": "思",
-    "code": "ln",
-    "difficulty": 2
+    "code": "lnu",
+    "difficulty": 2,
+    "shortCode": "ln",
+    "units": "〖※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0-4/5-8"
   },
   {
     "char": "意",
-    "code": "ujn",
-    "difficulty": 2
+    "code": "ujnu",
+    "difficulty": 2,
+    "shortCode": "ujn",
+    "units": "〖※※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0-4/5-8/9-12"
   },
   {
     "char": "愿",
     "code": "drin",
-    "difficulty": 3
+    "difficulty": 3,
+    "units": "〖※※※〗",
+    "segments": "0-1/2-6/7-9/11-13"
   },
   {
     "char": "记",
-    "code": "yn",
-    "difficulty": 2
+    "code": "ynn",
+    "difficulty": 2,
+    "shortCode": "yn",
+    "units": "〖※※〗",
+    "flag": "折·左右〔乛 ⿰〕",
+    "segments": "0,1/2-4"
   },
   {
     "char": "忆",
-    "code": "nn",
-    "difficulty": 2
+    "code": "nnn",
+    "difficulty": 2,
+    "shortCode": "nn",
+    "units": "〖※※〗",
+    "flag": "折·左右〔乛 ⿰〕",
+    "segments": "0-2/3"
   },
   {
     "char": "忘",
     "code": "ynnu",
-    "difficulty": 3
+    "difficulty": 3,
+    "units": "〖※※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0-1/2/3-6"
   },
   {
     "char": "忙",
     "code": "nynn",
-    "difficulty": 2
+    "difficulty": 2,
+    "shortCode": "nyn",
+    "units": "〖※※※〗",
+    "flag": "折·左右〔乛 ⿰〕",
+    "segments": "0-2/3-4/5"
   },
   {
     "char": "急",
-    "code": "qvn",
-    "difficulty": 2
+    "code": "qvnu",
+    "difficulty": 2,
+    "shortCode": "qvn",
+    "units": "〖※※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0-1/2-4/5-8"
   },
   {
     "char": "怕",
-    "code": "nr",
-    "difficulty": 2
+    "code": "nrg",
+    "difficulty": 2,
+    "shortCode": "nr",
+    "units": "〖※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0-2/3-7"
   },
   {
     "char": "惊",
     "code": "nyiy",
-    "difficulty": 3
+    "difficulty": 3,
+    "units": "〖※※※〗",
+    "flag": "捺·左右〔丶 ⿰〕",
+    "segments": "0-2/3-7/8-10"
   },
   {
     "char": "喜",
-    "code": "fku",
-    "difficulty": 2
+    "code": "fkuk",
+    "difficulty": 2,
+    "shortCode": "fku",
+    "units": "〖※※※〗",
+    "segments": "0-2/3-5/6-8/9-11"
   },
   {
     "char": "怒",
-    "code": "vcn",
-    "difficulty": 3
+    "code": "vcnu",
+    "difficulty": 3,
+    "shortCode": "vcn",
+    "units": "〖※※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0-2/3-4/5-8"
   },
   {
     "char": "哀",
     "code": "yeu",
-    "difficulty": 3
+    "difficulty": 3,
+    "units": "〖※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0-4/5-8"
   },
   {
     "char": "悲",
     "code": "djdn",
-    "difficulty": 3
+    "difficulty": 3,
+    "moreCode": "⊙hdhn",
+    "units": "〖※※※〗",
+    "segments": "1-3/0,4/5-7/8-11"
   },
   {
     "char": "欢",
-    "code": "cqw",
-    "difficulty": 2
+    "code": "cqwy",
+    "difficulty": 2,
+    "shortCode": "cqw",
+    "units": "〖※※※〗",
+    "flag": "捺·左右〔丶 ⿰〕",
+    "segments": "0-1/2-3/4-5"
   },
   {
     "char": "迎",
-    "code": "qbp",
-    "difficulty": 2
+    "code": "qbpk",
+    "difficulty": 2,
+    "shortCode": "qbp",
+    "moreCode": "pyfg",
+    "units": "〖※※※〗",
+    "flag": "竖·杂合〔丨 ⿻〕",
+    "segments": "0-1/2-3/4-6"
   },
   {
     "char": "送",
-    "code": "udp",
-    "difficulty": 2
+    "code": "udpi",
+    "difficulty": 2,
+    "shortCode": "udp",
+    "units": "〖※※※〗",
+    "flag": "捺·杂合〔丶 ⿻〕",
+    "segments": "0-2/3-5/6-8"
   },
   {
     "char": "谢",
-    "code": "ytm",
-    "difficulty": 3
+    "code": "ytmf",
+    "difficulty": 3,
+    "shortCode": "ytm",
+    "units": "〖※※※〗",
+    "segments": "0-1/2/3-4/9-11"
   },
   {
     "char": "请",
-    "code": "yge",
-    "difficulty": 2
+    "code": "ygeg",
+    "difficulty": 2,
+    "shortCode": "yge",
+    "units": "〖※※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0-1/2-5/6-9"
   },
   {
     "char": "帮",
-    "code": "dt",
-    "difficulty": 2
+    "code": "dtbh",
+    "difficulty": 2,
+    "shortCode": "dt",
+    "units": "〖※※※〗",
+    "segments": "0-2/3/4-5/8"
   },
   {
     "char": "助",
-    "code": "egl",
-    "difficulty": 2
+    "code": "egln",
+    "difficulty": 2,
+    "shortCode": "egl",
+    "moreCode": "⊙eglt",
+    "units": "〖※※※〗",
+    "flag": "折·左右〔乛 ⿰〕",
+    "segments": "0-3/4/5-6"
   },
   {
     "char": "支",
-    "code": "fc",
-    "difficulty": 2
+    "code": "fcu",
+    "difficulty": 2,
+    "shortCode": "fc",
+    "units": "〖※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0,1/2,3"
   },
   {
     "char": "持",
-    "code": "rf",
-    "difficulty": 2
+    "code": "rffy",
+    "difficulty": 2,
+    "shortCode": "rf/rff",
+    "units": "〖※※※〗",
+    "flag": "捺·左右〔丶 ⿰〕",
+    "segments": "0-2/3-5/6-8"
   },
   {
     "char": "保",
-    "code": "wk",
-    "difficulty": 2
+    "code": "wksy",
+    "difficulty": 2,
+    "shortCode": "wk/wks",
+    "units": "〖※※※〗",
+    "flag": "捺·左右〔丶 ⿰〕",
+    "segments": "0-1/2-4/5-8"
   },
   {
     "char": "护",
-    "code": "ryn",
-    "difficulty": 2
+    "code": "rynt",
+    "difficulty": 2,
+    "shortCode": "ryn",
+    "units": "〖※※※〗",
+    "flag": "丿·左右〔丿 ⿰〕",
+    "segments": "0-2/3/4-6"
   },
   {
     "char": "环",
-    "code": "ggi",
-    "difficulty": 2
+    "code": "ggiy",
+    "difficulty": 2,
+    "shortCode": "ggi",
+    "units": "〖※※※〗",
+    "flag": "捺·左右〔丶 ⿰〕",
+    "segments": "0-3/4/5-7"
   },
   {
     "char": "境",
-    "code": "fuj",
-    "difficulty": 2
+    "code": "fujq",
+    "difficulty": 2,
+    "shortCode": "fuj",
+    "units": "〖※※※〗",
+    "segments": "0-2/3-7/8-11/12-13"
   },
   {
     "char": "自",
     "code": "thd",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※〗",
+    "flag": "横·杂合〔一 ⿻〕",
+    "segments": "0/1-5"
   },
   {
     "char": "然",
-    "code": "qd",
-    "difficulty": 2
+    "code": "qdou",
+    "difficulty": 2,
+    "shortCode": "qd/qdo",
+    "units": "〖※※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0-3/4-7/8-11"
   },
   {
     "char": "信",
-    "code": "wy",
-    "difficulty": 2
+    "code": "wyg",
+    "difficulty": 2,
+    "shortCode": "wy",
+    "units": "〖※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0,1/2-8"
   },
   {
     "char": "任",
-    "code": "wtf",
-    "difficulty": 2
+    "code": "wtfg",
+    "difficulty": 2,
+    "shortCode": "wtf",
+    "units": "〖※※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0-1/2/3-5"
   },
   {
     "char": "希",
-    "code": "qdm",
-    "difficulty": 2
+    "code": "qdmh",
+    "difficulty": 2,
+    "shortCode": "qdm",
+    "units": "〖※※※〗",
+    "segments": "0-1/2-3/4-5/6"
   },
   {
     "char": "望",
     "code": "yneg",
-    "difficulty": 3
+    "difficulty": 3,
+    "units": "〖※※※〗",
+    "segments": "0-1/2/3-6/7-10"
   },
   {
     "char": "梦",
-    "code": "ssq",
-    "difficulty": 2
+    "code": "ssqu",
+    "difficulty": 2,
+    "shortCode": "ssq",
+    "units": "〖※※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0-3/4-7/8-10"
   },
   {
     "char": "追",
     "code": "wnnp",
-    "difficulty": 3
+    "difficulty": 3,
+    "units": "〖※※※〗",
+    "segments": "0-1/2-3/4-5/6-8"
   },
   {
     "char": "赶",
     "code": "fhfk",
-    "difficulty": 3
+    "difficulty": 3,
+    "units": "〖※※※〗",
+    "flag": "竖·杂合〔丨 ⿻〕",
+    "segments": "0-2/3-6/7-9"
   },
   {
     "char": "超",
-    "code": "fhv",
-    "difficulty": 2
+    "code": "fhvk",
+    "difficulty": 2,
+    "shortCode": "fhv",
+    "units": "〖※※※〗",
+    "segments": "0-2/3-6/7-8/9-11"
   },
   {
     "char": "越",
-    "code": "fha",
-    "difficulty": 2
+    "code": "fhat",
+    "difficulty": 2,
+    "shortCode": "fha",
+    "moreCode": "⊙fhay",
+    "units": "〖※※※〗",
+    "segments": "0-2/3-6/7-8/10"
   },
   {
     "char": "赢",
     "code": "ynky",
-    "difficulty": 3
+    "difficulty": 3,
+    "units": "〖※※※〗",
+    "segments": "0-1/2/3-5/16"
   },
   {
     "char": "输",
-    "code": "lwg",
-    "difficulty": 3
+    "code": "lwgj",
+    "difficulty": 3,
+    "shortCode": "lwg",
+    "units": "〖※※※〗",
+    "segments": "0-3/4-5/6/11-12"
   },
   {
     "char": "胜",
-    "code": "etg",
-    "difficulty": 2
+    "code": "etgg",
+    "difficulty": 2,
+    "shortCode": "etg",
+    "units": "〖※※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0-3/4/5-8"
   },
   {
     "char": "败",
     "code": "mty",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※〗",
+    "flag": "捺·左右〔丶 ⿰〕",
+    "segments": "0-3/4-7"
   },
   {
     "char": "战",
-    "code": "hka",
-    "difficulty": 2
+    "code": "hkat",
+    "difficulty": 2,
+    "shortCode": "hka",
+    "moreCode": "⊙hkay",
+    "units": "〖※※※〗",
+    "flag": "丿·左右〔丿 ⿰〕",
+    "segments": "*0-1/2-4/5-8"
   },
   {
     "char": "争",
-    "code": "qvh",
-    "difficulty": 2
+    "code": "qvhj",
+    "difficulty": 2,
+    "shortCode": "qv/qvh",
+    "units": "〖※※※〗",
+    "flag": "竖·上下〔丨 ⿱〕",
+    "segments": "0-1/2-4/5"
   },
   {
     "char": "斗",
     "code": "ufk",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※〗",
+    "flag": "竖·杂合〔丨 ⿻〕",
+    "segments": "0,1/2,3"
   },
   {
     "char": "平",
-    "code": "gu",
-    "difficulty": 2
+    "code": "guhk",
+    "difficulty": 2,
+    "shortCode": "gu/guh",
+    "units": "〖※※※〗",
+    "flag": "竖·杂合〔丨 ⿻〕",
+    "segments": "0/1-3/4"
   },
   {
     "char": "强",
-    "code": "xk",
-    "difficulty": 2
+    "code": "xkjy",
+    "difficulty": 2,
+    "shortCode": "xk/xkj",
+    "units": "〖※※※〗",
+    "flag": "捺·左右〔丶 ⿰〕",
+    "segments": "0-2/3-5/6-11"
   },
   {
     "char": "弱",
-    "code": "xu",
-    "difficulty": 2
+    "code": "xuxu",
+    "difficulty": 2,
+    "shortCode": "xu/xux",
+    "units": "〖※※※〗",
+    "segments": "0-2/3-4/5-7/8-9"
   },
   {
     "char": "富",
-    "code": "pgk",
-    "difficulty": 2
+    "code": "pgkl",
+    "difficulty": 2,
+    "shortCode": "pgk",
+    "units": "〖※※※〗",
+    "segments": "0-2/3/4-6/7-11"
   },
   {
     "char": "穷",
-    "code": "pwl",
-    "difficulty": 2
+    "code": "pwlb",
+    "difficulty": 2,
+    "shortCode": "pwl",
+    "moreCode": "⊙pwlr",
+    "units": "〖※※※〗",
+    "flag": "折·上下〔乛 ⿱〕",
+    "segments": "0-2/3-4/5-6"
   },
   {
     "char": "贵",
     "code": "khgm",
-    "difficulty": 3
+    "difficulty": 3,
+    "units": "〖※※※〗",
+    "segments": "0-2/3/4/5-8"
   },
   {
     "char": "贱",
     "code": "mgt",
-    "difficulty": 3
+    "difficulty": 3,
+    "moreCode": "⊙mgy",
+    "units": "〖※※〗",
+    "flag": "丿·左右〔丿 ⿰〕",
+    "segments": "0-3/4-8"
   },
   {
     "char": "善",
     "code": "uduk",
-    "difficulty": 3
+    "difficulty": 3,
+    "units": "〖※※※〗",
+    "segments": "0-1/2-5/6-8/9-11"
   },
   {
     "char": "恶",
     "code": "gogn",
-    "difficulty": 3
+    "difficulty": 3,
+    "units": "〖※※※〗",
+    "segments": "0/1-4/5/6-9"
   },
   {
     "char": "正",
     "code": "ghd",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※〗",
+    "flag": "横·杂合〔一 ⿻〕",
+    "segments": "0/1-4"
   },
   {
     "char": "邪",
     "code": "ahtb",
-    "difficulty": 3
+    "difficulty": 3,
+    "units": "〖※※※〗"
   },
   {
     "char": "清",
-    "code": "ige",
-    "difficulty": 2
+    "code": "igeg",
+    "difficulty": 2,
+    "shortCode": "ige",
+    "units": "〖※※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0-2/3-6/7-10"
   },
   {
     "char": "洁",
-    "code": "ifk",
-    "difficulty": 2
+    "code": "ifkg",
+    "difficulty": 2,
+    "shortCode": "ifk",
+    "units": "〖※※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0-2/3-5/6-8"
   },
   {
     "char": "净",
-    "code": "uqv",
-    "difficulty": 2
+    "code": "uqvh",
+    "difficulty": 2,
+    "shortCode": "uqv",
+    "units": "〖※※※〗",
+    "segments": "0-1/2-3/4-6/7"
   },
   {
     "char": "脏",
-    "code": "eyf",
-    "difficulty": 2
+    "code": "eyfg",
+    "difficulty": 2,
+    "shortCode": "eyf",
+    "units": "〖※※※〗",
+    "flag": "横·左右〔一 ⿰〕"
   },
   {
     "char": "乱",
-    "code": "tdn",
-    "difficulty": 2
+    "code": "tdnn",
+    "difficulty": 2,
+    "shortCode": "tdn",
+    "units": "〖※※※〗",
+    "flag": "折·左右〔乛 ⿰〕",
+    "segments": "0/1-5/6"
   },
   {
     "char": "整",
     "code": "gkih",
-    "difficulty": 3
+    "difficulty": 3,
+    "units": "〖※※※〗",
+    "segments": "0/1-3/4-6/12-15"
   },
   {
     "char": "齐",
     "code": "yjj",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※〗",
+    "flag": "竖·上下〔丨 ⿱〕",
+    "segments": "0-3/4,5"
   },
   {
     "char": "简",
-    "code": "tuj",
-    "difficulty": 2
+    "code": "tujf",
+    "difficulty": 2,
+    "shortCode": "tuj",
+    "units": "〖※※※〗",
+    "flag": "横·上下〔一 ⿱〕",
+    "segments": "0-5/6-8/9-12"
   },
   {
     "char": "单",
     "code": "ujfj",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※※〗",
+    "flag": "竖·上下〔丨 ⿱〕",
+    "segments": "0-1/2-5/6-7"
   },
   {
     "char": "复",
-    "code": "tjt",
-    "difficulty": 2
+    "code": "tjtu",
+    "difficulty": 2,
+    "shortCode": "tjt",
+    "units": "〖※※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0-1/2-5/6-8"
   },
   {
     "char": "杂",
-    "code": "vs",
-    "difficulty": 2
+    "code": "vsu",
+    "difficulty": 2,
+    "shortCode": "vs",
+    "units": "〖※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0,1/2-5"
   },
   {
     "char": "难",
-    "code": "cw",
-    "difficulty": 2
+    "code": "cwyg",
+    "difficulty": 2,
+    "shortCode": "cw/cwy",
+    "units": "〖※※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0-1/2-3/4-9"
   },
   {
     "char": "易",
-    "code": "jqr",
-    "difficulty": 2
+    "code": "jqrr",
+    "difficulty": 2,
+    "shortCode": "jqr",
+    "units": "〖※※※〗",
+    "flag": "丿·上下〔丿 ⿱〕",
+    "segments": "0-3/4-5/6-7"
   },
   {
     "char": "变",
-    "code": "yo",
-    "difficulty": 2
+    "code": "yocu",
+    "difficulty": 2,
+    "shortCode": "yo/yoc",
+    "units": "〖※※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0-1/2-5/6-7"
   },
   {
     "char": "深",
-    "code": "ipw",
-    "difficulty": 2
+    "code": "ipws",
+    "difficulty": 2,
+    "shortCode": "ipw",
+    "units": "〖※※※〗",
+    "segments": "0-2/3-4/5-6/7-10"
   },
   {
     "char": "浅",
     "code": "igt",
-    "difficulty": 2
+    "difficulty": 2,
+    "moreCode": "⊙igy",
+    "units": "〖※※〗",
+    "flag": "丿·左右〔丿 ⿰〕"
   },
   {
     "char": "厚",
-    "code": "djb",
-    "difficulty": 2
+    "code": "djbd",
+    "difficulty": 2,
+    "shortCode": "djb",
+    "units": "〖※※※〗",
+    "flag": "横·杂合〔一 ⿻〕",
+    "segments": "0-1/2-5/6-8"
   },
   {
     "char": "薄",
-    "code": "aig",
-    "difficulty": 3
+    "code": "aigf",
+    "difficulty": 3,
+    "shortCode": "aig",
+    "units": "〖※※※〗",
+    "segments": "0-2/3-5/6/13-15"
   },
   {
     "char": "胖",
-    "code": "euf",
-    "difficulty": 2
+    "code": "eufh",
+    "difficulty": 2,
+    "shortCode": "euf",
+    "units": "〖※※※〗",
+    "flag": "竖·左右〔丨 ⿰〕"
   },
   {
     "char": "瘦",
-    "code": "uvh",
-    "difficulty": 2
+    "code": "uvhc",
+    "difficulty": 2,
+    "shortCode": "uvh",
+    "units": "〖※※※〗"
   },
   {
     "char": "丑",
     "code": "nfd",
-    "difficulty": 2
+    "difficulty": 2,
+    "moreCode": "⊙nhfd",
+    "units": "〖※※〗",
+    "flag": "横·杂合〔一 ⿻〕",
+    "segments": "0/1-3"
   },
   {
     "char": "粗",
-    "code": "oe",
-    "difficulty": 2
+    "code": "oegg",
+    "difficulty": 2,
+    "shortCode": "oe/oeg",
+    "units": "〖※※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0-5/6-9/10"
   },
   {
     "char": "细",
-    "code": "xl",
-    "difficulty": 2
+    "code": "xlg",
+    "difficulty": 2,
+    "shortCode": "xl",
+    "units": "〖※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0-2/3-7"
   },
   {
     "char": "硬",
-    "code": "dgj",
-    "difficulty": 2
+    "code": "dgjq",
+    "difficulty": 2,
+    "shortCode": "dgj",
+    "units": "〖※※※〗",
+    "segments": "0-4/5/6-9/10-11"
   },
   {
     "char": "软",
-    "code": "lqw",
-    "difficulty": 2
+    "code": "lqwy",
+    "difficulty": 2,
+    "shortCode": "lqw",
+    "units": "〖※※※〗",
+    "flag": "捺·左右〔丶 ⿰〕",
+    "segments": "0-3/4-5/6-7"
   },
   {
     "char": "轻",
-    "code": "lc",
-    "difficulty": 2
+    "code": "lcag",
+    "difficulty": 2,
+    "shortCode": "lc/lca",
+    "units": "〖※※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0-3/4-5/6-8"
   },
   {
     "char": "重",
-    "code": "tgj",
-    "difficulty": 2
+    "code": "tgjf",
+    "difficulty": 2,
+    "shortCode": "tgj",
+    "units": "〖※※※〗",
+    "segments": "0/1/2-5/6-8"
   },
   {
     "char": "干",
     "code": "fggh",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※※〗",
+    "segments": "0-2/0/1/2"
   },
   {
     "char": "湿",
-    "code": "ijo",
-    "difficulty": 2
+    "code": "ijog",
+    "difficulty": 2,
+    "shortCode": "ijo",
+    "units": "〖※※※〗"
   },
   {
     "char": "燥",
-    "code": "okk",
-    "difficulty": 2
+    "code": "okks",
+    "difficulty": 2,
+    "shortCode": "okk",
+    "units": "〖※※※〗"
   },
   {
     "char": "精",
-    "code": "oge",
-    "difficulty": 2
+    "code": "ogeg",
+    "difficulty": 2,
+    "shortCode": "oge",
+    "units": "〖※※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0-5/6-9/10-13"
   },
   {
     "char": "神",
-    "code": "pyj",
-    "difficulty": 2
+    "code": "pyjh",
+    "difficulty": 2,
+    "shortCode": "pyj",
+    "units": "〖※※※〗",
+    "segments": "0-2/3/4-7/8"
   },
   {
     "char": "健",
-    "code": "wvf",
-    "difficulty": 2
+    "code": "wvfp",
+    "difficulty": 2,
+    "shortCode": "wvf",
+    "units": "〖※※※〗",
+    "segments": "0-1/2-4/5-6/8-9"
   },
   {
     "char": "康",
-    "code": "yvi",
-    "difficulty": 2
+    "code": "yvii",
+    "difficulty": 2,
+    "shortCode": "yvi",
+    "units": "〖※※※〗",
+    "flag": "捺·杂合〔丶 ⿻〕",
+    "segments": "0-2/3-5/6-10"
   },
   {
     "char": "壮",
     "code": "ufg",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0-2/3-5"
   },
   {
     "char": "勇",
-    "code": "cel",
-    "difficulty": 2
+    "code": "celb",
+    "difficulty": 2,
+    "shortCode": "cel",
+    "moreCode": "⊙celr",
+    "units": "〖※※※〗",
+    "flag": "折·上下〔乛 ⿱〕",
+    "segments": "0-1/2-6/7-8"
   },
   {
     "char": "敢",
-    "code": "nbt",
-    "difficulty": 2
+    "code": "nbty",
+    "difficulty": 2,
+    "shortCode": "nb/nbt",
+    "units": "〖※※※〗",
+    "flag": "捺·左右〔丶 ⿰〕",
+    "segments": "0/1-6/7-10"
   },
   {
     "char": "创",
-    "code": "wbj",
-    "difficulty": 2
+    "code": "wbjh",
+    "difficulty": 2,
+    "shortCode": "wbj",
+    "units": "〖※※※〗",
+    "flag": "竖·左右〔丨 ⿰〕",
+    "segments": "0-1/2-3/4-5"
   },
   {
     "char": "展",
-    "code": "nae",
-    "difficulty": 2
+    "code": "naei",
+    "difficulty": 2,
+    "shortCode": "nae",
+    "units": "〖※※※〗",
+    "flag": "捺·杂合〔丶 ⿻〕",
+    "segments": "0-2/3-6/7-9"
   },
   {
     "char": "进",
-    "code": "fj",
-    "difficulty": 2
+    "code": "fjpk",
+    "difficulty": 2,
+    "shortCode": "fj/fjp",
+    "units": "〖※※※〗",
+    "flag": "竖·杂合〔丨 ⿻〕",
+    "segments": "0,1/2,3/4-6"
   },
   {
     "char": "步",
-    "code": "hi",
-    "difficulty": 2
+    "code": "hir",
+    "difficulty": 2,
+    "shortCode": "hi",
+    "units": "〖※※〗",
+    "flag": "丿·上下〔丿 ⿱〕",
+    "segments": "0-3/4-6"
   },
   {
     "char": "改",
     "code": "nty",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※〗",
+    "flag": "捺·左右〔丶 ⿰〕",
+    "segments": "0-2/3-6"
   },
   {
     "char": "革",
-    "code": "af",
-    "difficulty": 2
+    "code": "afj",
+    "difficulty": 2,
+    "shortCode": "af",
+    "units": "〖※※〗",
+    "flag": "竖·上下〔丨 ⿱〕",
+    "segments": "0-3/4-8"
   },
   {
     "char": "稳",
-    "code": "tqv",
-    "difficulty": 2
+    "code": "tqvn",
+    "difficulty": 2,
+    "shortCode": "tqv",
+    "units": "〖※※※〗",
+    "segments": "0-4/5-6/7-9/10-13"
   },
   {
     "char": "定",
-    "code": "pg",
-    "difficulty": 2
+    "code": "pghu",
+    "difficulty": 2,
+    "shortCode": "pg/pgh",
+    "units": "〖※※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0-2/3/4-7"
   },
   {
     "char": "团",
-    "code": "lft",
-    "difficulty": 2
+    "code": "lfte",
+    "difficulty": 2,
+    "shortCode": "lft",
+    "units": "〖※※※〗",
+    "flag": "丿·杂合〔丿 ⿻〕",
+    "segments": "0-1,5/2-3/4"
   },
   {
     "char": "结",
-    "code": "xf",
-    "difficulty": 2
+    "code": "xfkg",
+    "difficulty": 2,
+    "shortCode": "xf/xfk",
+    "units": "〖※※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0-2/3-5/6-8"
   },
   {
     "char": "合",
-    "code": "wgk",
-    "difficulty": 2
+    "code": "wgkf",
+    "difficulty": 2,
+    "shortCode": "wgk",
+    "units": "〖※※※〗",
+    "flag": "横·上下〔一 ⿱〕",
+    "segments": "0-1/2/3-5"
   },
   {
     "char": "分",
-    "code": "wv",
-    "difficulty": 2
+    "code": "wvb",
+    "difficulty": 2,
+    "shortCode": "wv",
+    "moreCode": "⊙wvr",
+    "units": "〖※※〗",
+    "flag": "折·上下〔乛 ⿱〕",
+    "segments": "0,1/2,3"
   },
   {
     "char": "离",
-    "code": "yb",
-    "difficulty": 2
+    "code": "ybmc",
+    "difficulty": 2,
+    "shortCode": "yb/ybm",
+    "units": "〖※※※〗",
+    "segments": "0-3/4-5/6-7/8-9"
   },
   {
     "char": "集",
-    "code": "wys",
-    "difficulty": 2
+    "code": "wysu",
+    "difficulty": 2,
+    "shortCode": "wys",
+    "units": "〖※※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0-1/2-7/8-11"
   },
   {
     "char": "散",
-    "code": "aet",
-    "difficulty": 2
+    "code": "aety",
+    "difficulty": 2,
+    "shortCode": "aet",
+    "units": "〖※※※〗",
+    "flag": "捺·左右〔丶 ⿰〕",
+    "segments": "0-3/4-7/8-11"
   },
   {
     "char": "增",
-    "code": "fu",
-    "difficulty": 2
+    "code": "fulj",
+    "difficulty": 2,
+    "shortCode": "fu/ful",
+    "units": "〖※※※〗",
+    "segments": "0-2/3-4/5-10/11-14"
   },
   {
     "char": "减",
-    "code": "udg",
-    "difficulty": 2
+    "code": "udgt",
+    "difficulty": 2,
+    "shortCode": "udg",
+    "moreCode": "⊙udgy",
+    "units": "〖※※※〗",
+    "segments": "0-1/2-3/4/9"
   },
   {
     "char": "乘",
-    "code": "tux",
-    "difficulty": 2
+    "code": "tuxv",
+    "difficulty": 2,
+    "shortCode": "tux",
+    "units": "〖※※※〗",
+    "flag": "折·杂合〔乛 ⿻〕",
+    "segments": "*0-2,8-9/3-5/6-7"
   },
   {
     "char": "除",
-    "code": "bwt",
-    "difficulty": 2
+    "code": "bwty",
+    "difficulty": 2,
+    "shortCode": "bwt",
+    "units": "〖※※※〗",
+    "flag": "捺·左右〔丶 ⿰〕",
+    "segments": "0-1/2-3/4-8"
   },
   {
     "char": "加",
-    "code": "lk",
-    "difficulty": 2
+    "code": "lkg",
+    "difficulty": 2,
+    "shortCode": "lk",
+    "units": "〖※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0,1/2-4"
   },
   {
     "char": "选",
     "code": "tfqp",
-    "difficulty": 3
+    "difficulty": 3,
+    "units": "〖※※※〗",
+    "segments": "0/1-3/4-5/6-8"
   },
   {
     "char": "择",
-    "code": "rcf",
-    "difficulty": 2
+    "code": "rcfh",
+    "difficulty": 2,
+    "shortCode": "rcf",
+    "units": "〖※※※〗",
+    "segments": "0-2/3-4/5-6/7"
   },
   {
     "char": "接",
-    "code": "ruv",
-    "difficulty": 2
+    "code": "ruvg",
+    "difficulty": 2,
+    "shortCode": "ruv",
+    "units": "〖※※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0-2/3-7/8-10"
   },
   {
     "char": "受",
-    "code": "epc",
-    "difficulty": 2
+    "code": "epcu",
+    "difficulty": 2,
+    "shortCode": "epc",
+    "units": "〖※※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0-3/4-5/6-7"
   },
   {
     "char": "拒",
-    "code": "ran",
-    "difficulty": 2
+    "code": "rang",
+    "difficulty": 2,
+    "shortCode": "ran",
+    "units": "〖※※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0-2/3,6/4-5"
   },
   {
     "char": "绝",
-    "code": "xqc",
-    "difficulty": 2
+    "code": "xqcn",
+    "difficulty": 2,
+    "shortCode": "xqc",
+    "units": "〖※※※〗",
+    "flag": "折·左右〔乛 ⿰〕",
+    "segments": "0-2/3-4/5-8"
   },
   {
     "char": "允",
-    "code": "cq",
-    "difficulty": 2
+    "code": "cqb",
+    "difficulty": 2,
+    "shortCode": "cq",
+    "units": "〖※※〗",
+    "flag": "折·上下〔乛 ⿱〕",
+    "segments": "0,1/2,3"
   },
   {
     "char": "许",
-    "code": "ytf",
-    "difficulty": 2
+    "code": "ytfh",
+    "difficulty": 2,
+    "shortCode": "ytf",
+    "units": "〖※※※〗",
+    "flag": "竖·左右〔丨 ⿰〕",
+    "segments": "0-1/2-3/4-5"
   },
   {
     "char": "禁",
-    "code": "ssf",
-    "difficulty": 2
+    "code": "ssfi",
+    "difficulty": 2,
+    "shortCode": "ssf",
+    "units": "〖※※※〗",
+    "segments": "0-3/4-7/8-9/10-12"
   },
   {
     "char": "止",
-    "code": "hh",
-    "difficulty": 2
+    "code": "hhhg",
+    "difficulty": 2,
+    "shortCode": "hh/hhg",
+    "moreCode": "⊙hhgg",
+    "units": "〖※※※〗",
+    "segments": "*0-3/0/2/3"
   },
   {
     "char": "继",
-    "code": "xo",
-    "difficulty": 2
+    "code": "xonn",
+    "difficulty": 2,
+    "shortCode": "xo/xon",
+    "units": "〖※※※〗",
+    "flag": "折·左右〔乛 ⿰〕",
+    "segments": "0-2/3-8/9"
   },
   {
     "char": "续",
-    "code": "xfn",
-    "difficulty": 2
+    "code": "xfnd",
+    "difficulty": 2,
+    "shortCode": "xfn",
+    "units": "〖※※※〗",
+    "segments": "0-2/3-4/5/8-10"
   },
   {
     "char": "停",
-    "code": "wyp",
-    "difficulty": 2
+    "code": "wyps",
+    "difficulty": 2,
+    "shortCode": "wyp",
+    "units": "〖※※※〗",
+    "segments": "0-1/2-6/7-8/9-10"
   },
   {
     "char": "断",
-    "code": "on",
-    "difficulty": 2
+    "code": "onrh",
+    "difficulty": 2,
+    "shortCode": "on/onr",
+    "units": "〖※※※〗",
+    "flag": "竖·左右〔丨 ⿰〕",
+    "segments": "0-5/6/7-10"
   },
   {
     "char": "连",
     "code": "lpk",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※〗",
+    "flag": "竖·杂合〔丨 ⿻〕",
+    "segments": "0-3/4-6"
   },
   {
     "char": "独",
-    "code": "qtj",
-    "difficulty": 2
+    "code": "qtjy",
+    "difficulty": 2,
+    "shortCode": "qtj",
+    "units": "〖※※※〗",
+    "flag": "捺·左右〔丶 ⿰〕",
+    "segments": "0-1/2/3-8"
   },
   {
     "char": "孤",
-    "code": "br",
-    "difficulty": 2
+    "code": "brcy",
+    "difficulty": 2,
+    "shortCode": "br/brc",
+    "units": "〖※※※〗",
+    "segments": "0-2/3-4/5-6/7"
   },
   {
     "char": "双",
-    "code": "cc",
-    "difficulty": 2
+    "code": "ccy",
+    "difficulty": 2,
+    "shortCode": "cc",
+    "units": "〖※※〗",
+    "flag": "捺·左右〔丶 ⿰〕",
+    "segments": "0,1/2,3"
   },
   {
     "char": "空",
-    "code": "pw",
-    "difficulty": 2
+    "code": "pwaf",
+    "difficulty": 2,
+    "shortCode": "pw/pwa",
+    "units": "〖※※※〗",
+    "flag": "横·上下〔一 ⿱〕",
+    "segments": "0-2/3-4/5-7"
   },
   {
     "char": "满",
     "code": "iagw",
-    "difficulty": 3
+    "difficulty": 3,
+    "units": "〖※※※〗",
+    "segments": "0-2/3-5/6/11-12"
   },
   {
     "char": "实",
-    "code": "pu",
-    "difficulty": 2
+    "code": "pudu",
+    "difficulty": 2,
+    "shortCode": "pu/pud",
+    "units": "〖※※※〗",
+    "flag": "捺·上下〔丶 ⿱〕",
+    "segments": "0-2/3,4/5-7"
   },
   {
     "char": "虚",
-    "code": "hao",
-    "difficulty": 3
+    "code": "haog",
+    "difficulty": 3,
+    "shortCode": "hao",
+    "units": "〖※※※〗",
+    "segments": "0-3/4-5/6-9/10"
   },
   {
     "char": "存",
-    "code": "dhb",
-    "difficulty": 2
+    "code": "dhbd",
+    "difficulty": 2,
+    "shortCode": "dhb",
+    "units": "〖※※※〗",
+    "flag": "横·杂合〔一 ⿻〕",
+    "segments": "0-1/2/3-5"
   },
   {
     "char": "亡",
     "code": "ynv",
-    "difficulty": 2
+    "difficulty": 2,
+    "units": "〖※※〗",
+    "flag": "折·杂合〔乛 ⿻〕",
+    "segments": "0,1/2"
   },
   {
     "char": "死",
-    "code": "gqx",
-    "difficulty": 2
+    "code": "gqxb",
+    "difficulty": 2,
+    "shortCode": "gqx",
+    "moreCode": "⊙gqxv",
+    "units": "〖※※※〗",
+    "flag": "折·上下〔乛 ⿱〕",
+    "segments": "0/1-3/4-5"
   },
   {
     "char": "始",
-    "code": "vck",
-    "difficulty": 2
+    "code": "vckg",
+    "difficulty": 2,
+    "shortCode": "vck",
+    "units": "〖※※※〗",
+    "flag": "横·左右〔一 ⿰〕",
+    "segments": "0-2/3-4/5-7"
   },
   {
     "char": "终",
-    "code": "xtu",
-    "difficulty": 2
+    "code": "xtuy",
+    "difficulty": 2,
+    "shortCode": "xtu",
+    "units": "〖※※※〗",
+    "flag": "捺·左右〔丶 ⿰〕",
+    "segments": "0-2/3-5/6-7"
   },
   {
     "char": "成",
-    "code": "dn",
-    "difficulty": 2
+    "code": "dnnt",
+    "difficulty": 2,
+    "shortCode": "dn/dnn",
+    "moreCode": "⊙dnny",
+    "units": "〖※※※〗",
+    "segments": "0,1/2/3/4"
   },
   {
     "char": "功",
-    "code": "al",
-    "difficulty": 2
+    "code": "aln",
+    "difficulty": 2,
+    "shortCode": "al",
+    "moreCode": "⊙alt",
+    "units": "〖※※〗",
+    "flag": "折·左右〔乛 ⿰〕",
+    "segments": "0-2/3,4"
   },
   {
     "char": "失",
-    "code": "rw",
-    "difficulty": 2
+    "code": "rwi",
+    "difficulty": 2,
+    "shortCode": "rw",
+    "units": "〖※※〗",
+    "flag": "捺·杂合〔丶 ⿻〕",
+    "segments": "0-2/3,4"
   },
   {
     "char": "得",
-    "code": "tj",
-    "difficulty": 2
+    "code": "tjgf",
+    "difficulty": 2,
+    "shortCode": "tj/tjg",
+    "units": "〖※※※〗",
+    "segments": "0-2/3-6/7/8-10"
   }
 ]
