@@ -416,22 +416,24 @@ function currentAnalysis() {
 function escapeHtml(value) {
   return String(value || '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
 }
-function codeRouteHtml(code) {
+function codeRouteText(code) {
   return String(code || '').toLowerCase().split('').map(key => {
     const root = byKey(key);
     const keyText = key.toUpperCase();
-    if (!root) return `<span class="route-step"><span class="route-key">${keyText}</span></span>`;
-    const rootsText = root.roots.slice(0, 3).join('、');
-    return `<span class="route-step"><span class="route-key">${keyText}</span><span>${escapeHtml(root.label)}</span><span class="route-label">(${escapeHtml(rootsText)})</span></span>`;
-  }).join('<span class="route-label">→</span>');
+    return root ? `${keyText}${root.label}` : keyText;
+  }).join(' + ');
+}
+function codeRouteHtml(code) {
+  return escapeHtml(codeRouteText(code));
 }
 function formatDecomp() {
   const info = currentAnalysis();
   if (!info) return '暂无解析';
   const flag = info.flag ? `<div class="decomp-flag">${escapeHtml(info.flag)}</div>` : '';
   const route = codeRouteHtml(info.code);
+  const code = escapeHtml(info.code || '');
   const shortCode = info.shortCode ? `<div class="decomp-flag">简码：${escapeHtml(info.shortCode)}</div>` : '';
-  return `<span class="decomp-label">取码</span> <span class="code-route">${route}</span>${flag}${shortCode}`;
+  return `<span class="code-route">${escapeHtml(info.char || cur.char)} = ${route} → ${code}</span>${flag}${shortCode}`;
 }
 function hintDecomp() { if (!cur) return; E.dec.innerHTML = formatDecomp(); }
 function hintKeys() { if (!cur) return; hintIdx = cur.code.length; highlightKeys(cur.code); toast(`已高亮 ${cur.code} 键位`,''); }
@@ -439,7 +441,7 @@ function hintCode() {
   const info = currentAnalysis();
   if (!info) return;
   const shortCode = info.shortCode ? ` · 简码 ${info.shortCode}` : '';
-  E.dec.innerHTML = `<span class="decomp-label">编码</span> <span class="code-route">${codeRouteHtml(info.code)}</span>${shortCode}`;
+  E.dec.innerHTML = `<span class="code-route">${escapeHtml(info.char || cur.char)} = ${codeRouteHtml(info.code)} → ${escapeHtml(info.code)}</span>${shortCode}`;
   toast(`完整编码：${info.code}`,'');
 }
 function skip() { if (!cur||retry) return; s.history = [...(s.history||[]), cur.char].slice(-80); s.streak=0; s.wrongMap[cur.char]=s.wrongMap[cur.char]||{code:cur.code,count:1}; s.wrongMap[cur.char].count++; save(); next(); }
