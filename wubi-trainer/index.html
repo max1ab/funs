@@ -190,7 +190,7 @@
     color: var(--color-accent);
   }
 
-  /* Root table — compact keyboard grid */
+  /* Root table — scannable reference */
   .roots-section summary {
     cursor: pointer;
     font-size: 14px;
@@ -203,90 +203,71 @@
   .roots-section summary::before { content: "⌨ "; }
   .roots-section[open] summary { margin-bottom: 10px; }
 
-  .kb-grid {
-    display: grid;
-    gap: 4px;
-    max-width: 460px;
-    margin: 0 auto;
-  }
-  .kb-row {
-    display: grid;
-    gap: 4px;
-  }
-  .kb-row.r0 { grid-template-columns: repeat(10, 1fr); }
-  .kb-row.r1 { grid-template-columns: .5fr repeat(9, 1fr) .5fr; }
-  .kb-row.r2 { grid-template-columns: 1.25fr repeat(7, 1fr) 1.75fr; }
-
-  .kb-key {
-    aspect-ratio: 1;
-    min-width: 32px;
-    border: 1px solid var(--color-border);
-    border-radius: 6px;
-    background: var(--color-surface);
-    cursor: pointer;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    transition: all .15s;
-    padding: 2px;
-    position: relative;
-  }
-  .kb-key:hover {
-    border-color: var(--color-accent);
-    transform: translateY(-1px);
-    box-shadow: 0 3px 12px rgba(155,95,47,.1);
-  }
-  .kb-key.hint {
-    border-color: var(--color-accent);
-    background: var(--color-accent-dim);
-    box-shadow: 0 0 0 3px rgba(197,113,10,.15);
-    transform: scale(1.06);
-    z-index: 2;
-  }
-  .kb-key .kl {
-    font-family: var(--font-mono);
-    font-size: 16px;
-    font-weight: 800;
-    color: var(--color-text);
-    line-height: 1;
-  }
-  .kb-key .kz {
-    font-size: 9px;
-    color: var(--color-text-muted);
-    line-height: 1;
-    margin-top: 1px;
-  }
-  .kb-spacer { min-width: 0; }
-
-  /* Key detail popover */
-  .key-detail {
-    text-align: center;
-    padding: 12px;
-    min-height: 36px;
+  .root-table {
+    width: 100%;
+    border-collapse: collapse;
     font-size: 13px;
-    color: var(--color-text-secondary);
-    line-height: 1.7;
-    border: 1px dashed var(--color-border);
-    border-radius: var(--radius-sm);
-    background: rgba(241,234,223,.5);
-    margin-top: 8px;
   }
-  .key-detail strong { color: var(--color-text); }
-  .key-detail .roots {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 4px;
-    justify-content: center;
-    margin-top: 6px;
+  .root-table th, .root-table td {
+    padding: 6px 8px;
+    text-align: left;
+    vertical-align: top;
+    border-bottom: 1px solid var(--color-border);
   }
-  .key-detail .root-chip {
-    padding: 2px 8px;
-    border: 1px solid rgba(155,95,47,.14);
-    border-radius: var(--radius-full);
+  .root-table th {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+    position: sticky;
+    top: 0;
+    background: #f7f2e8;
+  }
+  .root-table .zone-row td {
+    background: rgba(220, 200, 170, 0.2);
+    font-weight: 700;
     font-size: 12px;
-    background: rgba(255,253,248,.7);
+    color: var(--color-accent);
+    padding: 8px;
+    letter-spacing: .05em;
   }
+  .root-table tr.key-row.hint {
+    background: var(--color-accent-dim);
+    outline: 2px solid var(--color-accent);
+    outline-offset: -2px;
+  }
+  .root-table .key-cell {
+    font-family: var(--font-mono);
+    font-weight: 800;
+    font-size: 16px;
+    width: 32px;
+    text-align: center;
+    color: var(--color-text);
+  }
+  .root-table .label-cell {
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .root-table .roots-cell {
+    line-height: 1.8;
+  }
+  .root-table .roots-cell .rc {
+    display: inline-block;
+    padding: 1px 6px;
+    margin: 1px;
+    border: 1px solid rgba(155,95,47,.12);
+    border-radius: 3px;
+    font-size: 12px;
+    background: rgba(255,253,248,.6);
+  }
+  .root-table .mnemonic-cell {
+    color: var(--color-text-muted);
+    font-size: 12px;
+    line-height: 1.5;
+    min-width: 120px;
+  }
+
 
   /* Mistakes */
   .mistakes {
@@ -318,11 +299,11 @@
   }
 
   @media (max-width: 480px) {
-    .kb-key { min-width: 24px; }
-    .kb-key .kl { font-size: 13px; }
-    .kb-key .kz { font-size: 8px; }
     .input-row input { font-size: 20px; padding: 14px; }
     .char-card .char { font-size: 72px; }
+    .root-table { font-size: 11px; }
+    .root-table .mnemonic-cell { display: none; }
+    .root-table th, .root-table td { padding: 4px 5px; }
   }
 </style>
 </head>
@@ -330,7 +311,7 @@
 <div class="app">
   <header class="header">
     <h1>五笔86 · 查表练习</h1>
-    <p>对照字根键盘，推导编码，建立肌肉记忆</p>
+    <p>对照字根总表，推导编码，建立肌肉记忆</p>
   </header>
 
   <div class="stats">
@@ -365,9 +346,10 @@
   </div>
 
   <details class="roots-section" open id="rootsSection">
-    <summary>五笔86 字根键盘（点击键位查看详情）</summary>
-    <div class="kb-grid" id="keyboard"></div>
-    <div class="key-detail" id="keyDetail">点击任一键位查看完整字根和口诀</div>
+    <summary>五笔86 字根总表（五区扫读）</summary>
+    <div style="overflow-x:auto;">
+      <table class="root-table" id="rootTable"></table>
+    </div>
   </details>
 
   <div class="mistakes">
@@ -428,45 +410,36 @@ function save() { localStorage.setItem(STATE_KEY, JSON.stringify(state)); }
 
 const $ = id => document.getElementById(id);
 const els = {
-  kbd: $('keyboard'), kd: $('keyDetail'), tc: $('targetChar'), ci: $('charInfo'),
+  rt: $('rootTable'), tc: $('targetChar'), ci: $('charInfo'),
   inp: $('codeInput'), sub: $('submitBtn'), msg: $('msg'),
   ttl: $('totalCount'), acc: $('accuracy'), str: $('streak'), wc: $('wrongCount'),
   ml: $('mistakeList')
 };
 
+const ZONES = ['横区','竖区','撇区','捺区','折区'];
 function byKey(k) { return roots.find(r => r.key.toLowerCase() === k.toLowerCase()); }
 
-function renderKbd() {
-  els.kbd.innerHTML = '';
-  KB_ROWS.forEach((row, ri) => {
-    const re = document.createElement('div');
-    re.className = `kb-row r${ri}`;
-    if (ri === 1) re.appendChild(spacer());
-    if (ri === 2) re.appendChild(spacer());
-    row.forEach(key => {
-      const root = byKey(key); if (!root) return;
-      const el = document.createElement('button');
-      el.type = 'button';
-      el.className = 'kb-key';
-      el.dataset.key = root.key.toLowerCase();
-      el.innerHTML = `<span class="kl">${root.key}</span><span class="kz">${root.zone}·${root.label}</span>`;
-      el.addEventListener('click', () => showDetail(root));
-      re.appendChild(el);
+function renderTable() {
+  let html = '<thead><tr><th>键</th><th>代表字</th><th>字根</th><th>口诀</th></tr></thead><tbody>';
+  ZONES.forEach(zone => {
+    html += `<tr class="zone-row"><td colspan="4">${zone}</td></tr>`;
+    const zoneKeys = roots.filter(r => r.zone === zone);
+    zoneKeys.forEach(r => {
+      html += `<tr class="key-row" data-key="${r.key.toLowerCase()}">`
+        + `<td class="key-cell">${r.key}</td>`
+        + `<td class="label-cell">${r.label}</td>`
+        + `<td class="roots-cell">${r.roots.map(x => `<span class="rc">${x}</span>`).join('')}</td>`
+        + `<td class="mnemonic-cell">${r.mnemonic}</td>`
+        + `</tr>`;
     });
-    if (ri === 1) re.appendChild(spacer());
-    if (ri === 2) re.appendChild(spacer());
-    els.kbd.appendChild(re);
   });
+  html += '</tbody>';
+  els.rt.innerHTML = html;
   highlightKeys('');
-}
-function spacer() { const d = document.createElement('div'); d.className = 'kb-spacer'; return d; }
-function showDetail(root) {
-  document.querySelectorAll('.kb-key').forEach(el => el.style.outline = el.dataset.key === root.key.toLowerCase() ? '2px solid var(--color-accent)' : '');
-  els.kd.innerHTML = `<strong>${root.key} 键 · ${root.zone}区 · ${root.label}（${root.mnemonic.split('').slice(0,6).join('')}…）</strong><br>口诀：${root.mnemonic}<div class="roots">${root.roots.map(r => `<span class="root-chip">${r}</span>`).join('')}</div>`;
 }
 function highlightKeys(code) {
   const set = new Set((code || '').toLowerCase().split(''));
-  document.querySelectorAll('.kb-key').forEach(el => {
+  document.querySelectorAll('.key-row').forEach(el => {
     el.classList.toggle('hint', set.has(el.dataset.key));
   });
 }
@@ -487,7 +460,7 @@ function next() {
   els.tc.textContent = cur.char;
   els.ci.textContent = `五笔86 · ${cur.code.length} 码`;
   els.inp.value = ''; els.inp.classList.remove('err'); els.sub.textContent = '确认'; els.sub.classList.remove('retry');
-  setMsg(mode === 'lookup' ? '对照字根键盘推导编码，用分步提示高亮键位' : '不看键盘，凭记忆输入完整编码');
+  setMsg(mode === 'lookup' ? '对照字根总表推导编码，用分步提示高亮键位' : '不看键盘，凭记忆输入完整编码');
   highlightKeys('');
   els.inp.focus(); updStats();
 }
@@ -532,7 +505,7 @@ async function init() {
     fetch('/wubi-trainer/data/wubi86-roots.json').then(r => r.json()).catch(() => FALLBACK_ROOTS),
     fetch('/wubi-trainer/data/wubi86-chars.json').then(r => r.json()).catch(() => FALLBACK_CHARS)
   ]);
-  renderKbd(); showDetail(roots[0]); updStats(); next();
+  renderTable(); updStats(); next();
 }
 
 document.querySelectorAll('.mode-tab').forEach(b => b.addEventListener('click', () => setMode(b.dataset.mode)));
