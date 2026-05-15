@@ -43,6 +43,29 @@
     background: linear-gradient(180deg, #fffdf9, #f7f2e8);
     flex-wrap: wrap;
   }
+  .mode-switch {
+    display: flex;
+    gap: 4px;
+    padding: 3px;
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    background: rgba(255,253,249,.72);
+  }
+  .mode-btn {
+    border: 0;
+    border-radius: 999px;
+    padding: 7px 12px;
+    background: transparent;
+    color: var(--text2);
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+  }
+  .mode-btn.active {
+    background: var(--text);
+    color: #f9f5ee;
+  }
   .bar .big-char {
     font-size: 56px; font-weight: 500; line-height: 1;
     letter-spacing: -.03em; min-width: 80px; text-align: center;
@@ -112,6 +135,39 @@
   .kb-body {
     display: flex; align-items: center; justify-content: center;
     padding: 12px 8px; overflow: hidden;
+  }
+  .page.blind-mode {
+    grid-template-rows: auto 0fr auto;
+  }
+  .page.blind-mode .kb-body {
+    display: none;
+  }
+  .page.blind-mode .bar {
+    min-height: calc(100vh - 48px);
+    align-content: center;
+    justify-content: center;
+    border-bottom: 0;
+  }
+  .page.blind-mode .bar .big-char {
+    font-size: clamp(96px, 18vw, 180px);
+    width: 100%;
+  }
+  .page.blind-mode .bar .decomp {
+    width: min(720px, 100%);
+    max-width: 720px;
+    text-align: center;
+    font-size: 14px;
+  }
+  .page.blind-mode .bar .input-group {
+    flex-basis: min(520px, 100%);
+    max-width: 520px;
+  }
+  .page.blind-mode .bar .hints,
+  .page.blind-mode .top-stats {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+    margin-left: 0;
   }
   .kb {
     display: grid;
@@ -219,6 +275,8 @@
 
   @media (max-width: 640px) {
     .bar { gap: 8px; padding: 8px 10px; }
+    .mode-switch { order: -2; }
+    .mode-btn { padding: 6px 10px; font-size: 11px; }
     .bar .big-char { font-size: 42px; min-width: 60px; }
     .bar .input-group input { font-size: 18px; padding: 8px 10px; }
     .bar .hints { display: none; }
@@ -236,9 +294,13 @@
 </head>
 <body>
 
-<div class="page">
+<div class="page" id="page">
   <!-- ════ Practice bar ════ -->
   <div class="bar">
+    <div class="mode-switch" aria-label="练习模式">
+      <button class="mode-btn active" data-mode="lookup" type="button">查表</button>
+      <button class="mode-btn" data-mode="blind" type="button">盲打</button>
+    </div>
     <div class="big-char" id="targetChar">字</div>
     <div class="decomp" id="decomp"></div>
     <div class="input-group">
@@ -316,7 +378,7 @@ const FALLBACK_CHARS = [
   {char:'民',code:'n'},{char:'了',code:'b'},{char:'发',code:'v'},{char:'以',code:'c'},{char:'经',code:'x'}
 ];
 
-let roots = [], chars = [], analysis = {}, cur = null, hintIdx = 0, retry = false;
+let roots = [], chars = [], analysis = {}, cur = null, hintIdx = 0, retry = false, mode = localStorage.getItem('wubi_mode') || 'lookup';
 let s = (() => { try { return JSON.parse(localStorage.getItem(STATE_KEY))||{}; } catch(_) { return {}; } })();
 s.total = s.total||0; s.correct = s.correct||0; s.streak = s.streak||0;
 s.wrongMap = s.wrongMap||{}; s.history = s.history||[];
@@ -324,7 +386,7 @@ function save() { localStorage.setItem(STATE_KEY, JSON.stringify(s)); updateStat
 
 const $ = id => document.getElementById(id);
 const E = {
-  kb: $('keyboard'), tc: $('targetChar'), dec: $('decomp'),
+  page: $('page'), kb: $('keyboard'), tc: $('targetChar'), dec: $('decomp'),
   inp: $('codeInput'), sub: $('submitBtn'), toast: $('toast'),
   topStats: $('topStats'), progress: $('progressLine')
 };
@@ -332,6 +394,13 @@ const E = {
 function byKey(k) { return roots.find(r => r.key.toLowerCase() === k.toLowerCase()); }
 function spacer() { const d = document.createElement('div'); d.className = 'kb-spacer'; return d; }
 function zoneClass(zone) { return ({横:'zone-heng', 竖:'zone-shu', 撇:'zone-pie', 捺:'zone-na', 折:'zone-zhe'})[zone] || ''; }
+function applyMode(nextMode, shouldAdvance = false) {
+  mode = nextMode;
+  localStorage.setItem('wubi_mode', mode);
+  E.page.classList.toggle('blind-mode', mode === 'blind');
+  document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.mode === mode));
+  if (shouldAdvance) next();
+}
 
 function renderKB() {
   E.kb.innerHTML = '';
@@ -453,7 +522,9 @@ async function init() {
     fetch('/wubi-trainer/data/wubi86-analysis.json').then(r => r.json()).catch(() => ({}))
   ]);
   chars = chars.map(item => ({ ...(analysis[item.char] || {}), ...item }));
-  renderKB(); next();
+  renderKB();
+  applyMode(mode, false);
+  next();
 }
 
 E.sub.addEventListener('click', submit);
@@ -466,6 +537,7 @@ $('bottomHintDecomp').addEventListener('click', hintDecomp);
 $('bottomHintKeys').addEventListener('click', hintKeys);
 $('bottomHintCode').addEventListener('click', hintCode);
 $('bottomSkipBtn').addEventListener('click', skip);
+document.querySelectorAll('.mode-btn').forEach(btn => btn.addEventListener('click', () => applyMode(btn.dataset.mode, true)));
 init();
 </script>
 </body>
