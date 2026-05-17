@@ -633,7 +633,7 @@ const FALLBACK_CODES = {
   中:'khk', 也:'bn', 要:'s', 流:'iycq', 畅:'jhnr', 适:'tdp', 合:'wgkf', 长:'ta', 期:'adwe'
 };
 
-let roots = [], chars = [], cur = null, sentence = '', hintIdx = 0, retry = false, mistake = false, locked = false, sentenceLocked = false, mode = localStorage.getItem('wubi_mode') || 'follow';
+let roots = [], chars = [], cur = null, sentence = '', hintIdx = 0, retry = false, mistake = false, locked = false, sentenceLocked = false, sentenceComposing = false, mode = localStorage.getItem('wubi_mode') || 'follow';
 let codeMap = new Map(Object.entries(FALLBACK_CODES));
 let s = (() => { try { return JSON.parse(localStorage.getItem(STATE_KEY))||{}; } catch(_) { return {}; } })();
 s.total = s.total||0; s.correct = s.correct||0; s.streak = s.streak||0;
@@ -744,7 +744,7 @@ function updateSentenceFeedback() {
   E.sentenceProgress.textContent = `输入 ${Math.min(input.length, sentence.length)}/${sentence.length} 字`;
 }
 function handleSentenceInput() {
-  if (mode !== 'follow' || sentenceLocked || !E.sentenceInput) return;
+  if (sentenceComposing || mode !== 'follow' || sentenceLocked || !E.sentenceInput) return;
   if (E.sentenceInput.value.length > sentence.length) E.sentenceInput.value = E.sentenceInput.value.slice(0, sentence.length);
   updateSentenceFeedback();
   if (E.sentenceInput.value.length !== sentence.length) return;
@@ -758,6 +758,13 @@ function handleSentenceInput() {
   }
   save();
   setTimeout(nextSentence, E.sentenceInput.value === sentence ? 700 : 1200);
+}
+function handleSentenceCompositionStart() {
+  sentenceComposing = true;
+}
+function handleSentenceCompositionEnd() {
+  sentenceComposing = false;
+  handleSentenceInput();
 }
 
 function pick() {
@@ -932,6 +939,8 @@ E.inp.addEventListener('keydown', handlePracticeKeydown);
 E.inp.addEventListener('beforeinput', e => { if (mode === 'lookup') e.preventDefault(); });
 E.inp.addEventListener('compositionstart', e => { if (mode === 'lookup') e.preventDefault(); });
 E.sentenceInput.addEventListener('input', handleSentenceInput);
+E.sentenceInput.addEventListener('compositionstart', handleSentenceCompositionStart);
+E.sentenceInput.addEventListener('compositionend', handleSentenceCompositionEnd);
 $('hintDecomp').addEventListener('click', hintDecomp);
 $('hintKeys').addEventListener('click', hintKeys);
 $('hintCode').addEventListener('click', hintCode);
