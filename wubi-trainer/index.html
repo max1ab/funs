@@ -96,6 +96,11 @@
   .route-label { color: var(--text2); font-size: 11px; }
   .decomp-label { color: var(--text2); font-weight: 500; }
   .decomp-flag { color: var(--text2); font-weight: 500; font-size: 11px; }
+  .decomp-id {
+    color: var(--accent);
+    font-weight: 700;
+    font-size: 11px;
+  }
   .bar .input-group {
     display: flex; gap: 6px; flex: 1; max-width: 340px; min-width: 180px;
   }
@@ -137,6 +142,7 @@
   /* ── Keyboard body ── */
   .kb-body {
     display: flex; align-items: center; justify-content: center;
+    position: relative;
     padding: 10px 14px; overflow: hidden;
   }
   .page.blind-mode {
@@ -253,6 +259,50 @@
   }
   .kb-spacer { min-width: 0; }
 
+  .id-code-card {
+    position: absolute;
+    right: 16px;
+    bottom: 14px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    background: rgba(255,253,249,.88);
+    box-shadow: 0 8px 24px rgba(45,38,28,.08);
+    backdrop-filter: blur(10px);
+    color: var(--text2);
+    font-size: 11px;
+    z-index: 3;
+  }
+  .id-code-card h3 {
+    margin: 0 0 6px;
+    color: var(--text);
+    font-size: 12px;
+    text-align: center;
+  }
+  .id-code-card table {
+    border-collapse: collapse;
+  }
+  .id-code-card th,
+  .id-code-card td {
+    padding: 2px 5px;
+    text-align: center;
+    white-space: nowrap;
+  }
+  .id-code-card th {
+    color: var(--text3);
+    font-weight: 600;
+  }
+  .id-code-card td {
+    color: var(--text);
+    font-family: "SF Mono","Consolas",monospace;
+    font-weight: 800;
+  }
+  .id-code-card .stroke {
+    color: var(--text2);
+    font-family: inherit;
+    font-weight: 600;
+  }
+
   /* ── Bottom bar ── */
   .bottom-bar {
     display: flex;
@@ -312,6 +362,7 @@
     .kb-key .k-label { font-size: 17px; margin-bottom: 2px; }
     .kb-key .k-roots { gap: 1px; line-height: 1.25; }
     .kb-key .k-roots span { font-size: 8px; padding: 0 1px; }
+    .id-code-card { display: none; }
     .bottom-bar { padding: 6px 8px; gap: 8px; }
     .step-actions { gap: 4px; }
     .step-actions button { padding: 6px 8px; font-size: 11px; }
@@ -346,6 +397,21 @@
   <!-- ════ Keyboard body ════ -->
   <div class="kb-body">
     <div class="kb" id="keyboard"></div>
+    <div class="id-code-card" aria-label="识别码速查">
+      <h3>识别码速查</h3>
+      <table>
+        <thead>
+          <tr><th></th><th>左右</th><th>上下</th><th>杂合</th></tr>
+        </thead>
+        <tbody>
+          <tr><th class="stroke">横</th><td>G</td><td>F</td><td>D</td></tr>
+          <tr><th class="stroke">竖</th><td>H</td><td>J</td><td>K</td></tr>
+          <tr><th class="stroke">撇</th><td>T</td><td>R</td><td>E</td></tr>
+          <tr><th class="stroke">捺</th><td>Y</td><td>U</td><td>I</td></tr>
+          <tr><th class="stroke">折</th><td>N</td><td>B</td><td>V</td></tr>
+        </tbody>
+      </table>
+    </div>
   </div>
 
   <div class="bottom-bar">
@@ -580,6 +646,23 @@ function codeRouteText(code) {
 function codeRouteHtml(code) {
   return escapeHtml(codeRouteText(code));
 }
+function idCodeFromFlag(flag) {
+  const match = String(flag || '').match(/(横|竖|撇|捺|折)·(左右|上下|杂合)/);
+  if (!match) return null;
+  const table = {
+    横: {左右:'G', 上下:'F', 杂合:'D'},
+    竖: {左右:'H', 上下:'J', 杂合:'K'},
+    撇: {左右:'T', 上下:'R', 杂合:'E'},
+    捺: {左右:'Y', 上下:'U', 杂合:'I'},
+    折: {左右:'N', 上下:'B', 杂合:'V'}
+  };
+  return {stroke: match[1], shape: match[2], key: table[match[1]][match[2]]};
+}
+function idCodeHtml(info) {
+  const id = idCodeFromFlag(info && info.flag);
+  if (!id) return '';
+  return `<div class="decomp-id">识别码：${id.key}（${id.stroke} · ${id.shape}）</div>`;
+}
 function formatDecomp() {
   const info = currentAnalysis();
   if (!info) return '暂无解析';
@@ -587,7 +670,7 @@ function formatDecomp() {
   const route = codeRouteHtml(info.code);
   const code = escapeHtml(info.code || '');
   const shortCode = info.shortCode ? `<div class="decomp-flag">简码：${escapeHtml(info.shortCode)}</div>` : '';
-  return `<span class="code-route">${escapeHtml(info.char || cur.char)} = ${route} → ${code}</span>${flag}${shortCode}`;
+  return `<span class="code-route">${escapeHtml(info.char || cur.char)} = ${route} → ${code}</span>${flag}${idCodeHtml(info)}${shortCode}`;
 }
 function hintDecomp() { if (!cur) return; E.dec.innerHTML = formatDecomp(); }
 function hintKeys() { if (!cur) return; hintIdx = cur.code.length; highlightKeys(cur.code); toast(`已高亮 ${cur.code} 键位`,''); }
@@ -595,7 +678,7 @@ function hintCode() {
   const info = currentAnalysis();
   if (!info) return;
   const shortCode = info.shortCode ? ` · 简码 ${info.shortCode}` : '';
-  E.dec.innerHTML = `<span class="code-route">${escapeHtml(info.char || cur.char)} = ${codeRouteHtml(info.code)} → ${escapeHtml(info.code)}</span>${shortCode}`;
+  E.dec.innerHTML = `<span class="code-route">${escapeHtml(info.char || cur.char)} = ${codeRouteHtml(info.code)} → ${escapeHtml(info.code)}</span>${idCodeHtml(info)}${escapeHtml(shortCode)}`;
   toast(`完整编码：${info.code}`,'');
 }
 function skip() { if (!cur||retry) return; s.history = [...(s.history||[]), cur.char].slice(-80); s.streak=0; s.wrongMap[cur.char]=s.wrongMap[cur.char]||{code:cur.code,count:1}; s.wrongMap[cur.char].count++; save(); next(); }
