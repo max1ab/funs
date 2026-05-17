@@ -4,9 +4,189 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>funs — small experiments, made for fun</title>
+<style>
+  :root {
+    --sky-top: #c9e8f7;
+    --card-bg: #fefcf5;
+    --card-shadow: rgba(120,90,50,.12);
+    --pin-color: #c4956a;
+    --pin-dark: #a0724a;
+    --rope: #d4b896;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system,"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;
+    background: linear-gradient(180deg, var(--sky-top) 0%, #d6ecf8 35%, #e8f4e8 70%, #d8ecd0 100%);
+    min-height: 100vh; overflow-x: hidden;
+  }
+
+  /* Clouds */
+  .cloud {
+    position: fixed; background: #fff; border-radius: 50%; opacity: .65; pointer-events: none; z-index: 0;
+  }
+  .cloud::before, .cloud::after { content: ''; position: absolute; background: #fff; border-radius: 50%; }
+  .c1 { width: 140px; height: 50px; top: 8%; left: -10%; animation: drift 50s linear infinite; }
+  .c1::before { width: 60px; height: 60px; top: -30px; left: 30px; }
+  .c1::after { width: 80px; height: 55px; top: -22px; left: 70px; }
+  .c2 { width: 100px; height: 36px; top: 18%; animation: drift 60s linear 18s infinite; }
+  .c2::before { width: 44px; height: 44px; top: -22px; left: 20px; }
+  .c2::after { width: 56px; height: 38px; top: -16px; left: 50px; }
+  .c3 { width: 120px; height: 42px; top: 5%; right: -15%; animation: drift-r 55s linear 10s infinite; }
+  .c3::before { width: 52px; height: 52px; top: -26px; left: 25px; }
+  .c3::after { width: 66px; height: 46px; top: -18px; left: 60px; }
+  @keyframes drift { from { transform: translateX(-180px); } to { transform: translateX(calc(100vw + 350px)); } }
+  @keyframes drift-r { from { transform: translateX(180px); } to { transform: translateX(calc(-100vw - 350px)); } }
+
+  /* Sun */
+  .sun {
+    position: fixed; top: 6%; right: 10%; width: 70px; height: 70px;
+    background: radial-gradient(circle, #fff8c0 25%, #ffe89c 65%, transparent 70%);
+    border-radius: 50%; pointer-events: none; z-index: 0;
+    animation: glow 4s ease-in-out infinite alternate;
+  }
+  @keyframes glow { from { box-shadow: 0 0 40px 10px rgba(255,240,160,.3); } to { box-shadow: 0 0 70px 20px rgba(255,220,100,.5); } }
+
+  /* Header */
+  header { text-align: center; padding: 44px 20px 20px; position: relative; z-index: 2; }
+  header h1 { font-size: clamp(36px, 6vw, 56px); font-weight: 800; letter-spacing: -.02em; color: #5a4a3a; text-shadow: 0 2px 8px rgba(255,255,255,.6); }
+  header h1 span { display: block; font-size: clamp(14px, 2vw, 18px); font-weight: 500; color: #8a7a6a; letter-spacing: .08em; margin-top: 4px; }
+
+  /* Gallery */
+  .gallery { position: relative; z-index: 2; max-width: 1100px; margin: 0 auto; padding: 10px 24px 60px; }
+  .rope-row { position: relative; margin-bottom: 40px; padding-top: 30px; }
+  .rope-row::before { content: ''; position: absolute; top: 14px; left: 0; right: 0; height: 2px; background: var(--rope); border-radius: 1px; box-shadow: 0 1px 3px rgba(180,150,120,.3); }
+  .rope-row::after { content: ''; position: absolute; top: 14px; left: 5%; right: 5%; height: 4px; background: var(--rope); border-radius: 0 0 50% 50%; transform: translateY(6px); opacity: .3; }
+  .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; position: relative; z-index: 2; }
+
+  /* Card */
+  .card {
+    background: var(--card-bg); border-radius: 4px;
+    box-shadow: 2px 3px 12px var(--card-shadow), 0 1px 3px rgba(0,0,0,.06);
+    cursor: pointer; transition: transform .3s ease, box-shadow .3s ease;
+    text-decoration: none; color: inherit; display: flex; flex-direction: column;
+    animation: sway 7s ease-in-out infinite;
+  }
+  .card:nth-child(2) { animation-delay: -2.5s; }
+  .card:nth-child(3) { animation-delay: -4.5s; }
+  .card:nth-child(4) { animation-delay: -1.5s; }
+  @keyframes sway { 0%, 100% { transform: rotate(-.5deg); } 50% { transform: rotate(.7deg); } }
+  .card:hover { transform: rotate(0deg) translateY(-8px) !important; box-shadow: 4px 10px 28px rgba(120,90,50,.18); z-index: 5; animation-play-state: paused; }
+
+  /* Clothespin */
+  .card::before { content: ''; position: absolute; top: -24px; left: 50%; transform: translateX(-50%); width: 16px; height: 30px; background: linear-gradient(90deg, var(--pin-dark) 30%, var(--pin-color) 30%, var(--pin-color) 70%, var(--pin-dark) 70%); border-radius: 4px 4px 2px 2px; z-index: 3; box-shadow: 0 1px 2px rgba(0,0,0,.15); }
+  .card::after { content: ''; position: absolute; top: -28px; left: 50%; transform: translateX(-50%); width: 12px; height: 8px; background: var(--pin-dark); border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,.1); }
+
+  /* Preview */
+  .preview { height: 130px; border-radius: 3px 3px 0 0; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
+  .pv-ball { background: linear-gradient(180deg, #fef9f0, #f0e8d8); border-bottom: 2px solid #e8dcc8; }
+  .pv-wubi { background: linear-gradient(180deg, #fdfaf5, #f5f0e4); border-bottom: 2px solid #e0d8c5; }
+  .pv-empty { background: repeating-linear-gradient(45deg, #f8f5ee, #f8f5ee 6px, #f2ede2 6px, #f2ede2 12px); border: 2px dashed #ddd6c5; }
+
+  .ball { width: 36px; height: 36px; background: radial-gradient(circle at 35% 30%, #ff9a76, #e85d3a); border-radius: 50%; animation: bounce .85s ease-in-out infinite alternate; box-shadow: 0 4px 12px rgba(232,93,58,.3); }
+  @keyframes bounce { from { transform: translateY(16px); } to { transform: translateY(-16px); } }
+  .ball-sh { position: absolute; bottom: 32px; width: 26px; height: 5px; background: rgba(0,0,0,.07); border-radius: 50%; animation: shrink .85s ease-in-out infinite alternate; }
+  @keyframes shrink { from { transform: scaleX(1); opacity: .5; } to { transform: scaleX(.4); opacity: .15; } }
+
+  .wu-char { font-size: 48px; font-weight: 500; color: #4a3a2a; animation: fc 3.5s ease-in-out infinite; }
+  @keyframes fc { 0%,35% { opacity:1; } 50%,85% { opacity:0; } 100% { opacity:1; } }
+  .wu-code { position: absolute; font-family: "SF Mono","Consolas",monospace; font-size: 26px; letter-spacing: .15em; color: #b55a10; font-weight: 700; animation: fc 3.5s ease-in-out infinite reverse; }
+
+  .empty-q { font-size: 44px; color: #ccc8bb; font-weight: 300; }
+
+  /* Card info */
+  .info { padding: 14px 16px 16px; text-align: center; }
+  .info h3 { font-size: 16px; font-weight: 700; color: #4a3a2a; margin-bottom: 4px; }
+  .info p { font-size: 12px; color: #8a7a6a; line-height: 1.4; }
+  .info .go { display: inline-block; margin-top: 8px; font-size: 11px; color: var(--pin-color); font-weight: 600; }
+
+  .footer { text-align: center; padding: 20px; position: relative; z-index: 2; font-size: 12px; color: #b0a590; }
+
+  /* Bird */
+  .bird { position: fixed; z-index: 1; pointer-events: none; font-size: 18px; animation: fly 20s linear infinite; top: 22%; }
+  @keyframes fly { 0% { left: -5%; transform: translateY(0); } 25% { transform: translateY(-22px); } 50% { transform: translateY(12px); } 75% { transform: translateY(-16px); } 100% { left: 105%; transform: translateY(0); } }
+
+  @media (max-width: 900px) {
+    .cards { grid-template-columns: repeat(2, 1fr); gap: 14px; }
+    .preview { height: 110px; }
+  }
+  @media (max-width: 480px) {
+    header { padding: 28px 14px 14px; }
+    header h1 { font-size: 28px; }
+    .gallery { padding: 6px 12px 40px; }
+    .cards { gap: 10px; }
+    .preview { height: 100px; }
+    .info { padding: 10px 10px 12px; }
+    .info h3 { font-size: 14px; }
+  }
+</style>
 </head>
 <body>
-  <h1>funs</h1>
-  <p>coming soon</p>
+
+<div class="cloud c1"></div>
+<div class="cloud c2"></div>
+<div class="cloud c3"></div>
+<div class="sun"></div>
+<div class="bird">🐦</div>
+
+<header>
+  <h1>funs<span>small experiments, made for fun</span></h1>
+</header>
+
+<main class="gallery">
+  <div class="rope-row">
+    <div class="cards">
+
+      <a class="card" href="/ball-physics-simulation">
+        <div class="preview pv-ball">
+          <div class="ball-sh"></div>
+          <div class="ball"></div>
+        </div>
+        <div class="info">
+          <h3>小球物理模拟</h3>
+          <p>弹来弹去的快乐小球</p>
+          <span class="go">去看看 →</span>
+        </div>
+      </a>
+
+      <a class="card" href="/wubi-trainer">
+        <div class="preview pv-wubi">
+          <span class="wu-char">好</span>
+          <span class="wu-code">vbg</span>
+        </div>
+        <div class="info">
+          <h3>五笔练习器</h3>
+          <p>拆字入指，编码成肌</p>
+          <span class="go">去看看 →</span>
+        </div>
+      </a>
+
+      <div class="card" style="cursor:default;opacity:.7;">
+        <div class="preview pv-empty">
+          <span class="empty-q">?</span>
+        </div>
+        <div class="info">
+          <h3>下一个点子</h3>
+          <p>还没想好做什么</p>
+          <span class="go" style="color:#ccc;">放点什么？</span>
+        </div>
+      </div>
+
+      <div class="card" style="cursor:default;opacity:.5;">
+        <div class="preview pv-empty">
+          <span class="empty-q">✨</span>
+        </div>
+        <div class="info">
+          <h3>等你来填</h3>
+          <p>好玩的都行</p>
+          <span class="go" style="color:#ccc;">……</span>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<div class="footer">funs — made with curiosity and joy</div>
+
 </body>
 </html>
