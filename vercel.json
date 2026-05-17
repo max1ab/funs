@@ -6,6 +6,8 @@
     { "source": "/ball-physics-simulation", "destination": "/ball-physics-simulation/index.html" },
     { "source": "/ball-physics-simulation/", "destination": "/ball-physics-simulation/index.html" },
     { "source": "/api/(.*)", "destination": "/api" },
-    { "source": "/", "destination": "/ball-physics-simulation/index.html" }
+    { "source": "/", "destination": "/home/index.html" },
+    { "source": "/home", "destination": "/home/index.html" },
+    { "source": "/home/", "destination": "/home/index.html" }
   ]
 }
