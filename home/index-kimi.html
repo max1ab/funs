@@ -1,0 +1,650 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>funs — small experiments, made for fun</title>
+  <style>
+    :root {
+      --sky-top: #b8d4f0;
+      --sky-bottom: #eef5fb;
+      --cloud: #ffffff;
+      --rope: #c4a882;
+      --clothespin: #d4a574;
+      --clothespin-dark: #b89360;
+      --card-bg: #faf6f0;
+      --card-border: #e8e0d4;
+      --card-shadow: rgba(0,0,0,0.08);
+      --text-dark: #3d3a35;
+      --text-light: #8a8378;
+      --accent-blue: #6b9dc7;
+      --accent-green: #7db87a;
+      --accent-orange: #e8a87c;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif;
+      background: linear-gradient(180deg, var(--sky-top) 0%, var(--sky-bottom) 60%, #f0ebe3 100%);
+      min-height: 100vh;
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* ===== 云朵 ===== */
+    .clouds {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      height: 40vh;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .cloud {
+      position: absolute;
+      background: var(--cloud);
+      border-radius: 100px;
+      opacity: 0.7;
+    }
+
+    .cloud::before, .cloud::after {
+      content: '';
+      position: absolute;
+      background: var(--cloud);
+      border-radius: 100px;
+    }
+
+    .cloud-1 {
+      width: 120px; height: 40px;
+      top: 8%; left: -10%;
+      animation: floatCloud 45s linear infinite;
+    }
+    .cloud-1::before { width: 50px; height: 50px; top: -25px; left: 15px; }
+    .cloud-1::after { width: 60px; height: 40px; top: -15px; right: 10px; }
+
+    .cloud-2 {
+      width: 100px; height: 35px;
+      top: 15%; left: -8%;
+      animation: floatCloud 55s linear infinite;
+      animation-delay: -20s;
+    }
+    .cloud-2::before { width: 45px; height: 45px; top: -22px; left: 12px; }
+    .cloud-2::after { width: 55px; height: 35px; top: -12px; right: 8px; }
+
+    .cloud-3 {
+      width: 90px; height: 30px;
+      top: 5%; left: -6%;
+      animation: floatCloud 50s linear infinite;
+      animation-delay: -35s;
+    }
+    .cloud-3::before { width: 40px; height: 40px; top: -20px; left: 10px; }
+    .cloud-3::after { width: 50px; height: 30px; top: -10px; right: 12px; }
+
+    @keyframes floatCloud {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(calc(100vw + 200px)); }
+    }
+
+    /* ===== 太阳 ===== */
+    .sun {
+      position: fixed;
+      top: 5%; right: 8%;
+      width: 60px; height: 60px;
+      background: radial-gradient(circle, #ffe4a1 30%, #ffd06b 70%);
+      border-radius: 50%;
+      box-shadow: 0 0 40px rgba(255, 208, 107, 0.4);
+      animation: sunPulse 4s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    @keyframes sunPulse {
+      0%, 100% { transform: scale(1); opacity: 0.9; }
+      50% { transform: scale(1.05); opacity: 1; }
+    }
+
+    /* ===== 主容器 ===== */
+    .container {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 60px 20px 80px;
+    }
+
+    /* ===== 标题 ===== */
+    .header {
+      text-align: center;
+      margin-bottom: 50px;
+    }
+
+    .header h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      letter-spacing: -1px;
+      margin-bottom: 8px;
+    }
+
+    .header p {
+      font-size: 1rem;
+      color: var(--text-light);
+      font-style: italic;
+    }
+
+    /* ===== 晾衣绳区域 ===== */
+    .clothesline-section {
+      position: relative;
+      margin-bottom: 60px;
+    }
+
+    .rope-svg {
+      width: 100%;
+      height: 40px;
+      overflow: visible;
+    }
+
+    .rope-path {
+      fill: none;
+      stroke: var(--rope);
+      stroke-width: 2.5;
+      stroke-linecap: round;
+    }
+
+    .rope-connector {
+      fill: none;
+      stroke: #a09078;
+      stroke-width: 2;
+    }
+
+    /* ===== 卡片网格 ===== */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 40px 30px;
+      padding: 10px 20px 0;
+    }
+
+    @media (max-width: 900px) {
+      .cards-grid { grid-template-columns: repeat(3, 1fr); gap: 30px 20px; }
+    }
+
+    @media (max-width: 600px) {
+      .cards-grid { grid-template-columns: repeat(2, 1fr); gap: 25px 15px; padding: 10px 10px 0; }
+      .header h1 { font-size: 2.2rem; }
+    }
+
+    /* ===== 明信片包装（含绳子和夹子） ===== */
+    .postcard-wrap {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .string-above {
+      width: 100%;
+      height: 30px;
+      position: relative;
+      margin-bottom: -8px;
+    }
+
+    .string-above svg {
+      width: 100%; height: 100%;
+      overflow: visible;
+    }
+
+    .clothespin {
+      position: absolute;
+      top: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 14px;
+      height: 28px;
+      z-index: 3;
+    }
+
+    .clothespin-body {
+      width: 100%; height: 100%;
+      background: linear-gradient(180deg, var(--clothespin) 0%, var(--clothespin-dark) 100%);
+      border-radius: 3px 3px 1px 1px;
+      position: relative;
+    }
+
+    .clothespin-body::before {
+      content: '';
+      position: absolute;
+      top: 4px; left: 3px; right: 3px;
+      height: 3px;
+      background: #b08a5e;
+      border-radius: 2px;
+    }
+
+    .clothespin-body::after {
+      content: '';
+      position: absolute;
+      bottom: 2px; left: 5px; right: 5px;
+      height: 4px;
+      background: rgba(0,0,0,0.1);
+      border-radius: 2px;
+    }
+
+    /* ===== 明信片 ===== */
+    .postcard {
+      width: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 4px;
+      box-shadow: 0 3px 12px var(--card-shadow);
+      overflow: hidden;
+      transition: transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .postcard::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, transparent 10%, rgba(0,0,0,0.03) 50%, transparent 90%);
+    }
+
+    .postcard:hover {
+      box-shadow: 0 8px 28px rgba(0,0,0,0.12);
+    }
+
+    /* 随机旋转角度 */
+    .postcard-wrap:nth-child(1) .postcard { transform: rotate(-1.5deg); }
+    .postcard-wrap:nth-child(1) .postcard:hover { transform: rotate(-1deg) translateY(-6px); }
+    .postcard-wrap:nth-child(2) .postcard { transform: rotate(1deg); }
+    .postcard-wrap:nth-child(2) .postcard:hover { transform: rotate(0.5deg) translateY(-6px); }
+    .postcard-wrap:nth-child(3) .postcard { transform: rotate(-0.8deg); }
+    .postcard-wrap:nth-child(3) .postcard:hover { transform: rotate(-0.3deg) translateY(-6px); }
+    .postcard-wrap:nth-child(4) .postcard { transform: rotate(1.2deg); }
+    .postcard-wrap:nth-child(4) .postcard:hover { transform: rotate(0.7deg) translateY(-6px); }
+
+    @keyframes gentleSway {
+      0%, 100% { transform: rotate(var(--base-rotate, 0deg)); }
+      25% { transform: rotate(calc(var(--base-rotate, 0deg) + 0.5deg)); }
+      75% { transform: rotate(calc(var(--base-rotate, 0deg) - 0.5deg)); }
+    }
+
+    .postcard-wrap:nth-child(1) { --base-rotate: -1.5deg; }
+    .postcard-wrap:nth-child(2) { --base-rotate: 1deg; }
+    .postcard-wrap:nth-child(3) { --base-rotate: -0.8deg; }
+    .postcard-wrap:nth-child(4) { --base-rotate: 1.2deg; }
+
+    /* ===== 预览区域 ===== */
+    .preview-area {
+      height: 140px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(180deg, #f5f1eb 0%, #ede8e0 100%);
+      border-bottom: 1px dashed var(--card-border);
+    }
+
+    /* 小球模拟器预览 */
+    .ball-preview {
+      position: relative;
+      width: 100%; height: 100%;
+    }
+
+    .mini-ball {
+      position: absolute;
+      width: 20px; height: 20px;
+      border-radius: 50%;
+      animation: miniBounce 2s ease-in-out infinite;
+    }
+
+    .mini-ball:nth-child(1) {
+      background: radial-gradient(circle at 30% 30%, #ff8a65, #e64a19);
+      left: 30%; animation-delay: 0s;
+    }
+
+    .mini-ball:nth-child(2) {
+      background: radial-gradient(circle at 30% 30%, #81c784, #388e3c);
+      left: 50%; animation-delay: 0.3s;
+      width: 16px; height: 16px;
+    }
+
+    .mini-ball:nth-child(3) {
+      background: radial-gradient(circle at 30% 30%, #64b5f6, #1976d2);
+      left: 70%; animation-delay: 0.6s;
+      width: 14px; height: 14px;
+    }
+
+    @keyframes miniBounce {
+      0%, 100% { top: 20%; transform: translateY(0); }
+      50% { top: 70%; transform: translateY(0); }
+    }
+
+    .ball-trail {
+      position: absolute;
+      width: 2px;
+      background: rgba(0,0,0,0.08);
+      left: calc(30% + 9px);
+      top: 20%; bottom: 30%;
+      border-radius: 1px;
+    }
+
+    .ball-trail::before {
+      content: '';
+      position: absolute;
+      width: 2px;
+      background: rgba(0,0,0,0.05);
+      left: calc(50% - 30% + 7px);
+      top: 0; bottom: 0;
+      border-radius: 1px;
+    }
+
+    /* 五笔预览 */
+    .wubi-preview {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .wubi-char {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: var(--text-dark);
+      animation: charSwitch 3s ease-in-out infinite;
+    }
+
+    .wubi-code {
+      font-family: "SF Mono", monospace;
+      font-size: 0.9rem;
+      color: var(--accent-blue);
+      letter-spacing: 2px;
+      animation: codeSwitch 3s ease-in-out infinite;
+    }
+
+    @keyframes charSwitch {
+      0%, 40% { opacity: 1; transform: scale(1); }
+      50%, 90% { opacity: 0; transform: scale(0.8); }
+      100% { opacity: 1; transform: scale(1); }
+    }
+
+    @keyframes codeSwitch {
+      0%, 40% { opacity: 0; transform: scale(0.8); }
+      50%, 90% { opacity: 1; transform: scale(1); }
+      100% { opacity: 0; transform: scale(0.8); }
+    }
+
+    /* 空夹子预览 */
+    .empty-preview {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .empty-dashed {
+      width: 80px; height: 80px;
+      border: 2px dashed var(--card-border);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.8rem;
+      color: var(--text-light);
+      animation: emptyPulse 3s ease-in-out infinite;
+    }
+
+    @keyframes emptyPulse {
+      0%, 100% { opacity: 0.5; transform: scale(1); }
+      50% { opacity: 0.8; transform: scale(1.05); }
+    }
+
+    /* ===== 文字区域 ===== */
+    .card-text {
+      padding: 16px 18px 20px;
+      text-align: center;
+    }
+
+    .card-title {
+      font-size: 1.05rem;
+      font-weight: 600;
+      color: var(--text-dark);
+      margin-bottom: 4px;
+    }
+
+    .card-desc {
+      font-size: 0.8rem;
+      color: var(--text-light);
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    .card-link {
+      display: inline-block;
+      padding: 6px 16px;
+      background: var(--text-dark);
+      color: #fff;
+      text-decoration: none;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      transition: background 0.2s, transform 0.2s;
+    }
+
+    .card-link:hover {
+      background: var(--accent-blue);
+      transform: translateY(-1px);
+    }
+
+    .empty-card .card-link {
+      background: transparent;
+      color: var(--text-light);
+      border: 1px dashed var(--card-border);
+    }
+
+    .empty-card .card-link:hover {
+      background: var(--card-bg);
+      color: var(--text-dark);
+    }
+
+    /* ===== 底部草地 ===== */
+    .grass {
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      height: 40px;
+      background: linear-gradient(180deg, #c4d9a8 0%, #a8c48a 100%);
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .grass::before {
+      content: '';
+      position: absolute;
+      top: -10px; left: 0; right: 0;
+      height: 20px;
+      background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath d='M0 20 Q5 5 10 20 Q15 5 20 20' fill='%23c4d9a8'/%3E%3C/svg%3E");
+      background-size: 20px 20px;
+      opacity: 0.6;
+    }
+
+    /* ===== 飞鸟 ===== */
+    .bird {
+      position: fixed;
+      width: 20px; height: 10px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .bird svg {
+      width: 100%; height: 100%;
+    }
+
+    .bird-1 {
+      top: 12%; left: -5%;
+      animation: flyAcross 25s linear infinite;
+    }
+
+    .bird-2 {
+      top: 8%; left: -3%;
+      animation: flyAcross 30s linear infinite;
+      animation-delay: -10s;
+      transform: scale(0.7);
+    }
+
+    @keyframes flyAcross {
+      0% { transform: translateX(0) translateY(0); }
+      25% { transform: translateX(30vw) translateY(-10px); }
+      50% { transform: translateX(60vw) translateY(5px); }
+      75% { transform: translateX(90vw) translateY(-5px); }
+      100% { transform: translateX(105vw) translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- 云朵 -->
+  <div class="clouds">
+    <div class="cloud cloud-1"></div>
+    <div class="cloud cloud-2"></div>
+    <div class="cloud cloud-3"></div>
+  </div>
+
+  <!-- 太阳 -->
+  <div class="sun"></div>
+
+  <!-- 飞鸟 -->
+  <div class="bird bird-1">
+    <svg viewBox="0 0 20 10" fill="none">
+      <path d="M0 5 Q5 0 10 5 Q15 0 20 5" stroke="#7a9ab0" stroke-width="1.5" fill="none" opacity="0.5"/>
+    </svg>
+  </div>
+  <div class="bird bird-2">
+    <svg viewBox="0 0 20 10" fill="none">
+      <path d="M0 5 Q5 0 10 5 Q15 0 20 5" stroke="#7a9ab0" stroke-width="1.5" fill="none" opacity="0.4"/>
+    </svg>
+  </div>
+
+  <!-- 主内容 -->
+  <div class="container">
+    <header class="header">
+      <h1>funs</h1>
+      <p>small experiments, made for fun</p>
+    </header>
+
+    <!-- 晾衣绳 -->
+    <section class="clothesline-section">
+      <svg class="rope-svg" viewBox="0 0 1200 40" preserveAspectRatio="none">
+        <!-- 左电线杆 -->
+        <line x1="20" y1="0" x2="20" y2="40" class="rope-connector"/>
+        <!-- 右电线杆 -->
+        <line x1="1180" y1="0" x2="1180" y2="40" class="rope-connector"/>
+        <!-- 绳子 -->
+        <path d="M20,10 Q600,35 1180,10" class="rope-path"/>
+      </svg>
+    </section>
+
+    <!-- 卡片网格 -->
+    <div class="cards-grid" id="cardsGrid"></div>
+  </div>
+
+  <!-- 底部草地 -->
+  <div class="grass"></div>
+
+  <script>
+    const projects = [
+      {
+        id: 'ball',
+        title: '小球物理模拟',
+        desc: '弹来弹去的快乐小球',
+        href: '/ball-physics-simulation',
+        type: 'ball'
+      },
+      {
+        id: 'wubi',
+        title: '五笔打字练习',
+        desc: '汉字与编码的碰撞',
+        href: '/wubi-trainer',
+        type: 'wubi'
+      },
+      {
+        id: 'empty1',
+        title: '下一个点子',
+        desc: '还在晾晒中...',
+        href: '#',
+        type: 'empty'
+      },
+      {
+        id: 'empty2',
+        title: '下一个作品',
+        desc: '等待挂上...',
+        href: '#',
+        type: 'empty'
+      }
+    ];
+
+    function createCard(project) {
+      const wrap = document.createElement('div');
+      wrap.className = 'postcard-wrap';
+
+      let previewHTML = '';
+      let cardClass = '';
+
+      if (project.type === 'ball') {
+        previewHTML = `
+          <div class="ball-preview">
+            <div class="ball-trail"></div>
+            <div class="mini-ball"></div>
+            <div class="mini-ball"></div>
+            <div class="mini-ball"></div>
+          </div>
+        `;
+      } else if (project.type === 'wubi') {
+        previewHTML = `
+          <div class="wubi-preview">
+            <div class="wubi-char">好</div>
+            <div class="wubi-code">v b g</div>
+          </div>
+        `;
+      } else {
+        previewHTML = `
+          <div class="empty-preview">
+            <div class="empty-dashed">?</div>
+          </div>
+        `;
+        cardClass = 'empty-card';
+      }
+
+      wrap.innerHTML = `
+        <div class="string-above">
+          <svg viewBox="0 0 100 30" preserveAspectRatio="none">
+            <path d="M0,5 Q50,20 100,5" fill="none" stroke="var(--rope)" stroke-width="1.5" opacity="0.4"/>
+          </svg>
+          <div class="clothespin">
+            <div class="clothespin-body"></div>
+          </div>
+        </div>
+        <div class="postcard ${cardClass}" onclick="window.location.href='${project.href}'">
+          <div class="preview-area">
+            ${previewHTML}
+          </div>
+          <div class="card-text">
+            <div class="card-title">${project.title}</div>
+            <div class="card-desc">${project.desc}</div>
+            <a href="${project.href}" class="card-link" onclick="event.stopPropagation()">
+              ${project.type === 'empty' ? '放点什么' : '去看看'}
+            </a>
+          </div>
+        </div>
+      `;
+
+      return wrap;
+    }
+
+    const grid = document.getElementById('cardsGrid');
+    projects.forEach(p => grid.appendChild(createCard(p)));
+  </script>
+</body>
+</html>
