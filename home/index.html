@@ -1,192 +1,632 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>funs — small experiments, made for fun</title>
-<style>
-  :root {
-    --sky-top: #c9e8f7;
-    --card-bg: #fefcf5;
-    --card-shadow: rgba(120,90,50,.12);
-    --pin-color: #c4956a;
-    --pin-dark: #a0724a;
-    --rope: #d4b896;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: -apple-system,"PingFang SC","Microsoft YaHei","Noto Sans SC",sans-serif;
-    background: linear-gradient(180deg, var(--sky-top) 0%, #d6ecf8 35%, #e8f4e8 70%, #d8ecd0 100%);
-    min-height: 100vh; overflow-x: hidden;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>明信片墙 — funs</title>
+  <style>
+    :root {
+      --wall: #f3efe7;
+      --wall-light: #f7f4ed;
+      --wall-shadow: #e8e2d6;
+      --text: #3d3832;
+      --text-light: #8a8174;
+      --text-muted: #b5ada2;
+      --accent: #c4956a;
+      --accent-hover: #a87d52;
+      --rope: #c9b99a;
+      --rope-dark: #b0a080;
+      --pin: #c4956a;
+      --pin-dark: #a07850;
+      --card-bg: #fdfcfa;
+      --card-border: #e8e0d4;
+      --tag-bg: #eae5dc;
+      --tag-active: #3d3832;
+      --tag-active-text: #fdfcfa;
+    }
 
-  /* Clouds */
-  .cloud {
-    position: fixed; background: #fff; border-radius: 50%; opacity: .65; pointer-events: none; z-index: 0;
-  }
-  .cloud::before, .cloud::after { content: ''; position: absolute; background: #fff; border-radius: 50%; }
-  .c1 { width: 140px; height: 50px; top: 8%; left: -10%; animation: drift 50s linear infinite; }
-  .c1::before { width: 60px; height: 60px; top: -30px; left: 30px; }
-  .c1::after { width: 80px; height: 55px; top: -22px; left: 70px; }
-  .c2 { width: 100px; height: 36px; top: 18%; animation: drift 60s linear 18s infinite; }
-  .c2::before { width: 44px; height: 44px; top: -22px; left: 20px; }
-  .c2::after { width: 56px; height: 38px; top: -16px; left: 50px; }
-  .c3 { width: 120px; height: 42px; top: 5%; right: -15%; animation: drift-r 55s linear 10s infinite; }
-  .c3::before { width: 52px; height: 52px; top: -26px; left: 25px; }
-  .c3::after { width: 66px; height: 46px; top: -18px; left: 60px; }
-  @keyframes drift { from { transform: translateX(-180px); } to { transform: translateX(calc(100vw + 350px)); } }
-  @keyframes drift-r { from { transform: translateX(180px); } to { transform: translateX(calc(-100vw - 350px)); } }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-  /* Sun */
-  .sun {
-    position: fixed; top: 6%; right: 10%; width: 70px; height: 70px;
-    background: radial-gradient(circle, #fff8c0 25%, #ffe89c 65%, transparent 70%);
-    border-radius: 50%; pointer-events: none; z-index: 0;
-    animation: glow 4s ease-in-out infinite alternate;
-  }
-  @keyframes glow { from { box-shadow: 0 0 40px 10px rgba(255,240,160,.3); } to { box-shadow: 0 0 70px 20px rgba(255,220,100,.5); } }
+    body {
+      font-family: -apple-system, "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+      background: var(--wall);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+    }
 
-  /* Header */
-  header { text-align: center; padding: 44px 20px 20px; position: relative; z-index: 2; }
-  header h1 { font-size: clamp(36px, 6vw, 56px); font-weight: 800; letter-spacing: -.02em; color: #5a4a3a; text-shadow: 0 2px 8px rgba(255,255,255,.6); }
-  header h1 span { display: block; font-size: clamp(14px, 2vw, 18px); font-weight: 500; color: #8a7a6a; letter-spacing: .08em; margin-top: 4px; }
+    /* ===== 导航 ===== */
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 20px 40px;
+      max-width: 1200px;
+      margin: 0 auto;
+    }
 
-  /* Gallery */
-  .gallery { position: relative; z-index: 2; max-width: 1100px; margin: 0 auto; padding: 10px 24px 60px; }
-  .rope-row { position: relative; margin-bottom: 40px; padding-top: 30px; }
-  .rope-row::before { content: ''; position: absolute; top: 14px; left: 0; right: 0; height: 2px; background: var(--rope); border-radius: 1px; box-shadow: 0 1px 3px rgba(180,150,120,.3); }
-  .rope-row::after { content: ''; position: absolute; top: 14px; left: 5%; right: 5%; height: 4px; background: var(--rope); border-radius: 0 0 50% 50%; transform: translateY(6px); opacity: .3; }
-  .cards { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; position: relative; z-index: 2; }
+    .nav-left {
+      display: flex;
+      align-items: center;
+      gap: 32px;
+    }
 
-  /* Card */
-  .card {
-    background: var(--card-bg); border-radius: 4px;
-    box-shadow: 2px 3px 12px var(--card-shadow), 0 1px 3px rgba(0,0,0,.06);
-    cursor: pointer; transition: transform .3s ease, box-shadow .3s ease;
-    text-decoration: none; color: inherit; display: flex; flex-direction: column;
-    animation: sway 7s ease-in-out infinite;
-  }
-  .card:nth-child(2) { animation-delay: -2.5s; }
-  .card:nth-child(3) { animation-delay: -4.5s; }
-  .card:nth-child(4) { animation-delay: -1.5s; }
-  @keyframes sway { 0%, 100% { transform: rotate(-.5deg); } 50% { transform: rotate(.7deg); } }
-  .card:hover { transform: rotate(0deg) translateY(-8px) !important; box-shadow: 4px 10px 28px rgba(120,90,50,.18); z-index: 5; animation-play-state: paused; }
+    .logo {
+      font-size: 1.1rem;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      color: var(--text);
+      text-decoration: none;
+    }
 
-  /* Clothespin */
-  .card::before { content: ''; position: absolute; top: -24px; left: 50%; transform: translateX(-50%); width: 16px; height: 30px; background: linear-gradient(90deg, var(--pin-dark) 30%, var(--pin-color) 30%, var(--pin-color) 70%, var(--pin-dark) 70%); border-radius: 4px 4px 2px 2px; z-index: 3; box-shadow: 0 1px 2px rgba(0,0,0,.15); }
-  .card::after { content: ''; position: absolute; top: -28px; left: 50%; transform: translateX(-50%); width: 12px; height: 8px; background: var(--pin-dark); border-radius: 2px; box-shadow: 0 1px 2px rgba(0,0,0,.1); }
+    .logo span {
+      font-weight: 400;
+      color: var(--text-muted);
+    }
 
-  /* Preview */
-  .preview { height: 130px; border-radius: 3px 3px 0 0; display: flex; align-items: center; justify-content: center; overflow: hidden; position: relative; }
-  .pv-ball { background: linear-gradient(180deg, #fef9f0, #f0e8d8); border-bottom: 2px solid #e8dcc8; }
-  .pv-wubi { background: linear-gradient(180deg, #fdfaf5, #f5f0e4); border-bottom: 2px solid #e0d8c5; }
-  .pv-empty { background: repeating-linear-gradient(45deg, #f8f5ee, #f8f5ee 6px, #f2ede2 6px, #f2ede2 12px); border: 2px dashed #ddd6c5; }
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
 
-  .ball { width: 36px; height: 36px; background: radial-gradient(circle at 35% 30%, #ff9a76, #e85d3a); border-radius: 50%; animation: bounce .85s ease-in-out infinite alternate; box-shadow: 0 4px 12px rgba(232,93,58,.3); }
-  @keyframes bounce { from { transform: translateY(16px); } to { transform: translateY(-16px); } }
-  .ball-sh { position: absolute; bottom: 32px; width: 26px; height: 5px; background: rgba(0,0,0,.07); border-radius: 50%; animation: shrink .85s ease-in-out infinite alternate; }
-  @keyframes shrink { from { transform: scaleX(1); opacity: .5; } to { transform: scaleX(.4); opacity: .15; } }
+    .nav-links a {
+      font-size: 0.85rem;
+      color: var(--text-light);
+      text-decoration: none;
+      transition: color 0.2s;
+      letter-spacing: 0.02em;
+    }
 
-  .wu-char { font-size: 48px; font-weight: 500; color: #4a3a2a; animation: fc 3.5s ease-in-out infinite; }
-  @keyframes fc { 0%,35% { opacity:1; } 50%,85% { opacity:0; } 100% { opacity:1; } }
-  .wu-code { position: absolute; font-family: "SF Mono","Consolas",monospace; font-size: 26px; letter-spacing: .15em; color: #b55a10; font-weight: 700; animation: fc 3.5s ease-in-out infinite reverse; }
+    .nav-links a:hover {
+      color: var(--text);
+    }
 
-  .empty-q { font-size: 44px; color: #ccc8bb; font-weight: 300; }
+    .nav-cta {
+      padding: 8px 20px;
+      border: 1px solid var(--text);
+      border-radius: 4px;
+      font-size: 0.8rem;
+      color: var(--text);
+      text-decoration: none;
+      transition: all 0.2s;
+      background: transparent;
+      cursor: pointer;
+    }
 
-  /* Card info */
-  .info { padding: 14px 16px 16px; text-align: center; }
-  .info h3 { font-size: 16px; font-weight: 700; color: #4a3a2a; margin-bottom: 4px; }
-  .info p { font-size: 12px; color: #8a7a6a; line-height: 1.4; }
-  .info .go { display: inline-block; margin-top: 8px; font-size: 11px; color: var(--pin-color); font-weight: 600; }
+    .nav-cta:hover {
+      background: var(--text);
+      color: var(--wall-light);
+    }
 
-  .footer { text-align: center; padding: 20px; position: relative; z-index: 2; font-size: 12px; color: #b0a590; }
+    @media (max-width: 600px) {
+      .nav { padding: 16px 20px; }
+      .nav-links { display: none; }
+    }
 
-  /* Bird */
-  .bird { position: fixed; z-index: 1; pointer-events: none; font-size: 18px; animation: fly 20s linear infinite; top: 22%; }
-  @keyframes fly { 0% { left: -5%; transform: translateY(0); } 25% { transform: translateY(-22px); } 50% { transform: translateY(12px); } 75% { transform: translateY(-16px); } 100% { left: 105%; transform: translateY(0); } }
+    /* ===== 标题区 ===== */
+    .hero {
+      text-align: center;
+      padding: 40px 20px 30px;
+      max-width: 600px;
+      margin: 0 auto;
+    }
 
-  @media (max-width: 900px) {
-    .cards { grid-template-columns: repeat(2, 1fr); gap: 14px; }
-    .preview { height: 110px; }
-  }
-  @media (max-width: 480px) {
-    header { padding: 28px 14px 14px; }
-    header h1 { font-size: 28px; }
-    .gallery { padding: 6px 12px 40px; }
-    .cards { gap: 10px; }
-    .preview { height: 100px; }
-    .info { padding: 10px 10px 12px; }
-    .info h3 { font-size: 14px; }
-  }
-</style>
+    .hero h1 {
+      font-size: clamp(1.8rem, 4vw, 2.6rem);
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      margin-bottom: 8px;
+      color: var(--text);
+    }
+
+    .hero p {
+      font-size: 0.9rem;
+      color: var(--text-light);
+      letter-spacing: 0.03em;
+    }
+
+    /* ===== 筛选标签 ===== */
+    .tags {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding: 0 20px 30px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      padding: 6px 16px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      color: var(--text-light);
+      background: var(--tag-bg);
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      letter-spacing: 0.02em;
+    }
+
+    .tag:hover {
+      background: var(--wall-shadow);
+      color: var(--text);
+    }
+
+    .tag.active {
+      background: var(--tag-active);
+      color: var(--tag-active-text);
+    }
+
+    /* ===== 画廊 ===== */
+    .gallery {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 30px 60px;
+    }
+
+    .rope-row {
+      position: relative;
+      margin-bottom: 30px;
+      padding-top: 28px;
+    }
+
+    .rope-line {
+      position: absolute;
+      top: 8px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, transparent 0%, var(--rope) 5%, var(--rope) 95%, transparent 100%);
+      opacity: 0.6;
+    }
+
+    .rope-line::after {
+      content: '';
+      position: absolute;
+      top: 1px;
+      left: 3%;
+      right: 3%;
+      height: 3px;
+      background: var(--rope-dark);
+      border-radius: 0 0 50% 50%;
+      opacity: 0.25;
+      transform: translateY(2px);
+    }
+
+    .cards {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 16px;
+      position: relative;
+      z-index: 2;
+    }
+
+    @media (max-width: 900px) {
+      .cards { grid-template-columns: repeat(3, 1fr); }
+    }
+
+    @media (max-width: 600px) {
+      .cards { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+      .gallery { padding: 0 16px 40px; }
+    }
+
+    @media (max-width: 480px) {
+      .cards { grid-template-columns: repeat(1, 1fr); gap: 16px; max-width: 280px; margin: 0 auto; }
+      .card-content { height: 160px; }
+    }
+
+    /* ===== 明信片 ===== */
+    .postcard-wrap {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .clothespin {
+      position: absolute;
+      top: -18px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 4;
+      width: 14px;
+      height: 26px;
+    }
+
+    .clothespin-body {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--pin-dark) 25%, var(--pin) 25%, var(--pin) 75%, var(--pin-dark) 75%);
+      border-radius: 3px 3px 1px 1px;
+      position: relative;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    }
+
+    .clothespin-body::before {
+      content: '';
+      position: absolute;
+      top: 3px;
+      left: 2px;
+      right: 2px;
+      height: 2px;
+      background: rgba(0,0,0,0.12);
+      border-radius: 1px;
+    }
+
+    .clothespin-body::after {
+      content: '';
+      position: absolute;
+      top: -4px;
+      left: 4px;
+      width: 6px;
+      height: 5px;
+      background: var(--pin-dark);
+      border-radius: 1px;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .postcard {
+      width: 100%;
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 2px;
+      box-shadow: 1px 2px 8px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
+      position: relative;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    /* 微妙旋转 */
+    .postcard-wrap:nth-child(1) .postcard { transform: rotate(-1deg); }
+    .postcard-wrap:nth-child(2) .postcard { transform: rotate(0.6deg); }
+    .postcard-wrap:nth-child(3) .postcard { transform: rotate(-0.4deg); }
+    .postcard-wrap:nth-child(4) .postcard { transform: rotate(0.8deg); }
+    .postcard-wrap:nth-child(5) .postcard { transform: rotate(-0.7deg); }
+
+    .postcard:hover {
+      transform: rotate(0deg) translateY(-6px) !important;
+      box-shadow: 3px 8px 20px rgba(0,0,0,0.1);
+      z-index: 5;
+    }
+
+    /* ===== 卡片内容类型 ===== */
+    .card-content {
+      height: 150px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+
+    @media (max-width: 600px) {
+      .card-content { height: 120px; }
+    }
+
+    /* 文字排版风格 */
+    .type-typo {
+      background: linear-gradient(135deg, #f5f1ea 0%, #ece6db 100%);
+      flex-direction: column;
+      gap: 6px;
+      padding: 16px;
+      text-align: center;
+    }
+
+    .type-typo .big {
+      font-size: 2.2rem;
+      font-weight: 300;
+      color: var(--text);
+      line-height: 1.1;
+    }
+
+    .type-typo .small {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    /* 几何/艺术风格 */
+    .type-art {
+      background: #f0ebe3;
+    }
+
+    .art-circle {
+      width: 50px;
+      height: 50px;
+      border: 2px solid var(--text);
+      border-radius: 50%;
+      opacity: 0.3;
+    }
+
+    .art-triangle {
+      width: 0; height: 0;
+      border-left: 20px solid transparent;
+      border-right: 20px solid transparent;
+      border-bottom: 36px solid var(--accent);
+      opacity: 0.4;
+    }
+
+    .art-line {
+      width: 40px;
+      height: 2px;
+      background: var(--text);
+      opacity: 0.2;
+    }
+
+    /* 项目卡片 - 小球 */
+    .type-ball {
+      background: linear-gradient(180deg, #f8f5ef, #f0ebe0);
+      border-bottom: 1px solid #e0d8c8;
+    }
+
+    .mini-ball {
+      width: 24px; height: 24px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #ff9a76, #e85d3a);
+      animation: ballBounce 1.2s ease-in-out infinite alternate;
+      box-shadow: 0 3px 8px rgba(232,93,58,0.25);
+    }
+
+    @keyframes ballBounce {
+      from { transform: translateY(14px); }
+      to { transform: translateY(-14px); }
+    }
+
+    .ball-shadow {
+      position: absolute;
+      bottom: 30px;
+      width: 20px; height: 4px;
+      background: rgba(0,0,0,0.08);
+      border-radius: 50%;
+      animation: shadowScale 1.2s ease-in-out infinite alternate;
+    }
+
+    @keyframes shadowScale {
+      from { transform: scaleX(1); opacity: 0.5; }
+      to { transform: scaleX(0.5); opacity: 0.15; }
+    }
+
+    /* 项目卡片 - 五笔 */
+    .type-wubi {
+      background: linear-gradient(180deg, #faf7f1, #f2ede4);
+      border-bottom: 1px solid #e0d8c8;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .wubi-char {
+      font-size: 2rem;
+      font-weight: 500;
+      color: var(--text);
+      animation: charFlip 3s ease-in-out infinite;
+    }
+
+    .wubi-code {
+      font-family: "SF Mono", "Consolas", monospace;
+      font-size: 0.75rem;
+      color: var(--accent);
+      letter-spacing: 0.15em;
+      animation: codeFlip 3s ease-in-out infinite;
+    }
+
+    @keyframes charFlip {
+      0%, 40% { opacity: 1; }
+      50%, 90% { opacity: 0; }
+      100% { opacity: 1; }
+    }
+
+    @keyframes codeFlip {
+      0%, 40% { opacity: 0; }
+      50%, 90% { opacity: 1; }
+      100% { opacity: 0; }
+    }
+
+    /* 空位 */
+    .type-empty {
+      background: repeating-linear-gradient(45deg, #f5f1ea, #f5f1ea 8px, #ede8de 8px, #ede8de 16px);
+    }
+
+    .empty-mark {
+      font-size: 1.8rem;
+      color: var(--text-muted);
+      font-weight: 300;
+      opacity: 0.5;
+    }
+
+    /* 底部信息 */
+    .card-info {
+      padding: 10px 12px 12px;
+      text-align: center;
+    }
+
+    .card-info h4 {
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 2px;
+    }
+
+    .card-info p {
+      font-size: 0.7rem;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    /* ===== 页脚 ===== */
+    .footer {
+      text-align: center;
+      padding: 30px 20px 50px;
+      border-top: 1px solid var(--wall-shadow);
+      margin: 0 40px;
+    }
+
+    .footer p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      letter-spacing: 0.03em;
+    }
+
+    @media (max-width: 600px) {
+      .footer { margin: 0 20px; padding: 20px 10px 40px; }
+    }
+  </style>
 </head>
 <body>
 
-<div class="cloud c1"></div>
-<div class="cloud c2"></div>
-<div class="cloud c3"></div>
-<div class="sun"></div>
-<div class="bird">🐦</div>
-
-<header>
-  <h1>funs<span>small experiments, made for fun</span></h1>
-</header>
-
-<main class="gallery">
-  <div class="rope-row">
-    <div class="cards">
-
-      <a class="card" href="/ball-physics-simulation">
-        <div class="preview pv-ball">
-          <div class="ball-sh"></div>
-          <div class="ball"></div>
-        </div>
-        <div class="info">
-          <h3>小球物理模拟</h3>
-          <p>弹来弹去的快乐小球</p>
-          <span class="go">去看看 →</span>
-        </div>
-      </a>
-
-      <a class="card" href="/wubi-trainer">
-        <div class="preview pv-wubi">
-          <span class="wu-char">好</span>
-          <span class="wu-code">vbg</span>
-        </div>
-        <div class="info">
-          <h3>五笔练习器</h3>
-          <p>拆字入指，编码成肌</p>
-          <span class="go">去看看 →</span>
-        </div>
-      </a>
-
-      <div class="card" style="cursor:default;opacity:.7;">
-        <div class="preview pv-empty">
-          <span class="empty-q">?</span>
-        </div>
-        <div class="info">
-          <h3>下一个点子</h3>
-          <p>还没想好做什么</p>
-          <span class="go" style="color:#ccc;">放点什么？</span>
-        </div>
-      </div>
-
-      <div class="card" style="cursor:default;opacity:.5;">
-        <div class="preview pv-empty">
-          <span class="empty-q">✨</span>
-        </div>
-        <div class="info">
-          <h3>等你来填</h3>
-          <p>好玩的都行</p>
-          <span class="go" style="color:#ccc;">……</span>
-        </div>
-      </div>
-
+  <!-- 导航 -->
+  <nav class="nav">
+    <div class="nav-left">
+      <a href="/" class="logo">funs <span>工作室</span></a>
+      <ul class="nav-links">
+        <li><a href="#">关于</a></li>
+        <li><a href="#">日志</a></li>
+        <li><a href="#">作品</a></li>
+        <li><a href="#">联系</a></li>
+      </ul>
     </div>
+    <a href="#" class="nav-cta">写张明信片</a>
+  </nav>
+
+  <!-- 标题 -->
+  <header class="hero">
+    <h1>明信片墙</h1>
+    <p>一个用心挑选和分享的灵感和精选墙</p>
+  </header>
+
+  <!-- 筛选 -->
+  <div class="tags" id="tags">
+    <button class="tag active" data-filter="all">全部</button>
+    <button class="tag" data-filter="art">艺术</button>
+    <button class="tag" data-filter="design">设计</button>
+    <button class="tag" data-filter="photo">摄影</button>
+    <button class="tag" data-filter="code">代码</button>
   </div>
-</main>
 
-<div class="footer">funs — made with curiosity and joy</div>
+  <!-- 画廊 -->
+  <div class="gallery" id="gallery"></div>
 
+  <!-- 页脚 -->
+  <footer class="footer">
+    <p>© 2026 funs 工作室 · small experiments, made for fun</p>
+  </footer>
+
+  <script>
+    const projects = [
+      { id: 'ball', title: '小球物理模拟', desc: '弹来弹去的快乐', type: 'ball', tags: ['code', 'design'], href: '/ball-physics-simulation' },
+      { id: 'wubi', title: '五笔打字练习', desc: '汉字与编码', type: 'wubi', tags: ['code', 'design'], href: '/wubi-trainer' },
+      { id: 'typo1', title: '字体排印', desc: '文字的力量', type: 'typo', tags: ['design', 'art'], href: '#' },
+      { id: 'geo1', title: '几何构成', desc: '点线面的舞蹈', type: 'art', tags: ['art', 'design'], href: '#' },
+      { id: 'empty1', title: '待续', desc: '下一张明信片', type: 'empty', tags: [], href: '#' },
+      { id: 'typo2', title: '保持简单', desc: 'less is more', type: 'typo', tags: ['design'], href: '#' },
+      { id: 'art1', title: '圆与缺', desc: '正负形探索', type: 'art', tags: ['art'], href: '#' },
+      { id: 'empty2', title: '空白', desc: '留给未来', type: 'empty', tags: [], href: '#' },
+      { id: 'photo1', title: '光影', desc: '捕捉瞬间', type: 'photo', tags: ['photo'], href: '#' },
+      { id: 'typo3', title: '慢下来', desc: '放慢脚步', type: 'typo', tags: ['design'], href: '#' },
+    ];
+
+    function createPostcard(project) {
+      const wrap = document.createElement('div');
+      wrap.className = 'postcard-wrap';
+      wrap.dataset.tags = project.tags.join(' ');
+
+      let contentHTML = '';
+
+      switch (project.type) {
+        case 'ball':
+          contentHTML = `
+            <div class="mini-ball"></div>
+            <div class="ball-shadow"></div>
+          `;
+          break;
+        case 'wubi':
+          contentHTML = `
+            <div class="wubi-char">好</div>
+            <div class="wubi-code">v b g</div>
+          `;
+          break;
+        case 'typo':
+          contentHTML = `
+            <div class="big">${project.title === '保持简单' ? 'keep it<br>simple' : project.title === '慢下来' ? '慢' : project.title === '字体排印' ? 'Aa' : '文字'}</div>
+            <div class="small">${project.desc}</div>
+          `;
+          break;
+        case 'art':
+          contentHTML = `
+            <div class="art-circle"></div>
+          `;
+          break;
+        case 'photo':
+          contentHTML = `
+            <div style="width:60%;height:60%;background:linear-gradient(135deg,#d4c8b8,#b8a898);border-radius:2px;opacity:0.6;"></div>
+          `;
+          break;
+        case 'empty':
+          contentHTML = `<div class="empty-mark">?</div>`;
+          break;
+      }
+
+      wrap.innerHTML = `
+        <div class="clothespin">
+          <div class="clothespin-body"></div>
+        </div>
+        <a href="${project.href}" class="postcard type-${project.type}">
+          <div class="card-content">
+            ${contentHTML}
+          </div>
+          <div class="card-info">
+            <h4>${project.title}</h4>
+            <p>${project.desc}</p>
+          </div>
+        </a>
+      `;
+
+      return wrap;
+    }
+
+    function renderGallery(filter = 'all') {
+      const gallery = document.getElementById('gallery');
+      gallery.innerHTML = '';
+
+      const filtered = filter === 'all'
+        ? projects
+        : projects.filter(p => p.tags.includes(filter));
+
+      // 每 5 个一组，每组一根绳子
+      const perRow = 5;
+      for (let i = 0; i < filtered.length; i += perRow) {
+        const row = document.createElement('div');
+        row.className = 'rope-row';
+
+        const rope = document.createElement('div');
+        rope.className = 'rope-line';
+        row.appendChild(rope);
+
+        const cards = document.createElement('div');
+        cards.className = 'cards';
+
+        filtered.slice(i, i + perRow).forEach(p => {
+          cards.appendChild(createPostcard(p));
+        });
+
+        row.appendChild(cards);
+        gallery.appendChild(row);
+      }
+    }
+
+    // 筛选
+    document.getElementById('tags').addEventListener('click', e => {
+      if (!e.target.classList.contains('tag')) return;
+      document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
+      e.target.classList.add('active');
+      renderGallery(e.target.dataset.filter);
+    });
+
+    renderGallery();
+  </script>
 </body>
 </html>
