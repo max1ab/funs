@@ -131,6 +131,13 @@
   .page.follow-mode .follow-code {
     display: flex;
   }
+  .page.follow-mode .bar .big-char,
+  .page.follow-mode .bar .decomp,
+  .page.follow-mode .bar .follow-code,
+  .page.follow-mode .bar .input-group,
+  .page.follow-mode .bar .hints {
+    display: none;
+  }
   .follow-code span {
     min-width: 38px;
     height: 42px;
@@ -295,6 +302,83 @@
   }
   .kb-spacer { min-width: 0; }
 
+  .page.follow-mode .kb,
+  .page.follow-mode .id-code-card,
+  .page.follow-mode .bottom-bar {
+    display: none;
+  }
+  .follow-panel {
+    display: none;
+    width: min(920px, 100%);
+    padding: clamp(24px, 5vw, 52px);
+    border: 1px solid var(--border);
+    border-radius: 24px;
+    background: rgba(255,253,249,.86);
+    box-shadow: 0 18px 60px rgba(45,38,28,.08);
+  }
+  .page.follow-mode .follow-panel {
+    display: grid;
+    gap: 28px;
+  }
+  .sentence-view {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 10px 6px;
+  }
+  .sentence-char {
+    min-width: 54px;
+    min-height: 86px;
+    display: grid;
+    justify-items: center;
+    align-content: start;
+    gap: 8px;
+    padding: 8px 4px;
+    border-radius: 14px;
+  }
+  .sentence-char.current {
+    background: var(--accent-dim);
+    box-shadow: inset 0 0 0 1px rgba(181,90,16,.18);
+  }
+  .sentence-char.ok { background: rgba(45,138,86,.08); }
+  .sentence-char.bad { background: rgba(209,67,67,.08); }
+  .sentence-char .hanzi {
+    font-size: clamp(34px, 5vw, 56px);
+    line-height: 1;
+    font-weight: 500;
+  }
+  .sentence-char .code {
+    color: var(--accent);
+    font-family: "SF Mono","Consolas","Courier New",monospace;
+    font-size: 13px;
+    font-weight: 800;
+    line-height: 1;
+  }
+  .sentence-input {
+    width: 100%;
+    min-height: 88px;
+    padding: 18px 20px;
+    border: 1.5px solid var(--border);
+    border-radius: 16px;
+    background: var(--surface);
+    color: var(--text);
+    font-size: 28px;
+    line-height: 1.5;
+    resize: none;
+    outline: none;
+  }
+  .sentence-input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-dim);
+  }
+  .sentence-meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    color: var(--text2);
+    font-size: 13px;
+  }
+
   .id-code-card {
     position: absolute;
     right: 16px;
@@ -401,6 +485,14 @@
     .kb-key .k-roots { gap: 1px; line-height: 1.25; }
     .kb-key .k-roots span { font-size: 8px; padding: 0 1px; }
     .id-code-card { display: none; }
+    .follow-panel { padding: 18px 12px; border-radius: 18px; }
+    .page.follow-mode .follow-panel { gap: 18px; }
+    .sentence-view { justify-content: flex-start; gap: 8px 2px; }
+    .sentence-char { min-width: 42px; min-height: 68px; gap: 6px; padding: 6px 2px; }
+    .sentence-char .hanzi { font-size: 34px; }
+    .sentence-char .code { font-size: 10px; }
+    .sentence-input { font-size: 22px; min-height: 76px; padding: 14px; }
+    .sentence-meta { flex-direction: column; gap: 8px; }
     .bottom-bar { padding: 6px 8px; gap: 8px; }
     .step-actions { gap: 4px; }
     .step-actions button { padding: 6px 8px; font-size: 11px; }
@@ -436,6 +528,14 @@
 
   <!-- ════ Keyboard body ════ -->
   <div class="kb-body">
+    <div class="follow-panel">
+      <div class="sentence-view" id="sentenceView"></div>
+      <textarea class="sentence-input" id="sentenceInput" rows="2" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="切换到系统五笔输入法，输入上面的句子"></textarea>
+      <div class="sentence-meta">
+        <span id="sentenceProgress">输入 0/0 字</span>
+        <span>用系统输入法输入中文；整句打完自动换下一句</span>
+      </div>
+    </div>
     <div class="kb" id="keyboard"></div>
     <div class="id-code-card" aria-label="识别码速查">
       <h3>识别码速查</h3>
@@ -510,17 +610,41 @@ const FALLBACK_CHARS = [
   {char:'主',code:'y'},{char:'产',code:'u'},{char:'不',code:'i'},{char:'为',code:'o'},{char:'这',code:'p'},
   {char:'民',code:'n'},{char:'了',code:'b'},{char:'发',code:'v'},{char:'以',code:'c'},{char:'经',code:'x'}
 ];
+const SENTENCES = [
+  '今天天气很好',
+  '我们一起学习五笔',
+  '这个工具很简单',
+  '请用输入法打字',
+  '每天练习十分钟',
+  '看到文字直接输入',
+  '慢慢形成肌肉记忆',
+  '先求准确再求速度',
+  '错了就删除重来',
+  '熟能生巧贵在坚持',
+  '中文输入也要流畅',
+  '五笔适合长期练习'
+];
+const FALLBACK_CODES = {
+  今:'wynb', 天:'gdi', 气:'rnb', 很:'tvey', 好:'vbg', 我:'q', 们:'wu', 一:'g', 起:'fhnv', 学:'ipb', 习:'nu', 五:'gg', 笔:'ttfn',
+  这:'ypi', 个:'wh', 工:'a', 具:'hw', 简:'tujf', 单:'ujfj', 请:'ygeg', 用:'et', 输:'lwgj', 入:'tyi', 法:'ifcy', 打:'rs', 字:'pb',
+  每:'txgu', 练:'xanw', 十:'fg', 分:'wv', 钟:'qkhh', 看:'rhf', 到:'gc', 文:'yygy', 直:'fhf', 接:'ruv',
+  慢:'njlc', 形:'gae', 成:'dn', 肌:'em', 肉:'mwwi', 记:'ynn', 忆:'nnn', 先:'tfq', 求:'fiyi', 准:'uwyg', 确:'dqeh', 再:'gmfd', 速:'gkip', 度:'ya',
+  错:'qajg', 了:'b', 就:'yi', 删:'mmgj', 除:'bwty', 重:'tgjf', 来:'goi', 熟:'ybvo', 能:'ce', 生:'tgd', 巧:'agnn', 贵:'khgm', 在:'d', 坚:'jcff', 持:'rffy',
+  中:'khk', 也:'bn', 要:'s', 流:'iycq', 畅:'jhnr', 适:'tdp', 合:'wgkf', 长:'ta', 期:'adwe'
+};
 
-let roots = [], chars = [], cur = null, hintIdx = 0, retry = false, mistake = false, locked = false, mode = localStorage.getItem('wubi_mode') || 'follow';
+let roots = [], chars = [], cur = null, sentence = '', hintIdx = 0, retry = false, mistake = false, locked = false, sentenceLocked = false, mode = localStorage.getItem('wubi_mode') || 'follow';
+let codeMap = new Map(Object.entries(FALLBACK_CODES));
 let s = (() => { try { return JSON.parse(localStorage.getItem(STATE_KEY))||{}; } catch(_) { return {}; } })();
 s.total = s.total||0; s.correct = s.correct||0; s.streak = s.streak||0;
-s.wrongMap = s.wrongMap||{}; s.history = s.history||[];
+s.wrongMap = s.wrongMap||{}; s.history = s.history||[]; s.sentenceTotal = s.sentenceTotal||0; s.sentenceCorrect = s.sentenceCorrect||0; s.sentenceHistory = s.sentenceHistory||[];
 function save() { localStorage.setItem(STATE_KEY, JSON.stringify(s)); updateStats(); }
 
 const $ = id => document.getElementById(id);
 const E = {
   page: $('page'), kb: $('keyboard'), tc: $('targetChar'), dec: $('decomp'),
   inp: $('codeInput'), sub: $('submitBtn'), fc: $('followCode'), toast: $('toast'),
+  sentenceView: $('sentenceView'), sentenceInput: $('sentenceInput'), sentenceProgress: $('sentenceProgress'),
   topStats: $('topStats'), progress: $('progressLine')
 };
 
@@ -534,7 +658,7 @@ function applyMode(nextMode, shouldAdvance = false) {
   E.page.classList.toggle('practice-mode', mode === 'lookup');
   E.page.classList.toggle('blind-mode', mode === 'blind');
   document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.mode === mode));
-  E.inp.readOnly = mode === 'lookup' || mode === 'follow';
+  E.inp.readOnly = mode === 'lookup';
   E.inp.placeholder = mode === 'blind' ? '输入编码' : '按键输入编码';
   if (shouldAdvance) next();
 }
@@ -569,24 +693,71 @@ function highlightKeys(code) {
 
 function renderFollowCode() {
   if (!E.fc) return;
-  if (!cur || mode !== 'follow') {
-    E.fc.innerHTML = '';
-    return;
-  }
-  const typedLength = E.inp.value.length;
-  E.fc.innerHTML = cur.code.toLowerCase().split('').map((key, index) => {
-    const cls = index < typedLength ? 'done' : index === typedLength ? 'current' : '';
-    return `<span class="${cls}">${escapeHtml(key)}</span>`;
-  }).join('');
+  E.fc.innerHTML = '';
 }
 
 
 function updateStats() {
-  const total = s.total || 0;
-  const accuracy = total ? Math.round((s.correct || 0) / total * 100) : 0;
+  const total = mode === 'follow' ? (s.sentenceTotal || 0) : (s.total || 0);
+  const correct = mode === 'follow' ? (s.sentenceCorrect || 0) : (s.correct || 0);
+  const unit = mode === 'follow' ? '句' : '字';
+  const accuracy = total ? Math.round(correct / total * 100) : 0;
   const wrongCount = Object.values(s.wrongMap || {}).filter(v => v.count > 0).length;
-  if (E.topStats) E.topStats.innerHTML = `已练 <strong>${total}</strong> 字 · 准确率 <strong>${accuracy}%</strong>`;
+  if (E.topStats) E.topStats.innerHTML = `已练 <strong>${total}</strong> ${unit} · 准确率 <strong>${accuracy}%</strong>`;
   if (E.progress) E.progress.textContent = `已练 ${total} · 准确率 ${accuracy}% · 连对 ${s.streak || 0} · 错题 ${wrongCount}`;
+}
+function codeOf(char) {
+  if (/，|。|、|！|？|；|：|“|”|《|》/.test(char)) return '标点';
+  return codeMap.get(char) || '----';
+}
+function pickSentence() {
+  const recent = new Set((s.sentenceHistory || []).slice(-4));
+  const pool = SENTENCES.filter(item => !recent.has(item));
+  const list = pool.length ? pool : SENTENCES;
+  return list[Math.floor(Math.random() * list.length)];
+}
+function renderSentence() {
+  if (!E.sentenceView) return;
+  E.sentenceView.innerHTML = [...sentence].map((char, index) => {
+    return `<div class="sentence-char" data-i="${index}"><div class="hanzi">${escapeHtml(char)}</div><div class="code">${escapeHtml(codeOf(char))}</div></div>`;
+  }).join('');
+  updateSentenceFeedback();
+}
+function nextSentence() {
+  sentence = pickSentence();
+  sentenceLocked = false;
+  if (E.sentenceInput) E.sentenceInput.value = '';
+  s.sentenceHistory = [...(s.sentenceHistory || []), sentence].slice(-12);
+  renderSentence();
+  toast('');
+  updateStats();
+  setTimeout(() => E.sentenceInput && E.sentenceInput.focus(), 0);
+}
+function updateSentenceFeedback() {
+  if (!E.sentenceInput || !E.sentenceProgress) return;
+  const input = E.sentenceInput.value;
+  document.querySelectorAll('.sentence-char').forEach((block, index) => {
+    block.classList.toggle('current', index === input.length && !sentenceLocked);
+    block.classList.toggle('ok', index < input.length && input[index] === sentence[index]);
+    block.classList.toggle('bad', index < input.length && input[index] !== sentence[index]);
+  });
+  E.sentenceProgress.textContent = `输入 ${Math.min(input.length, sentence.length)}/${sentence.length} 字`;
+}
+function handleSentenceInput() {
+  if (mode !== 'follow' || sentenceLocked || !E.sentenceInput) return;
+  if (E.sentenceInput.value.length > sentence.length) E.sentenceInput.value = E.sentenceInput.value.slice(0, sentence.length);
+  updateSentenceFeedback();
+  if (E.sentenceInput.value.length !== sentence.length) return;
+  sentenceLocked = true;
+  s.sentenceTotal++;
+  if (E.sentenceInput.value === sentence) {
+    s.sentenceCorrect++;
+    toast('完成','ok');
+  } else {
+    toast('有错字，下一句继续','bad');
+  }
+  save();
+  setTimeout(nextSentence, E.sentenceInput.value === sentence ? 700 : 1200);
 }
 
 function pick() {
@@ -601,6 +772,10 @@ function pick() {
   return (pool.length > 12 ? pool : chars)[Math.floor(Math.random()*(pool.length > 12 ? pool : chars).length)];
 }
 function next() {
+  if (mode === 'follow') {
+    nextSentence();
+    return;
+  }
   cur = pick(); hintIdx = 0; retry = false; mistake = false; locked = false;
   E.tc.textContent = cur.char; E.dec.innerHTML = '';
   E.inp.value = ''; E.inp.classList.remove('err'); E.sub.textContent = '确认';
@@ -650,6 +825,7 @@ function finishPractice(delay = 450) {
   setTimeout(next, delay);
 }
 function handlePracticeKeydown(e) {
+  if (mode === 'follow') return;
   if (mode === 'blind') {
     if (e.key === 'Enter') submit();
     return;
@@ -684,13 +860,8 @@ function handlePracticeKeydown(e) {
   }
   E.inp.classList.remove('err');
   E.inp.value += key;
-  if (mode === 'follow') {
-    highlightKeys(ans[E.inp.value.length] || ans);
-    renderFollowCode();
-  } else {
-    highlightKeys(E.inp.value);
-  }
-  if (E.inp.value.length >= ans.length) finishPractice(mode === 'follow' ? 2000 : 450);
+  highlightKeys(E.inp.value);
+  if (E.inp.value.length >= ans.length) finishPractice();
 }
 function currentAnalysis() {
   return cur || null;
@@ -750,6 +921,7 @@ async function init() {
     fetch('/wubi-trainer/data/wubi86-roots.json').then(r => r.json()).catch(() => FALLBACK_ROOTS),
     fetch('/wubi-trainer/data/wubi86-chars.json').then(r => r.json()).catch(() => FALLBACK_CHARS)
   ]);
+  codeMap = new Map([...codeMap, ...chars.map(item => [item.char, item.code])]);
   renderKB();
   applyMode(mode, false);
   next();
@@ -757,8 +929,9 @@ async function init() {
 
 E.sub.addEventListener('click', submit);
 E.inp.addEventListener('keydown', handlePracticeKeydown);
-E.inp.addEventListener('beforeinput', e => { if (mode === 'lookup' || mode === 'follow') e.preventDefault(); });
-E.inp.addEventListener('compositionstart', e => { if (mode === 'lookup' || mode === 'follow') e.preventDefault(); });
+E.inp.addEventListener('beforeinput', e => { if (mode === 'lookup') e.preventDefault(); });
+E.inp.addEventListener('compositionstart', e => { if (mode === 'lookup') e.preventDefault(); });
+E.sentenceInput.addEventListener('input', handleSentenceInput);
 $('hintDecomp').addEventListener('click', hintDecomp);
 $('hintKeys').addEventListener('click', hintKeys);
 $('hintCode').addEventListener('click', hintCode);
