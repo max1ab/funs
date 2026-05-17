@@ -1,661 +1,548 @@
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>明信片墙 — funs</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>funs — 小东西陈列墙</title>
   <style>
     :root {
-      --wall: #f3efe7;
-      --wall-light: #f7f4ed;
-      --wall-shadow: #e8e2d6;
-      --text: #3d3832;
-      --text-light: #8a8174;
-      --text-muted: #b5ada2;
-      --accent: #c4956a;
-      --accent-hover: #a87d52;
-      --rope: #c9b99a;
-      --rope-dark: #b0a080;
-      --pin: #c4956a;
-      --pin-dark: #a07850;
-      --card-bg: #fdfcfa;
-      --card-border: #e8e0d4;
-      --tag-bg: #eae5dc;
-      --tag-active: #3d3832;
-      --tag-active-text: #fdfcfa;
+      --ink: #342a21;
+      --muted: #76695e;
+      --soft: #9a8a7c;
+      --paper: #fbf7ee;
+      --paper-warm: #f2e7d5;
+      --paper-edge: #d9c4a8;
+      --pin: #b57c43;
+      --pin-dark: #704724;
+      --rope: #7c6448;
+      --shadow: rgba(52, 37, 20, .28);
+      --light: rgba(255, 250, 236, .74);
     }
 
-    * { margin: 0; padding: 0; box-sizing: border-box; }
+    * { box-sizing: border-box; }
+
+    html, body { min-height: 100%; }
 
     body {
-      font-family: -apple-system, "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+      margin: 0;
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+      background: #e8d9c5 url("./assets/bg-wall.webp") center / cover fixed no-repeat;
+      overflow-x: hidden;
+    }
+
+    body::before,
+    body::after {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    body::before {
       background:
-        /*  subtle wall texture pattern */
-        url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E"),
-        /* soft directional light from top-left */
-        radial-gradient(ellipse at 15% 10%, rgba(255,252,245,0.6) 0%, transparent 50%),
-        radial-gradient(ellipse at 85% 90%, rgba(200,190,175,0.25) 0%, transparent 40%),
-        var(--wall);
-      background-size: 200px 200px, auto, auto, auto;
-      color: var(--text);
-      min-height: 100vh;
-      line-height: 1.6;
-      -webkit-font-smoothing: antialiased;
+        radial-gradient(circle at 12% 5%, rgba(255,255,245,.72), transparent 36%),
+        linear-gradient(115deg, rgba(255,248,229,.28), rgba(88,58,30,.12) 70%, rgba(46,31,20,.18));
+      mix-blend-mode: soft-light;
     }
 
-    /* ===== 导航 ===== */
-    .nav {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 20px 40px;
-      max-width: 1200px;
-      margin: 0 auto;
+    body::after {
+      background:
+        radial-gradient(ellipse at 50% 40%, transparent 0 58%, rgba(58,39,24,.18) 100%),
+        repeating-linear-gradient(0deg, rgba(80,60,40,.025) 0 1px, transparent 1px 4px);
+      opacity: .58;
     }
 
-    .nav-left {
-      display: flex;
-      align-items: center;
-      gap: 32px;
-    }
-
-    .logo {
-      font-size: 1.1rem;
-      font-weight: 600;
-      letter-spacing: 0.05em;
-      color: var(--text);
-      text-decoration: none;
-    }
-
-    .logo span {
-      font-weight: 400;
-      color: var(--text-muted);
-    }
-
-    .nav-links {
-      display: flex;
-      gap: 24px;
-      list-style: none;
-    }
-
-    .nav-links a {
-      font-size: 0.85rem;
-      color: var(--text-light);
-      text-decoration: none;
-      transition: color 0.2s;
-      letter-spacing: 0.02em;
-    }
-
-    .nav-links a:hover {
-      color: var(--text);
-    }
-
-    .nav-cta {
-      padding: 8px 20px;
-      border: 1px solid var(--text);
-      border-radius: 4px;
-      font-size: 0.8rem;
-      color: var(--text);
-      text-decoration: none;
-      transition: all 0.2s;
-      background: transparent;
-      cursor: pointer;
-    }
-
-    .nav-cta:hover {
-      background: var(--text);
-      color: var(--wall-light);
-    }
-
-    @media (max-width: 600px) {
-      .nav { padding: 16px 20px; }
-      .nav-links { display: none; }
-    }
-
-    /* ===== 标题区 ===== */
-    .hero {
-      text-align: center;
-      padding: 40px 20px 30px;
-      max-width: 600px;
-      margin: 0 auto;
-    }
-
-    .hero h1 {
-      font-size: clamp(1.8rem, 4vw, 2.6rem);
-      font-weight: 500;
-      letter-spacing: 0.08em;
-      margin-bottom: 8px;
-      color: var(--text);
-    }
-
-    .hero p {
-      font-size: 0.9rem;
-      color: var(--text-light);
-      letter-spacing: 0.03em;
-    }
-
-    /* ===== 筛选标签 ===== */
-    .tags {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-      padding: 0 20px 30px;
-      flex-wrap: wrap;
-    }
-
-    .tag {
-      padding: 6px 16px;
-      border-radius: 20px;
-      font-size: 0.8rem;
-      color: var(--text-light);
-      background: var(--tag-bg);
-      border: none;
-      cursor: pointer;
-      transition: all 0.2s;
-      letter-spacing: 0.02em;
-    }
-
-    .tag:hover {
-      background: var(--wall-shadow);
-      color: var(--text);
-    }
-
-    .tag.active {
-      background: var(--tag-active);
-      color: var(--tag-active-text);
-    }
-
-    /* ===== 画廊 ===== */
-    .gallery {
-      max-width: 1100px;
-      margin: 0 auto;
-      padding: 0 30px 60px;
-    }
-
-    .rope-row {
+    .page {
       position: relative;
-      margin-bottom: 30px;
-      padding-top: 28px;
+      z-index: 1;
+      min-height: 100vh;
+      padding: 34px clamp(18px, 4vw, 58px) 56px;
     }
 
-    .rope-line {
-      position: absolute;
-      top: 8px;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: linear-gradient(90deg, transparent 0%, var(--rope) 5%, var(--rope) 95%, transparent 100%);
-      opacity: 0.7;
-      box-shadow: 0 2px 4px rgba(100,80,50,0.15), 0 1px 2px rgba(100,80,50,0.1);
+    .topbar {
+      max-width: 1220px;
+      margin: 0 auto 28px;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
     }
 
-    .rope-line::after {
-      content: '';
+    .brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 11px;
+      text-decoration: none;
+      color: inherit;
+      letter-spacing: .02em;
+      font-weight: 700;
+      font-size: 18px;
+    }
+
+    .brand-mark {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background:
+        radial-gradient(circle at 34% 30%, #fff0bf 0 13%, transparent 14%),
+        radial-gradient(circle at 62% 66%, #e16b47 0 17%, transparent 18%),
+        #5b8569;
+      box-shadow: 0 7px 18px rgba(54, 38, 21, .18), inset 0 1px 0 rgba(255,255,255,.55);
+    }
+
+    .intro {
+      text-align: right;
+      max-width: 420px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.8;
+      text-shadow: 0 1px 0 rgba(255,255,255,.36);
+    }
+
+    .hero {
+      max-width: 1220px;
+      margin: 0 auto 40px;
+      display: grid;
+      grid-template-columns: minmax(260px, 560px) 1fr;
+      gap: 28px;
+      align-items: end;
+    }
+
+    h1 {
+      margin: 0;
+      font-size: clamp(42px, 8vw, 92px);
+      line-height: .92;
+      letter-spacing: -.07em;
+      font-weight: 800;
+      text-shadow: 0 2px 0 rgba(255,255,255,.38), 0 20px 44px rgba(80,52,26,.14);
+    }
+
+    .hero-note {
+      margin: 0 0 7px;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.9;
+      max-width: 440px;
+      text-shadow: 0 1px 0 rgba(255,255,255,.32);
+    }
+
+    .wall {
+      max-width: 1220px;
+      margin: 0 auto;
+      position: relative;
+      padding: 42px 0 18px;
+    }
+
+    .rope {
       position: absolute;
-      top: 1px;
-      left: 3%;
-      right: 3%;
-      height: 4px;
-      background: var(--rope-dark);
-      border-radius: 0 0 50% 50%;
-      opacity: 0.3;
-      transform: translateY(2px);
-      box-shadow: 0 3px 6px rgba(100,80,50,0.12);
+      left: -2%;
+      right: -2%;
+      top: 24px;
+      height: 34px;
+      z-index: 1;
+      pointer-events: none;
+      filter: drop-shadow(12px 18px 8px rgba(70, 43, 22, .18));
+    }
+
+    .rope svg {
+      width: 100%;
+      height: 100%;
+      display: block;
+      overflow: visible;
     }
 
     .cards {
-      display: grid;
-      grid-template-columns: repeat(5, 1fr);
-      gap: 16px;
       position: relative;
       z-index: 2;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: clamp(22px, 3vw, 44px);
+      align-items: start;
     }
 
-    @media (max-width: 900px) {
-      .cards { grid-template-columns: repeat(3, 1fr); }
-    }
-
-    @media (max-width: 600px) {
-      .cards { grid-template-columns: repeat(2, 1fr); gap: 12px; }
-      .gallery { padding: 0 16px 40px; }
-    }
-
-    @media (max-width: 480px) {
-      .cards { grid-template-columns: repeat(1, 1fr); gap: 16px; max-width: 280px; margin: 0 auto; }
-      .card-content { height: 160px; }
-    }
-
-    /* ===== 明信片 ===== */
-    .postcard-wrap {
+    .item {
+      --tilt: 0deg;
+      min-width: 0;
       position: relative;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      padding-top: 14px;
+      transform: rotate(var(--tilt));
+      transform-origin: 50% 2px;
+      transition: transform .28s ease, filter .28s ease;
     }
 
-    .clothespin {
-      position: absolute;
-      top: -18px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 4;
-      width: 14px;
-      height: 26px;
-      /* contact shadow where pin grips the card */
-      filter: drop-shadow(0 2px 2px rgba(60,40,20,0.2)) drop-shadow(0 1px 1px rgba(0,0,0,0.15));
-    }
+    .item:nth-child(1) { --tilt: -2.4deg; margin-top: 9px; }
+    .item:nth-child(2) { --tilt: 1.1deg; margin-top: 28px; }
+    .item:nth-child(3) { --tilt: -1.2deg; margin-top: 15px; }
+    .item:nth-child(4) { --tilt: 2.2deg; margin-top: 34px; }
 
-    .clothespin-body {
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, var(--pin-dark) 25%, var(--pin) 25%, var(--pin) 75%, var(--pin-dark) 75%);
-      border-radius: 3px 3px 1px 1px;
-      position: relative;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.2), inset 0 1px 0 rgba(255,255,255,0.2);
-    }
-
-    .clothespin-body::before {
-      content: '';
-      position: absolute;
-      top: 3px;
-      left: 2px;
-      right: 2px;
-      height: 2px;
-      background: rgba(0,0,0,0.12);
-      border-radius: 1px;
-    }
-
-    .clothespin-body::after {
-      content: '';
-      position: absolute;
-      top: -4px;
-      left: 4px;
-      width: 6px;
-      height: 5px;
-      background: var(--pin-dark);
-      border-radius: 1px;
-      box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-    }
-
-    .postcard {
-      width: 100%;
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 2px;
-      /* directional light: shadow to bottom-right, subtle left-edge highlight */
-      box-shadow:
-        inset 1px 0 0 rgba(255,255,255,0.5),
-        2px 3px 10px rgba(60,40,20,0.1),
-        4px 6px 20px rgba(60,40,20,0.06),
-        0 1px 2px rgba(0,0,0,0.04);
-      overflow: hidden;
-      cursor: pointer;
-      transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease;
-      position: relative;
-      text-decoration: none;
-      color: inherit;
-    }
-
-    .postcard::after {
-      content: '';
-      position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
-      border-radius: 2px;
-      box-shadow: inset -1px -1px 2px rgba(0,0,0,0.03);
-      pointer-events: none;
-    }
-
-    /* 微妙旋转 */
-    .postcard-wrap:nth-child(1) .postcard { transform: rotate(-1deg); }
-    .postcard-wrap:nth-child(2) .postcard { transform: rotate(0.6deg); }
-    .postcard-wrap:nth-child(3) .postcard { transform: rotate(-0.4deg); }
-    .postcard-wrap:nth-child(4) .postcard { transform: rotate(0.8deg); }
-    .postcard-wrap:nth-child(5) .postcard { transform: rotate(-0.7deg); }
-
-    .postcard:hover {
-      transform: rotate(0deg) translateY(-6px) !important;
-      box-shadow:
-        inset 1px 0 0 rgba(255,255,255,0.5),
-        4px 8px 16px rgba(60,40,20,0.14),
-        8px 14px 28px rgba(60,40,20,0.08),
-        0 1px 2px rgba(0,0,0,0.04);
+    .item:hover {
+      transform: rotate(0deg) translateY(-7px);
+      filter: saturate(1.03);
       z-index: 5;
     }
 
-    /* ===== 卡片内容类型 ===== */
-    .card-content {
-      height: 150px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+    .clip {
+      position: absolute;
+      top: -16px;
+      left: 50%;
+      width: 24px;
+      height: 46px;
+      transform: translateX(-50%) rotate(-2deg);
+      z-index: 4;
+      filter: drop-shadow(8px 14px 6px rgba(63, 38, 18, .20));
+    }
+
+    .clip::before,
+    .clip::after {
+      content: "";
+      position: absolute;
+      top: 5px;
+      width: 11px;
+      height: 38px;
+      background:
+        linear-gradient(90deg, rgba(255,255,255,.26), transparent 40%),
+        linear-gradient(180deg, #d7a468 0%, #a76b35 52%, #7b4a22 100%);
+      border-radius: 4px 4px 2px 2px;
+      box-shadow: inset -1px 0 2px rgba(58,34,15,.25), inset 1px 0 rgba(255,255,255,.2);
+    }
+
+    .clip::before { left: 2px; transform: skewY(-2deg); }
+    .clip::after { right: 2px; transform: skewY(2deg); }
+
+    .spring {
+      position: absolute;
+      top: 18px;
+      left: 50%;
+      width: 16px;
+      height: 9px;
+      transform: translateX(-50%);
+      border: 2px solid rgba(74,48,28,.55);
+      border-left: 0;
+      border-right: 0;
+      border-radius: 50%;
+      z-index: 2;
+    }
+
+    .clip-shadow {
+      position: absolute;
+      top: 24px;
+      left: calc(50% + 13px);
+      width: 32px;
+      height: 44px;
+      transform: skewX(-18deg) rotate(8deg);
+      background: rgba(70,43,20,.16);
+      filter: blur(7px);
+      z-index: 1;
+    }
+
+    .card {
+      display: block;
+      width: 100%;
+      min-width: 0;
+      min-height: 328px;
+      text-decoration: none;
+      color: inherit;
+      border-radius: 3px;
+      background:
+        linear-gradient(100deg, rgba(255,255,255,.38), transparent 34%),
+        linear-gradient(180deg, #fffaf0, #f1dfc1);
+      border: 1px solid rgba(132,94,54,.22);
+      box-shadow:
+        2px 3px 0 rgba(255,255,255,.32) inset,
+        -1px -2px 0 rgba(120,82,42,.08) inset,
+        12px 24px 22px rgba(66,39,20,.20),
+        31px 46px 36px rgba(66,39,20,.11),
+        0 2px 2px rgba(74,48,23,.08);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background:
+        repeating-linear-gradient(0deg, rgba(111,76,40,.028) 0 1px, transparent 1px 5px),
+        radial-gradient(circle at 20% 14%, rgba(255,255,255,.42), transparent 38%),
+        radial-gradient(circle at 85% 92%, rgba(106,68,35,.10), transparent 42%);
+      mix-blend-mode: multiply;
+      pointer-events: none;
+      z-index: 3;
+    }
+
+    .card.empty {
+      background:
+        linear-gradient(180deg, rgba(255,250,239,.46), rgba(232,212,180,.35));
+      border: 1px dashed rgba(87,62,36,.28);
+      box-shadow:
+        9px 18px 18px rgba(66,39,20,.12),
+        22px 36px 28px rgba(66,39,20,.07);
+    }
+
+    .art {
+      height: 196px;
+      margin: 12px 12px 0;
+      border-radius: 2px;
+      border: 1px solid rgba(95,62,34,.12);
       position: relative;
       overflow: hidden;
+      background: #efe5d3;
+      box-shadow: 0 1px 0 rgba(255,255,255,.45) inset, 0 9px 16px rgba(87,55,25,.08);
     }
 
-    @media (max-width: 600px) {
-      .card-content { height: 120px; }
+    .ball-art {
+      background:
+        linear-gradient(180deg, rgba(255,255,255,.72), transparent 55%),
+        linear-gradient(180deg, #f4eadb, #dac1a0);
     }
 
-    /* 文字排版风格 */
-    .type-typo {
-      background: linear-gradient(135deg, #f5f1ea 0%, #ece6db 100%);
-      flex-direction: column;
-      gap: 6px;
-      padding: 16px;
-      text-align: center;
-    }
-
-    .type-typo .big {
-      font-size: 2.2rem;
-      font-weight: 300;
-      color: var(--text);
-      line-height: 1.1;
-    }
-
-    .type-typo .small {
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-    }
-
-    /* 几何/艺术风格 */
-    .type-art {
-      background: #f0ebe3;
-    }
-
-    .art-circle {
-      width: 50px;
-      height: 50px;
-      border: 2px solid var(--text);
-      border-radius: 50%;
-      opacity: 0.3;
-    }
-
-    .art-triangle {
-      width: 0; height: 0;
-      border-left: 20px solid transparent;
-      border-right: 20px solid transparent;
-      border-bottom: 36px solid var(--accent);
-      opacity: 0.4;
-    }
-
-    .art-line {
-      width: 40px;
-      height: 2px;
-      background: var(--text);
-      opacity: 0.2;
-    }
-
-    /* 项目卡片 - 小球 */
-    .type-ball {
-      background: linear-gradient(180deg, #f8f5ef, #f0ebe0);
-      border-bottom: 1px solid #e0d8c8;
-    }
-
-    .mini-ball {
-      width: 24px; height: 24px;
-      border-radius: 50%;
-      background: radial-gradient(circle at 35% 30%, #ff9a76, #e85d3a);
-      animation: ballBounce 1.2s ease-in-out infinite alternate;
-      box-shadow: 0 3px 8px rgba(232,93,58,0.25);
-    }
-
-    @keyframes ballBounce {
-      from { transform: translateY(14px); }
-      to { transform: translateY(-14px); }
-    }
-
-    .ball-shadow {
+    .ball-art::before {
+      content: "";
       position: absolute;
-      bottom: 30px;
-      width: 20px; height: 4px;
-      background: rgba(0,0,0,0.08);
+      width: 54px;
+      height: 54px;
+      left: 50%;
+      top: 44%;
       border-radius: 50%;
-      animation: shadowScale 1.2s ease-in-out infinite alternate;
+      background: radial-gradient(circle at 32% 28%, #ffe8bf, #df6b49 48%, #963f2c 100%);
+      box-shadow: 22px 28px 16px rgba(85,45,28,.22);
+      transform: translate(-50%, -50%);
+      animation: floatBall 2.8s ease-in-out infinite;
     }
 
-    @keyframes shadowScale {
-      from { transform: scaleX(1); opacity: 0.5; }
-      to { transform: scaleX(0.5); opacity: 0.15; }
+    .ball-art::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      bottom: 46px;
+      width: 84px;
+      height: 14px;
+      background: rgba(81,48,24,.16);
+      border-radius: 50%;
+      filter: blur(4px);
+      transform: translateX(-50%);
+      animation: ballShadow 2.8s ease-in-out infinite;
     }
 
-    /* 项目卡片 - 五笔 */
-    .type-wubi {
-      background: linear-gradient(180deg, #faf7f1, #f2ede4);
-      border-bottom: 1px solid #e0d8c8;
-      flex-direction: column;
-      gap: 4px;
+    @keyframes floatBall {
+      0%, 100% { transform: translate(-50%, -54%); }
+      50% { transform: translate(-50%, -30%); }
     }
 
-    .wubi-char {
-      font-size: 2rem;
-      font-weight: 500;
-      color: var(--text);
-      animation: charFlip 3s ease-in-out infinite;
+    @keyframes ballShadow {
+      0%, 100% { transform: translateX(-50%) scaleX(.78); opacity: .42; }
+      50% { transform: translateX(-50%) scaleX(1.08); opacity: .70; }
     }
 
-    .wubi-code {
-      font-family: "SF Mono", "Consolas", monospace;
-      font-size: 0.75rem;
-      color: var(--accent);
-      letter-spacing: 0.15em;
-      animation: codeFlip 3s ease-in-out infinite;
+    .wubi-art {
+      display: grid;
+      place-items: center;
+      background:
+        linear-gradient(145deg, rgba(255,255,255,.56), transparent 45%),
+        linear-gradient(180deg, #f9f1df, #ded0b4);
+      font-family: "Songti SC", "STSong", serif;
     }
 
-    @keyframes charFlip {
-      0%, 40% { opacity: 1; }
-      50%, 90% { opacity: 0; }
-      100% { opacity: 1; }
+    .wubi-art .hanzi {
+      font-size: 82px;
+      line-height: 1;
+      letter-spacing: -.04em;
+      color: #2f291f;
+      text-shadow: 0 7px 16px rgba(73,43,22,.10);
     }
 
-    @keyframes codeFlip {
-      0%, 40% { opacity: 0; }
-      50%, 90% { opacity: 1; }
-      100% { opacity: 0; }
+    .wubi-art .code {
+      position: absolute;
+      right: 18px;
+      bottom: 15px;
+      font-family: "SF Mono", Consolas, monospace;
+      font-size: 18px;
+      letter-spacing: .18em;
+      color: #9a6338;
     }
 
-    /* 空位 */
-    .type-empty {
-      background: repeating-linear-gradient(45deg, #f5f1ea, #f5f1ea 8px, #ede8de 8px, #ede8de 16px);
-    }
-
-    .empty-mark {
-      font-size: 1.8rem;
-      color: var(--text-muted);
+    .soon-art {
+      display: grid;
+      place-items: center;
+      color: rgba(75,53,34,.38);
+      font-size: 46px;
       font-weight: 300;
-      opacity: 0.5;
+      background:
+        linear-gradient(135deg, rgba(255,255,255,.38), transparent 38%),
+        repeating-linear-gradient(-45deg, rgba(126,92,55,.08) 0 8px, transparent 8px 18px),
+        #ead9bd;
     }
 
-    /* 底部信息 */
-    .card-info {
-      padding: 10px 12px 12px;
+    .card-text {
+      padding: 20px 20px 23px;
+      position: relative;
+      z-index: 4;
+    }
+
+    .card-kicker {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 11px;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+      color: var(--soft);
+    }
+
+    .card h2 {
+      margin: 0 0 7px;
+      font-size: 22px;
+      line-height: 1.22;
+      letter-spacing: -.03em;
+    }
+
+    .card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.65;
+    }
+
+    .empty .card-text {
       text-align: center;
+      padding-top: 25px;
     }
 
-    .card-info h4 {
-      font-size: 0.8rem;
-      font-weight: 600;
-      color: var(--text);
-      margin-bottom: 2px;
+    .empty .card h2,
+    .empty h2 { color: rgba(55,40,28,.72); }
+
+    .note {
+      max-width: 1220px;
+      margin: 42px auto 0;
+      color: rgba(63,48,36,.68);
+      font-size: 13px;
+      letter-spacing: .03em;
+      text-align: right;
+      text-shadow: 0 1px 0 rgba(255,255,255,.35);
     }
 
-    .card-info p {
-      font-size: 0.7rem;
-      color: var(--text-muted);
-      line-height: 1.4;
+    @media (max-width: 900px) {
+      .hero {
+        grid-template-columns: 1fr;
+        gap: 12px;
+        margin-bottom: 30px;
+      }
+
+      .hero-note,
+      .intro { max-width: none; }
+
+      .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .rope { display: none; }
+      .wall { padding-top: 12px; }
+      .card { min-height: 300px; }
+      .art { height: 166px; }
     }
 
-    /* ===== 页脚 ===== */
-    .footer {
-      text-align: center;
-      padding: 30px 20px 50px;
-      border-top: 1px solid var(--wall-shadow);
-      margin: 0 40px;
-    }
-
-    .footer p {
-      font-size: 0.75rem;
-      color: var(--text-muted);
-      letter-spacing: 0.03em;
-    }
-
-    @media (max-width: 600px) {
-      .footer { margin: 0 20px; padding: 20px 10px 40px; }
+    @media (max-width: 560px) {
+      body { background-attachment: scroll; }
+      .page { padding: 24px 10px 38px; }
+      .topbar { display: block; margin-bottom: 25px; }
+      .intro { text-align: left; margin-top: 14px; font-size: 13px; }
+      h1 { font-size: clamp(42px, 17vw, 70px); }
+      .hero-note { font-size: 14px; max-width: 330px; }
+      .cards { grid-template-columns: 1fr; gap: 22px; max-width: 280px; margin: 0 auto; }
+      .item:nth-child(n) { margin-top: 0; --tilt: 0deg; }
+      .clip { transform: translateX(-50%) scale(.82); top: -18px; }
+      .card { min-height: 238px; }
+      .art { height: 122px; margin: 9px 9px 0; }
+      .wubi-art .hanzi { font-size: 54px; }
+      .wubi-art .code { font-size: 13px; right: 11px; bottom: 10px; }
+      .card-text { padding: 14px 13px 16px; }
+      .card h2 { font-size: 17px; }
+      .card p { font-size: 12px; line-height: 1.55; }
+      .note { text-align: left; margin-top: 28px; font-size: 12px; }
     }
   </style>
 </head>
 <body>
+  <main class="page">
+    <nav class="topbar" aria-label="funs navigation">
+      <a class="brand" href="/">
+        <span class="brand-mark" aria-hidden="true"></span>
+        <span>funs</span>
+      </a>
+      <div class="intro">一些小实验，不追求有用，但希望打开时能让人停一下。</div>
+    </nav>
 
-  <!-- 导航 -->
-  <nav class="nav">
-    <div class="nav-left">
-      <a href="/" class="logo">funs <span>工作室</span></a>
-      <ul class="nav-links">
-        <li><a href="#">关于</a></li>
-        <li><a href="#">日志</a></li>
-        <li><a href="#">作品</a></li>
-        <li><a href="#">联系</a></li>
-      </ul>
-    </div>
-    <a href="#" class="nav-cta">写张明信片</a>
-  </nav>
+    <header class="hero">
+      <h1>small<br />things</h1>
+      <p class="hero-note">把做着玩的页面挂在这里。像一面工作室墙：有成品，也会留几个空位置给下一个想法。</p>
+    </header>
 
-  <!-- 标题 -->
-  <header class="hero">
-    <h1>明信片墙</h1>
-    <p>一个用心挑选和分享的灵感和精选墙</p>
-  </header>
+    <section class="wall" aria-label="项目明信片墙">
+      <div class="rope" aria-hidden="true">
+        <svg viewBox="0 0 1200 40" preserveAspectRatio="none">
+          <path d="M 0 10 C 240 23, 470 29, 660 21 S 1010 8, 1200 18" fill="none" stroke="rgba(57,41,25,.28)" stroke-width="7" stroke-linecap="round"/>
+          <path d="M 0 8 C 240 21, 470 27, 660 19 S 1010 6, 1200 16" fill="none" stroke="rgba(127,100,70,.94)" stroke-width="3.1" stroke-linecap="round"/>
+          <path d="M 0 6 C 240 19, 470 25, 660 17 S 1010 4, 1200 14" fill="none" stroke="rgba(232,205,164,.5)" stroke-width="1" stroke-linecap="round"/>
+        </svg>
+      </div>
 
-  <!-- 筛选 -->
-  <div class="tags" id="tags">
-    <button class="tag active" data-filter="all">全部</button>
-    <button class="tag" data-filter="art">艺术</button>
-    <button class="tag" data-filter="design">设计</button>
-    <button class="tag" data-filter="photo">摄影</button>
-    <button class="tag" data-filter="code">代码</button>
-  </div>
+      <div class="cards">
+        <article class="item">
+          <span class="clip-shadow" aria-hidden="true"></span>
+          <span class="clip" aria-hidden="true"><span class="spring"></span></span>
+          <a class="card" href="/ball-physics-simulation/">
+            <div class="art ball-art" aria-hidden="true"></div>
+            <div class="card-text">
+              <span class="card-kicker">experiment 01</span>
+              <h2>小球物理模拟</h2>
+              <p>一个弹来弹去的物理小实验，适合观察碰撞、重力和速度。</p>
+            </div>
+          </a>
+        </article>
 
-  <!-- 画廊 -->
-  <div class="gallery" id="gallery"></div>
+        <article class="item">
+          <span class="clip-shadow" aria-hidden="true"></span>
+          <span class="clip" aria-hidden="true"><span class="spring"></span></span>
+          <a class="card" href="/wubi-trainer/">
+            <div class="art wubi-art" aria-hidden="true">
+              <span class="hanzi">好</span>
+              <span class="code">vbg</span>
+            </div>
+            <div class="card-text">
+              <span class="card-kicker">experiment 02</span>
+              <h2>五笔打字练习</h2>
+              <p>用真实输入法跟打句子，慢慢把编码变成手指记忆。</p>
+            </div>
+          </a>
+        </article>
 
-  <!-- 页脚 -->
-  <footer class="footer">
-    <p>© 2026 funs 工作室 · small experiments, made for fun</p>
-  </footer>
-
-  <script>
-    const projects = [
-      { id: 'ball', title: '小球物理模拟', desc: '弹来弹去的快乐', type: 'ball', tags: ['code', 'design'], href: '/ball-physics-simulation' },
-      { id: 'wubi', title: '五笔打字练习', desc: '汉字与编码', type: 'wubi', tags: ['code', 'design'], href: '/wubi-trainer' },
-      { id: 'typo1', title: '字体排印', desc: '文字的力量', type: 'typo', tags: ['design', 'art'], href: '#' },
-      { id: 'geo1', title: '几何构成', desc: '点线面的舞蹈', type: 'art', tags: ['art', 'design'], href: '#' },
-      { id: 'empty1', title: '待续', desc: '下一张明信片', type: 'empty', tags: [], href: '#' },
-      { id: 'typo2', title: '保持简单', desc: 'less is more', type: 'typo', tags: ['design'], href: '#' },
-      { id: 'art1', title: '圆与缺', desc: '正负形探索', type: 'art', tags: ['art'], href: '#' },
-      { id: 'empty2', title: '空白', desc: '留给未来', type: 'empty', tags: [], href: '#' },
-      { id: 'photo1', title: '光影', desc: '捕捉瞬间', type: 'photo', tags: ['photo'], href: '#' },
-      { id: 'typo3', title: '慢下来', desc: '放慢脚步', type: 'typo', tags: ['design'], href: '#' },
-    ];
-
-    function createPostcard(project) {
-      const wrap = document.createElement('div');
-      wrap.className = 'postcard-wrap';
-      wrap.dataset.tags = project.tags.join(' ');
-
-      let contentHTML = '';
-
-      switch (project.type) {
-        case 'ball':
-          contentHTML = `
-            <div class="mini-ball"></div>
-            <div class="ball-shadow"></div>
-          `;
-          break;
-        case 'wubi':
-          contentHTML = `
-            <div class="wubi-char">好</div>
-            <div class="wubi-code">v b g</div>
-          `;
-          break;
-        case 'typo':
-          contentHTML = `
-            <div class="big">${project.title === '保持简单' ? 'keep it<br>simple' : project.title === '慢下来' ? '慢' : project.title === '字体排印' ? 'Aa' : '文字'}</div>
-            <div class="small">${project.desc}</div>
-          `;
-          break;
-        case 'art':
-          contentHTML = `
-            <div class="art-circle"></div>
-          `;
-          break;
-        case 'photo':
-          contentHTML = `
-            <div style="width:60%;height:60%;background:linear-gradient(135deg,#d4c8b8,#b8a898);border-radius:2px;opacity:0.6;"></div>
-          `;
-          break;
-        case 'empty':
-          contentHTML = `<div class="empty-mark">?</div>`;
-          break;
-      }
-
-      wrap.innerHTML = `
-        <div class="clothespin">
-          <div class="clothespin-body"></div>
-        </div>
-        <a href="${project.href}" class="postcard type-${project.type}">
-          <div class="card-content">
-            ${contentHTML}
+        <article class="item">
+          <span class="clip-shadow" aria-hidden="true"></span>
+          <span class="clip" aria-hidden="true"><span class="spring"></span></span>
+          <div class="card empty">
+            <div class="art soon-art" aria-hidden="true">?</div>
+            <div class="card-text">
+              <span class="card-kicker">empty slot</span>
+              <h2>下一件小东西</h2>
+              <p>还没决定。也许是阅读工具，也许是一个更没用的小玩意。</p>
+            </div>
           </div>
-          <div class="card-info">
-            <h4>${project.title}</h4>
-            <p>${project.desc}</p>
+        </article>
+
+        <article class="item">
+          <span class="clip-shadow" aria-hidden="true"></span>
+          <span class="clip" aria-hidden="true"><span class="spring"></span></span>
+          <div class="card empty">
+            <div class="art soon-art" aria-hidden="true">＋</div>
+            <div class="card-text">
+              <span class="card-kicker">future</span>
+              <h2>留一个位置</h2>
+              <p>项目多了以后，这面墙会自然长出来，不需要一开始填满。</p>
+            </div>
           </div>
-        </a>
-      `;
+        </article>
+      </div>
+    </section>
 
-      return wrap;
-    }
-
-    function renderGallery(filter = 'all') {
-      const gallery = document.getElementById('gallery');
-      gallery.innerHTML = '';
-
-      const filtered = filter === 'all'
-        ? projects
-        : projects.filter(p => p.tags.includes(filter));
-
-      // 每 5 个一组，每组一根绳子
-      const perRow = 5;
-      for (let i = 0; i < filtered.length; i += perRow) {
-        const row = document.createElement('div');
-        row.className = 'rope-row';
-
-        const rope = document.createElement('div');
-        rope.className = 'rope-line';
-        row.appendChild(rope);
-
-        const cards = document.createElement('div');
-        cards.className = 'cards';
-
-        filtered.slice(i, i + perRow).forEach(p => {
-          cards.appendChild(createPostcard(p));
-        });
-
-        row.appendChild(cards);
-        gallery.appendChild(row);
-      }
-    }
-
-    // 筛选
-    document.getElementById('tags').addEventListener('click', e => {
-      if (!e.target.classList.contains('tag')) return;
-      document.querySelectorAll('.tag').forEach(t => t.classList.remove('active'));
-      e.target.classList.add('active');
-      renderGallery(e.target.dataset.filter);
-    });
-
-    renderGallery();
-  </script>
+    <p class="note">funs.mclab.top · made for small experiments</p>
+  </main>
 </body>
 </html>
