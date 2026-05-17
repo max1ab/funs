@@ -144,26 +144,44 @@
   }
   .page.blind-mode .bar {
     min-height: calc(100vh - 48px);
-    align-content: center;
+    flex-direction: column;
+    flex-wrap: nowrap;
     justify-content: center;
+    align-items: center;
+    align-content: center;
+    gap: 16px;
     border-bottom: 0;
   }
+  .page.blind-mode .mode-switch {
+    order: 0;
+  }
   .page.blind-mode .bar .big-char {
-    font-size: clamp(96px, 18vw, 180px);
+    order: 1;
+    font-size: clamp(112px, 18vw, 190px);
     width: 100%;
+    min-width: 0;
   }
   .page.blind-mode .bar .decomp {
+    order: 2;
     width: min(720px, 100%);
     max-width: 720px;
+    min-width: 0;
     text-align: center;
     font-size: 14px;
   }
   .page.blind-mode .bar .input-group {
-    flex-basis: min(520px, 100%);
-    max-width: 520px;
+    order: 3;
+    width: min(560px, 100%);
+    max-width: 560px;
+    flex: 0 0 auto;
   }
-  .page.blind-mode .bar .hints,
+  .page.blind-mode .bar .hints {
+    order: 4;
+    width: 100%;
+    justify-content: center;
+  }
   .page.blind-mode .top-stats {
+    order: 5;
     width: 100%;
     justify-content: center;
     text-align: center;
@@ -378,7 +396,7 @@ const FALLBACK_CHARS = [
   {char:'民',code:'n'},{char:'了',code:'b'},{char:'发',code:'v'},{char:'以',code:'c'},{char:'经',code:'x'}
 ];
 
-let roots = [], chars = [], analysis = {}, cur = null, hintIdx = 0, retry = false, mode = localStorage.getItem('wubi_mode') || 'lookup';
+let roots = [], chars = [], cur = null, hintIdx = 0, retry = false, mode = localStorage.getItem('wubi_mode') || 'lookup';
 let s = (() => { try { return JSON.parse(localStorage.getItem(STATE_KEY))||{}; } catch(_) { return {}; } })();
 s.total = s.total||0; s.correct = s.correct||0; s.streak = s.streak||0;
 s.wrongMap = s.wrongMap||{}; s.history = s.history||[];
@@ -480,7 +498,7 @@ function submit() {
   }
 }
 function currentAnalysis() {
-  return cur ? { ...(analysis[cur.char] || {}), ...cur } : null;
+  return cur || null;
 }
 function escapeHtml(value) {
   return String(value || '').replace(/[&<>"']/g, ch => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[ch]));
@@ -516,12 +534,10 @@ function hintCode() {
 function skip() { if (!cur||retry) return; s.history = [...(s.history||[]), cur.char].slice(-80); s.streak=0; s.wrongMap[cur.char]=s.wrongMap[cur.char]||{code:cur.code,count:1}; s.wrongMap[cur.char].count++; save(); next(); }
 
 async function init() {
-  [roots, chars, analysis] = await Promise.all([
+  [roots, chars] = await Promise.all([
     fetch('/wubi-trainer/data/wubi86-roots.json').then(r => r.json()).catch(() => FALLBACK_ROOTS),
-    fetch('/wubi-trainer/data/wubi86-chars.json').then(r => r.json()).catch(() => FALLBACK_CHARS),
-    fetch('/wubi-trainer/data/wubi86-analysis.json').then(r => r.json()).catch(() => ({}))
+    fetch('/wubi-trainer/data/wubi86-chars.json').then(r => r.json()).catch(() => FALLBACK_CHARS)
   ]);
-  chars = chars.map(item => ({ ...(analysis[item.char] || {}), ...item }));
   renderKB();
   applyMode(mode, false);
   next();
