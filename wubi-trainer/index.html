@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-<title>五笔查表练习</title>
+<title>五笔练习</title>
 <link rel="stylesheet" href="/design-tokens.css">
 <style>
   :root {
@@ -112,6 +112,9 @@
     padding: 0 18px; border: 0; border-radius: 8px;
     background: var(--text); color: #f9f5ee;
     font-weight: 700; font-size: 14px; cursor: pointer; white-space: nowrap;
+  }
+  .page.practice-mode .bar .input-group button {
+    display: none;
   }
   .bar .hints {
     display: flex; gap: 5px;
@@ -316,13 +319,13 @@
   <!-- ════ Practice bar ════ -->
   <div class="bar">
     <div class="mode-switch" aria-label="练习模式">
-      <button class="mode-btn active" data-mode="lookup" type="button">查表</button>
-      <button class="mode-btn" data-mode="blind" type="button">盲打</button>
+      <button class="mode-btn active" data-mode="lookup" type="button">练习</button>
+      <button class="mode-btn" data-mode="blind" type="button">测验</button>
     </div>
     <div class="big-char" id="targetChar">字</div>
     <div class="decomp" id="decomp"></div>
     <div class="input-group">
-      <input id="codeInput" placeholder="编码" autocomplete="off" autocapitalize="off" spellcheck="false">
+      <input id="codeInput" placeholder="按键输入编码" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="none">
       <button id="submitBtn">确认</button>
     </div>
     <div class="hints">
@@ -396,7 +399,7 @@ const FALLBACK_CHARS = [
   {char:'民',code:'n'},{char:'了',code:'b'},{char:'发',code:'v'},{char:'以',code:'c'},{char:'经',code:'x'}
 ];
 
-let roots = [], chars = [], cur = null, hintIdx = 0, retry = false, mode = localStorage.getItem('wubi_mode') || 'lookup';
+let roots = [], chars = [], cur = null, hintIdx = 0, retry = false, mistake = false, locked = false, mode = localStorage.getItem('wubi_mode') || 'lookup';
 let s = (() => { try { return JSON.parse(localStorage.getItem(STATE_KEY))||{}; } catch(_) { return {}; } })();
 s.total = s.total||0; s.correct = s.correct||0; s.streak = s.streak||0;
 s.wrongMap = s.wrongMap||{}; s.history = s.history||[];
@@ -415,8 +418,11 @@ function zoneClass(zone) { return ({横:'zone-heng', 竖:'zone-shu', 撇:'zone-p
 function applyMode(nextMode, shouldAdvance = false) {
   mode = nextMode;
   localStorage.setItem('wubi_mode', mode);
+  E.page.classList.toggle('practice-mode', mode === 'lookup');
   E.page.classList.toggle('blind-mode', mode === 'blind');
   document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.mode === mode));
+  E.inp.readOnly = mode === 'lookup';
+  E.inp.placeholder = mode === 'lookup' ? '按键输入编码' : '输入编码';
   if (shouldAdvance) next();
 }
 
@@ -469,7 +475,7 @@ function pick() {
   return (pool.length > 12 ? pool : chars)[Math.floor(Math.random()*(pool.length > 12 ? pool : chars).length)];
 }
 function next() {
-  cur = pick(); hintIdx = 0; retry = false;
+  cur = pick(); hintIdx = 0; retry = false; mistake = false; locked = false;
   E.tc.textContent = cur.char; E.dec.innerHTML = '';
   E.inp.value = ''; E.inp.classList.remove('err'); E.sub.textContent = '确认';
   highlightKeys(''); toast(''); updateStats(); E.inp.focus();
@@ -496,6 +502,61 @@ function submit() {
     E.inp.value = ''; E.inp.classList.add('err'); E.sub.textContent = '重输';
     toast(`编码 ${ans}，请重打`,'bad'); save();
   }
+}
+function finishPractice() {
+  if (!cur || locked) return;
+  locked = true;
+  const ans = cur.code.toLowerCase();
+  s.total++;
+  s.history = [...(s.history||[]), cur.char].slice(-80);
+  if (mistake) {
+    s.streak = 0;
+    s.wrongMap[cur.char] = s.wrongMap[cur.char]||{code:ans,count:0};
+    s.wrongMap[cur.char].count++;
+    toast('完成，已记入错题','bad');
+  } else {
+    s.correct++;
+    s.streak++;
+    delete s.wrongMap[cur.char];
+    toast('正确！','ok');
+  }
+  save();
+  setTimeout(next, 450);
+}
+function handlePracticeKeydown(e) {
+  if (mode !== 'lookup') {
+    if (e.key === 'Enter') submit();
+    return;
+  }
+  if (e.key === 'Tab') return;
+  e.preventDefault();
+  if (!cur || locked) return;
+  if (e.key === 'Backspace' || e.key === 'Delete') {
+    E.inp.value = E.inp.value.slice(0, -1);
+    E.inp.classList.remove('err');
+    highlightKeys(E.inp.value);
+    return;
+  }
+  if (e.key === 'Escape') {
+    E.inp.value = '';
+    E.inp.classList.remove('err');
+    highlightKeys('');
+    return;
+  }
+  if (!/^[a-zA-Z]$/.test(e.key)) return;
+  const key = e.key.toLowerCase();
+  const ans = cur.code.toLowerCase();
+  const pos = E.inp.value.length;
+  if (key !== ans[pos]) {
+    mistake = true;
+    E.inp.classList.add('err');
+    toast('不对','bad');
+    return;
+  }
+  E.inp.classList.remove('err');
+  E.inp.value += key;
+  highlightKeys(E.inp.value);
+  if (E.inp.value.length >= ans.length) finishPractice();
 }
 function currentAnalysis() {
   return cur || null;
@@ -544,7 +605,9 @@ async function init() {
 }
 
 E.sub.addEventListener('click', submit);
-E.inp.addEventListener('keydown', e => { if (e.key === 'Enter') submit(); });
+E.inp.addEventListener('keydown', handlePracticeKeydown);
+E.inp.addEventListener('beforeinput', e => { if (mode === 'lookup') e.preventDefault(); });
+E.inp.addEventListener('compositionstart', e => { if (mode === 'lookup') e.preventDefault(); });
 $('hintDecomp').addEventListener('click', hintDecomp);
 $('hintKeys').addEventListener('click', hintKeys);
 $('hintCode').addEventListener('click', hintCode);
