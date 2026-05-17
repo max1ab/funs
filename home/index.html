@@ -3,20 +3,24 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>funs — 小东西陈列墙</title>
+  <title>funs — Control Deck</title>
   <style>
     :root {
-      --ink: #342a21;
-      --muted: #76695e;
-      --soft: #9a8a7c;
-      --paper: #fbf7ee;
-      --paper-warm: #f2e7d5;
-      --paper-edge: #d9c4a8;
-      --pin: #b57c43;
-      --pin-dark: #704724;
-      --rope: #7c6448;
-      --shadow: rgba(52, 37, 20, .28);
-      --light: rgba(255, 250, 236, .74);
+      --bg: #05090d;
+      --panel: rgba(7, 14, 19, .84);
+      --panel-soft: rgba(12, 26, 32, .76);
+      --line: rgba(142, 226, 230, .46);
+      --line-dim: rgba(142, 226, 230, .18);
+      --cyan: #a9f8ff;
+      --cyan-soft: #76dce8;
+      --green: #9cf0c6;
+      --amber: #ffc56f;
+      --red: #ff7d7d;
+      --text: #d7fbff;
+      --muted: #7f9da6;
+      --dark: #020508;
+      --glow: rgba(90, 226, 255, .26);
+      --mono: "SFMono-Regular", "Cascadia Mono", "JetBrains Mono", "Fira Code", Consolas, monospace;
     }
 
     * { box-sizing: border-box; }
@@ -25,10 +29,13 @@
 
     body {
       margin: 0;
-      color: var(--ink);
-      font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "PingFang SC", "Noto Sans SC", "Microsoft YaHei", sans-serif;
-      background: #e8d9c5 url("./assets/bg-wall.png") center / cover fixed no-repeat;
-      overflow-x: hidden;
+      color: var(--text);
+      font-family: var(--mono);
+      background:
+        radial-gradient(circle at 50% 10%, rgba(57, 168, 186, .14), transparent 32%),
+        radial-gradient(circle at 82% 70%, rgba(92, 255, 203, .09), transparent 32%),
+        linear-gradient(180deg, #071019 0%, var(--bg) 58%, #020407 100%);
+      overflow: hidden;
     }
 
     body::before,
@@ -41,508 +48,587 @@
     }
 
     body::before {
-      background:
-        radial-gradient(circle at 12% 5%, rgba(255,255,245,.72), transparent 36%),
-        linear-gradient(115deg, rgba(255,248,229,.28), rgba(88,58,30,.12) 70%, rgba(46,31,20,.18));
-      mix-blend-mode: soft-light;
+      background-image:
+        linear-gradient(rgba(145, 226, 230, .035) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(145, 226, 230, .035) 1px, transparent 1px);
+      background-size: 24px 24px;
+      mask-image: radial-gradient(circle at center, black 0 62%, transparent 100%);
     }
 
     body::after {
       background:
-        radial-gradient(ellipse at 50% 40%, transparent 0 58%, rgba(58,39,24,.18) 100%),
-        repeating-linear-gradient(0deg, rgba(80,60,40,.025) 0 1px, transparent 1px 4px);
-      opacity: .58;
+        repeating-linear-gradient(0deg, rgba(255,255,255,.035) 0 1px, transparent 1px 4px),
+        linear-gradient(90deg, rgba(0,0,0,.18), transparent 14%, transparent 86%, rgba(0,0,0,.24));
+      mix-blend-mode: screen;
+      opacity: .33;
     }
 
-    .page {
+    a { color: inherit; }
+
+    .deck {
       position: relative;
       z-index: 1;
-      min-height: 100vh;
-      padding: 34px clamp(18px, 4vw, 58px) 56px;
-    }
-
-    .topbar {
-      max-width: 1220px;
-      margin: 0 auto 28px;
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 24px;
-    }
-
-    .brand {
-      display: inline-flex;
-      align-items: center;
-      gap: 11px;
-      text-decoration: none;
-      color: inherit;
-      letter-spacing: .02em;
-      font-weight: 700;
-      font-size: 18px;
-    }
-
-    .brand-mark {
-      width: 30px;
-      height: 30px;
-      border-radius: 50%;
-      background:
-        radial-gradient(circle at 34% 30%, #fff0bf 0 13%, transparent 14%),
-        radial-gradient(circle at 62% 66%, #e16b47 0 17%, transparent 18%),
-        #5b8569;
-      box-shadow: 0 7px 18px rgba(54, 38, 21, .18), inset 0 1px 0 rgba(255,255,255,.55);
-    }
-
-    .intro {
-      text-align: right;
-      max-width: 420px;
-      color: var(--muted);
-      font-size: 14px;
-      line-height: 1.8;
-      text-shadow: 0 1px 0 rgba(255,255,255,.36);
-    }
-
-    .hero {
-      max-width: 1220px;
-      margin: 0 auto 40px;
+      height: 100vh;
+      padding: 10px;
       display: grid;
-      grid-template-columns: minmax(260px, 560px) 1fr;
-      gap: 28px;
-      align-items: end;
+      grid-template-columns: 310px minmax(620px, 1fr) 300px;
+      grid-template-rows: minmax(0, 1fr) 220px;
+      gap: 10px;
     }
 
-    h1 {
-      margin: 0;
-      font-size: clamp(42px, 8vw, 92px);
-      line-height: .92;
-      letter-spacing: -.07em;
-      font-weight: 800;
-      text-shadow: 0 2px 0 rgba(255,255,255,.38), 0 20px 44px rgba(80,52,26,.14);
-    }
-
-    .hero-note {
-      margin: 0 0 7px;
-      color: var(--muted);
-      font-size: 15px;
-      line-height: 1.9;
-      max-width: 440px;
-      text-shadow: 0 1px 0 rgba(255,255,255,.32);
-    }
-
-    .wall {
-      max-width: 1220px;
-      margin: 0 auto;
+    .panel {
       position: relative;
-      padding: 42px 0 18px;
-    }
-
-    .rope {
-      position: absolute;
-      left: -8%;
-      right: -8%;
-      top: 18px;
-      height: 48px;
-      z-index: 1;
-      pointer-events: none;
-      filter: drop-shadow(8px 22px 12px rgba(50, 28, 12, .28));
-    }
-
-    .rope svg {
-      width: 100%;
-      height: 100%;
-      display: block;
-      overflow: visible;
-    }
-
-    .cards {
-      position: relative;
-      z-index: 2;
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: clamp(22px, 3vw, 44px);
-      align-items: start;
-    }
-
-    .item {
-      --tilt: 0deg;
-      min-width: 0;
-      position: relative;
-      padding-top: 14px;
-      transform: rotate(var(--tilt));
-      transform-origin: 50% 2px;
-      transition: transform .28s ease, filter .28s ease;
-    }
-
-    .item:nth-child(1) { --tilt: -2.4deg; margin-top: 9px; }
-    .item:nth-child(2) { --tilt: 1.1deg; margin-top: 28px; }
-    .item:nth-child(3) { --tilt: -1.2deg; margin-top: 15px; }
-    .item:nth-child(4) { --tilt: 2.2deg; margin-top: 34px; }
-
-    .item:hover {
-      transform: rotate(0deg) translateY(-7px);
-      filter: saturate(1.03);
-      z-index: 5;
-    }
-
-    .clip {
-      position: absolute;
-      top: -16px;
-      left: 50%;
-      width: 24px;
-      height: 46px;
-      transform: translateX(-50%) rotate(-2deg);
-      z-index: 4;
-      filter: drop-shadow(8px 14px 6px rgba(63, 38, 18, .20));
-    }
-
-    .clip::before,
-    .clip::after {
-      content: "";
-      position: absolute;
-      top: 5px;
-      width: 11px;
-      height: 38px;
-      background:
-        linear-gradient(90deg, rgba(255,255,255,.26), transparent 40%),
-        linear-gradient(180deg, #d7a468 0%, #a76b35 52%, #7b4a22 100%);
-      border-radius: 4px 4px 2px 2px;
-      box-shadow: inset -1px 0 2px rgba(58,34,15,.25), inset 1px 0 rgba(255,255,255,.2);
-    }
-
-    .clip::before { left: 2px; transform: skewY(-2deg); }
-    .clip::after { right: 2px; transform: skewY(2deg); }
-
-    .spring {
-      position: absolute;
-      top: 18px;
-      left: 50%;
-      width: 16px;
-      height: 9px;
-      transform: translateX(-50%);
-      border: 2px solid rgba(74,48,28,.55);
-      border-left: 0;
-      border-right: 0;
-      border-radius: 50%;
-      z-index: 2;
-    }
-
-    .clip-shadow {
-      position: absolute;
-      top: 24px;
-      left: calc(50% + 13px);
-      width: 32px;
-      height: 44px;
-      transform: skewX(-18deg) rotate(8deg);
-      background: rgba(70,43,20,.16);
-      filter: blur(7px);
-      z-index: 1;
-    }
-
-    .card {
-      display: block;
-      width: 100%;
-      min-width: 0;
-      min-height: 270px;
-      text-decoration: none;
-      color: inherit;
-      border-radius: 3px;
-      background:
-        linear-gradient(100deg, rgba(255,255,255,.38), transparent 34%),
-        linear-gradient(180deg, #fffaf0, #f1dfc1);
-      border: 1px solid rgba(132,94,54,.22);
+      border: 1px solid var(--line);
+      background: var(--panel);
       box-shadow:
-        2px 3px 0 rgba(255,255,255,.32) inset,
-        -1px -2px 0 rgba(120,82,42,.08) inset,
-        8px 18px 28px rgba(50,28,12,.25),
-        24px 52px 48px rgba(50,28,12,.16),
-        0 1px 3px rgba(60,35,18,.10);
+        0 0 0 1px rgba(169, 248, 255, .04) inset,
+        0 0 28px rgba(69, 205, 229, .08),
+        0 18px 52px rgba(0,0,0,.28);
       overflow: hidden;
-      position: relative;
+      min-height: 0;
+      max-width: 100%;
     }
 
-    .card::before {
+    .panel::before {
       content: "";
       position: absolute;
       inset: 0;
       background:
-        repeating-linear-gradient(0deg, rgba(111,76,40,.028) 0 1px, transparent 1px 5px),
-        radial-gradient(circle at 20% 14%, rgba(255,255,255,.42), transparent 38%),
-        radial-gradient(circle at 85% 92%, rgba(106,68,35,.10), transparent 42%);
-      mix-blend-mode: multiply;
+        linear-gradient(135deg, rgba(255,255,255,.05), transparent 18%),
+        radial-gradient(circle at 18% 0%, rgba(157, 255, 255, .10), transparent 28%);
       pointer-events: none;
-      z-index: 3;
     }
 
-    .card.empty {
-      background:
-        linear-gradient(180deg, rgba(255,250,239,.46), rgba(232,212,180,.35));
-      border: 1px dashed rgba(87,62,36,.28);
-      box-shadow:
-        9px 18px 18px rgba(66,39,20,.12),
-        22px 36px 28px rgba(66,39,20,.07);
-    }
-
-    .art {
-      height: 150px;
-      margin: 12px 12px 0;
-      border-radius: 2px;
-      border: 1px solid rgba(95,62,34,.12);
+    .panel-title {
       position: relative;
-      overflow: hidden;
-      background: #efe5d3;
-      box-shadow: 0 1px 0 rgba(255,255,255,.45) inset, 0 9px 16px rgba(87,55,25,.08);
-    }
-
-    .ball-art {
-      background:
-        linear-gradient(180deg, rgba(255,255,255,.72), transparent 55%),
-        linear-gradient(180deg, #f4eadb, #dac1a0);
-    }
-
-    .ball-art::before {
-      content: "";
-      position: absolute;
-      width: 54px;
-      height: 54px;
-      left: 50%;
-      top: 44%;
-      border-radius: 50%;
-      background: radial-gradient(circle at 32% 28%, #ffe8bf, #df6b49 48%, #963f2c 100%);
-      box-shadow: 18px 38px 36px rgba(50,28,14,.30);
-      transform: translate(-50%, -50%);
-      animation: floatBall 2.8s ease-in-out infinite;
-    }
-
-    .ball-art::after {
-      content: "";
-      position: absolute;
-      left: 50%;
-      bottom: 46px;
-      width: 84px;
-      height: 14px;
-      background: rgba(81,48,24,.16);
-      border-radius: 50%;
-      filter: blur(4px);
-      transform: translateX(-50%);
-      animation: ballShadow 2.8s ease-in-out infinite;
-    }
-
-    @keyframes floatBall {
-      0%, 100% { transform: translate(-50%, -54%); }
-      50% { transform: translate(-50%, -30%); }
-    }
-
-    @keyframes ballShadow {
-      0%, 100% { transform: translateX(-50%) scaleX(.78); opacity: .42; }
-      50% { transform: translateX(-50%) scaleX(1.08); opacity: .70; }
-    }
-
-    .wubi-art {
-      display: grid;
-      place-items: center;
-      background:
-        linear-gradient(145deg, rgba(255,255,255,.56), transparent 45%),
-        linear-gradient(180deg, #f9f1df, #ded0b4);
-      font-family: "Songti SC", "STSong", serif;
-    }
-
-    .wubi-art .hanzi {
-      font-size: 82px;
-      line-height: 1;
-      letter-spacing: -.04em;
-      color: #2f291f;
-      text-shadow: 0 7px 16px rgba(73,43,22,.10);
-    }
-
-    .wubi-art .code {
-      position: absolute;
-      right: 18px;
-      bottom: 15px;
-      font-family: "SF Mono", Consolas, monospace;
-      font-size: 18px;
-      letter-spacing: .18em;
-      color: #9a6338;
-    }
-
-    .soon-art {
-      display: grid;
-      place-items: center;
-      color: rgba(75,53,34,.38);
-      font-size: 46px;
-      font-weight: 300;
-      background:
-        linear-gradient(135deg, rgba(255,255,255,.38), transparent 38%),
-        repeating-linear-gradient(-45deg, rgba(126,92,55,.08) 0 8px, transparent 8px 18px),
-        #ead9bd;
-    }
-
-    .card-text {
-      padding: 20px 20px 23px;
-      position: relative;
-      z-index: 4;
-    }
-
-    .card-kicker {
-      display: block;
-      margin-bottom: 7px;
-      font-size: 11px;
-      letter-spacing: .13em;
+      z-index: 1;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 10px;
+      border-bottom: 1px solid var(--line-dim);
+      color: var(--cyan);
+      font-size: 12px;
+      letter-spacing: .05em;
       text-transform: uppercase;
-      color: var(--soft);
+      background: rgba(169, 248, 255, .035);
     }
 
-    .card h2 {
-      margin: 0 0 7px;
-      font-size: 22px;
-      line-height: 1.22;
-      letter-spacing: -.03em;
+    .panel-body {
+      position: relative;
+      z-index: 1;
+      padding: 14px;
     }
 
-    .card p {
-      margin: 0;
+    .left { grid-column: 1; grid-row: 1 / 3; }
+    .main { grid-column: 2; grid-row: 1; }
+    .right { grid-column: 3; grid-row: 1 / 3; }
+    .files { grid-column: 2; grid-row: 2; }
+
+    .clock {
+      font-size: clamp(34px, 3.6vw, 48px);
+      line-height: 1;
+      letter-spacing: .08em;
+      color: var(--cyan);
+      text-shadow: 0 0 18px var(--glow);
+      margin: 14px 0 18px;
+    }
+
+    .kv {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 7px 10px;
+      font-size: 13px;
       color: var(--muted);
+      border-top: 1px solid var(--line-dim);
+      border-bottom: 1px solid var(--line-dim);
+      padding: 12px 0;
+      margin-bottom: 18px;
+    }
+
+    .kv strong { color: var(--text); font-weight: 500; }
+
+    .metric { margin: 16px 0; }
+
+    .metric-head {
+      display: flex;
+      justify-content: space-between;
+      color: var(--cyan-soft);
+      font-size: 12px;
+      margin-bottom: 7px;
+      text-transform: uppercase;
+    }
+
+    .spark {
+      height: 34px;
+      display: flex;
+      align-items: end;
+      gap: 3px;
+      padding: 5px 0;
+      border-bottom: 1px dashed var(--line-dim);
+    }
+
+    .spark i {
+      flex: 1;
+      min-width: 4px;
+      height: calc(var(--h) * 1%);
+      background: linear-gradient(180deg, var(--cyan), rgba(169,248,255,.16));
+      box-shadow: 0 0 10px rgba(169,248,255,.18);
+    }
+
+    .process-list {
+      margin: 18px 0 0;
+      padding: 0;
+      list-style: none;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .process-list li {
+      display: grid;
+      grid-template-columns: 46px 1fr auto;
+      gap: 8px;
+      padding: 5px 0;
+      border-bottom: 1px dotted rgba(169,248,255,.12);
+    }
+
+    .main-tabs {
+      display: grid;
+      grid-template-columns: 240px repeat(3, 1fr);
+      height: 30px;
+      border-bottom: 1px solid var(--line);
+      color: var(--cyan);
+      font-size: 13px;
+      text-align: center;
+      text-transform: uppercase;
+    }
+
+    .main-tabs div {
+      display: grid;
+      place-items: center;
+      border-right: 1px solid var(--line-dim);
+      background: rgba(169, 248, 255, .03);
+      clip-path: polygon(0 0, calc(100% - 18px) 0, 100% 100%, 0 100%);
+    }
+
+    .terminal {
+      padding: 16px 18px 18px;
+      height: calc(100% - 30px);
+      overflow: hidden;
       font-size: 14px;
       line-height: 1.65;
     }
 
-    .empty .card-text {
-      text-align: center;
-      padding-top: 25px;
+    .terminal .welcome { color: var(--cyan); font-weight: 700; }
+    .terminal .dim { color: var(--muted); overflow-wrap: anywhere; }
+    .terminal .path { color: var(--amber); }
+    .terminal .ok { color: var(--green); }
+    .terminal .cmd { color: var(--text); }
+
+    .ascii {
+      display: grid;
+      grid-template-columns: minmax(260px, 390px) 1fr;
+      gap: 28px;
+      margin: 18px 0 24px;
+      align-items: start;
     }
 
-    .empty .card h2,
-    .empty h2 { color: rgba(55,40,28,.72); }
+    pre {
+      margin: 0;
+      white-space: pre;
+      color: var(--cyan);
+      text-shadow: 0 0 14px rgba(169,248,255,.18);
+    }
 
-    .note {
-      max-width: 1220px;
-      margin: 42px auto 0;
-      color: rgba(63,48,36,.68);
+    .sysinfo {
+      display: grid;
+      grid-template-columns: max-content 1fr;
+      gap: 4px 16px;
+      color: var(--muted);
+      min-width: 0;
+    }
+
+    .sysinfo b { color: var(--cyan-soft); font-weight: 500; }
+
+    .launcher {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 10px;
+    }
+
+    .project {
+      position: relative;
+      display: block;
+      text-decoration: none;
+      border: 1px solid var(--line-dim);
+      background: rgba(169, 248, 255, .025);
+      padding: 13px 14px 13px 52px;
+      min-height: 92px;
+      transition: border-color .18s ease, background .18s ease, transform .18s ease, box-shadow .18s ease;
+    }
+
+    .project:hover {
+      border-color: var(--cyan);
+      background: rgba(169, 248, 255, .07);
+      transform: translateY(-2px);
+      box-shadow: 0 0 18px rgba(169,248,255,.10);
+    }
+
+    .project::before {
+      content: attr(data-key);
+      position: absolute;
+      left: 13px;
+      top: 13px;
+      width: 26px;
+      height: 26px;
+      display: grid;
+      place-items: center;
+      border: 1px solid var(--line-dim);
+      color: var(--cyan);
+      background: rgba(0,0,0,.18);
+    }
+
+    .project h2 {
+      margin: 0 0 7px;
+      font-size: 16px;
+      color: var(--text);
+      font-weight: 700;
+      letter-spacing: .02em;
+    }
+
+    .project p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .project .line {
+      display: block;
+      margin-top: 8px;
+      color: var(--green);
+      font-size: 12px;
+    }
+
+    .prompt {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      margin-top: 18px;
+      color: var(--cyan);
+    }
+
+    .cursor {
+      display: inline-block;
+      width: 10px;
+      height: 18px;
+      background: var(--cyan);
+      box-shadow: 0 0 14px var(--glow);
+      animation: blink 1s steps(2) infinite;
+    }
+
+    @keyframes blink { 50% { opacity: 0; } }
+
+    .radar {
+      height: 250px;
+      position: relative;
+      display: grid;
+      place-items: center;
+      margin: 12px 0 18px;
+      border: 1px solid var(--line-dim);
+      background:
+        radial-gradient(circle, transparent 0 21%, rgba(169,248,255,.08) 21.5% 22%, transparent 22.5% 44%, rgba(169,248,255,.08) 44.5% 45%, transparent 45.5%),
+        linear-gradient(90deg, transparent calc(50% - 1px), rgba(169,248,255,.12) 50%, transparent calc(50% + 1px)),
+        linear-gradient(0deg, transparent calc(50% - 1px), rgba(169,248,255,.12) 50%, transparent calc(50% + 1px));
+    }
+
+    .radar::before {
+      content: "";
+      position: absolute;
+      width: 44%;
+      height: 44%;
+      border-radius: 50%;
+      background: conic-gradient(from 0deg, rgba(169,248,255,.36), transparent 42%);
+      animation: sweep 4.5s linear infinite;
+      opacity: .58;
+    }
+
+    @keyframes sweep { to { transform: rotate(360deg); } }
+
+    .node {
+      position: absolute;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 12px var(--glow);
+    }
+
+    .node:nth-child(1) { left: 34%; top: 42%; }
+    .node:nth-child(2) { left: 63%; top: 55%; background: var(--green); }
+    .node:nth-child(3) { left: 48%; top: 28%; background: var(--amber); }
+
+    .traffic {
+      margin-top: 18px;
+      height: 140px;
+      border: 1px solid var(--line-dim);
+      background-image:
+        linear-gradient(rgba(169,248,255,.10) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(169,248,255,.10) 1px, transparent 1px);
+      background-size: 34px 28px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .traffic svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .files .panel-body {
+      height: calc(100% - 28px);
+      min-height: 0;
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 12px;
+      align-content: center;
+    }
+
+    .file {
+      display: block;
+      text-decoration: none;
+      color: var(--text);
+      border: 1px solid var(--line-dim);
+      background: rgba(169,248,255,.03);
+      padding: 14px;
+      min-height: 96px;
+      transition: border-color .18s ease, background .18s ease;
+    }
+
+    .file:hover {
+      border-color: var(--cyan);
+      background: rgba(169,248,255,.08);
+    }
+
+    .file-icon {
+      width: 56px;
+      height: 40px;
+      border: 2px solid var(--cyan-soft);
+      border-top-width: 12px;
+      border-radius: 3px;
+      margin-bottom: 14px;
+      opacity: .9;
+      box-shadow: 0 0 12px rgba(169,248,255,.12);
+    }
+
+    .file strong {
+      display: block;
       font-size: 13px;
-      letter-spacing: .03em;
-      text-align: right;
-      text-shadow: 0 1px 0 rgba(255,255,255,.35);
+      margin-bottom: 4px;
     }
 
-    @media (max-width: 900px) {
-      .hero {
-        grid-template-columns: 1fr;
-        gap: 12px;
-        margin-bottom: 30px;
+    .file span { color: var(--muted); font-size: 11px; }
+
+    .shortcuts {
+      position: fixed;
+      left: 50%;
+      bottom: 12px;
+      transform: translateX(-50%);
+      z-index: 4;
+      display: none;
+      gap: 8px;
+      color: var(--cyan);
+      font-size: 12px;
+    }
+
+    .key {
+      border: 1px solid var(--line-dim);
+      padding: 6px 9px;
+      background: rgba(3,7,10,.75);
+    }
+
+    @media (max-width: 1180px) {
+      .deck {
+        grid-template-columns: 240px minmax(520px, 1fr);
+        grid-template-rows: auto auto auto;
       }
-
-      .hero-note,
-      .intro { max-width: none; }
-
-      .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-      .rope { display: none; }
-      .wall { padding-top: 12px; }
-      .card { min-height: 300px; }
-      .art { height: 166px; }
+      .right { grid-column: 1 / 3; grid-row: 3; }
+      .left { grid-row: 1 / 3; }
+      .main { grid-column: 2; grid-row: 1; }
+      .files { grid-column: 2; grid-row: 2; }
+      .right .panel-body { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+      .radar, .traffic { margin: 0; height: 220px; }
     }
 
-    @media (max-width: 560px) {
-      body { background-attachment: scroll; }
-      .page { padding: 24px 10px 38px; }
-      .topbar { display: block; margin-bottom: 25px; }
-      .intro { text-align: left; margin-top: 14px; font-size: 13px; }
-      h1 { font-size: clamp(42px, 17vw, 70px); }
-      .hero-note { font-size: 14px; max-width: 330px; }
-      .cards { grid-template-columns: 1fr; gap: 22px; max-width: 280px; margin: 0 auto; }
-      .item:nth-child(n) { margin-top: 0; --tilt: 0deg; }
-      .clip { transform: translateX(-50%) scale(.82); top: -18px; }
-      .card { min-height: 238px; }
-      .art { height: 122px; margin: 9px 9px 0; }
-      .wubi-art .hanzi { font-size: 54px; }
-      .wubi-art .code { font-size: 13px; right: 11px; bottom: 10px; }
-      .card-text { padding: 14px 13px 16px; }
-      .card h2 { font-size: 17px; }
-      .card p { font-size: 12px; line-height: 1.55; }
-      .note { text-align: left; margin-top: 28px; font-size: 12px; }
+    @media (max-width: 820px) {
+      body { overflow-x: hidden; overflow-y: auto; }
+      body::after { opacity: .20; }
+      .deck {
+        display: block;
+        padding: 8px;
+        height: auto;
+        min-height: 100vh;
+        overflow: auto;
+      }
+      .panel { margin-bottom: 10px; }
+      .left, .right { display: none; }
+      .main-tabs { grid-template-columns: 1fr; }
+      .main-tabs div:nth-child(n+2) { display: none; }
+      .terminal { font-size: 12px; padding: 14px; overflow: visible; height: auto; }
+      .ascii { display: block; }
+      .ascii pre { font-size: 10px; overflow: hidden; margin-bottom: 14px; }
+      .sysinfo { font-size: 12px; grid-template-columns: 72px minmax(0, 1fr); }
+      .launcher { grid-template-columns: 1fr; }
+      .files .panel-body { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .project { padding-left: 48px; }
+      .shortcuts { display: flex; }
     }
   </style>
 </head>
 <body>
-  <main class="page">
-    <nav class="topbar" aria-label="funs navigation">
-      <a class="brand" href="/">
-        <span class="brand-mark" aria-hidden="true"></span>
-        <span>funs</span>
-      </a>
-      <div class="intro">一些小实验，不追求有用，但希望打开时能让人停一下。</div>
-    </nav>
+  <main class="deck">
+    <aside class="panel left" aria-label="system panel">
+      <div class="panel-title"><span>panel</span><span>system</span></div>
+      <div class="panel-body">
+        <div class="clock" id="clock">20:12:46</div>
+        <div class="kv">
+          <span>DATE</span><strong>2026.05.17</strong>
+          <span>UPTIME</span><strong>∞</strong>
+          <span>TYPE</span><strong>FUNS NODE</strong>
+          <span>POWER</span><strong>ONLINE</strong>
+        </div>
 
-    <header class="hero">
-      <h1>small<br />things</h1>
-      <p class="hero-note">把做着玩的页面挂在这里。像一面工作室墙：有成品，也会留几个空位置给下一个想法。</p>
-    </header>
+        <div class="metric">
+          <div class="metric-head"><span>project usage</span><span>2/4</span></div>
+          <div class="spark" aria-hidden="true">
+            <i style="--h:30"></i><i style="--h:52"></i><i style="--h:47"></i><i style="--h:72"></i><i style="--h:44"></i><i style="--h:61"></i><i style="--h:36"></i><i style="--h:66"></i><i style="--h:58"></i><i style="--h:79"></i><i style="--h:49"></i><i style="--h:69"></i>
+          </div>
+        </div>
 
-    <section class="wall" aria-label="项目明信片墙">
-      <div class="rope" aria-hidden="true">
-        <svg viewBox="0 0 1200 60" preserveAspectRatio="none">
-          <path d="M -40 12 Q 280 44, 600 38 T 1240 14" fill="none" stroke="rgba(50,35,20,.32)" stroke-width="8" stroke-linecap="round"/>
-          <path d="M -40 10 Q 280 42, 600 36 T 1240 12" fill="none" stroke="rgba(130,102,72,.92)" stroke-width="3.5" stroke-linecap="round"/>
-          <path d="M -40 8 Q 280 40, 600 34 T 1240 10" fill="none" stroke="rgba(238,215,172,.45)" stroke-width="1.2" stroke-linecap="round"/>
-        </svg>
+        <div class="metric">
+          <div class="metric-head"><span>memory</span><span>small ideas</span></div>
+          <div class="spark" aria-hidden="true">
+            <i style="--h:80"></i><i style="--h:12"></i><i style="--h:68"></i><i style="--h:18"></i><i style="--h:74"></i><i style="--h:29"></i><i style="--h:63"></i><i style="--h:20"></i><i style="--h:55"></i><i style="--h:16"></i><i style="--h:70"></i><i style="--h:24"></i>
+          </div>
+        </div>
+
+        <ul class="process-list">
+          <li><span>PID</span><span>NAME</span><span>STATE</span></li>
+          <li><span>001</span><span>ball-physics</span><span class="ok">RUN</span></li>
+          <li><span>002</span><span>wubi-trainer</span><span class="ok">RUN</span></li>
+          <li><span>003</span><span>reading-lab</span><span>IDLE</span></li>
+          <li><span>004</span><span>next-idea</span><span>WAIT</span></li>
+        </ul>
       </div>
+    </aside>
 
-      <div class="cards">
-        <article class="item">
-          <span class="clip-shadow" aria-hidden="true"></span>
-          <span class="clip" aria-hidden="true"><span class="spring"></span></span>
-          <a class="card" href="/ball-physics-simulation/">
-            <div class="art ball-art" aria-hidden="true"></div>
-            <div class="card-text">
-              <span class="card-kicker">experiment 01</span>
-              <h2>小球物理模拟</h2>
-              <p>一个弹来弹去的物理小实验，适合观察碰撞、重力和速度。</p>
-            </div>
-          </a>
-        </article>
-
-        <article class="item">
-          <span class="clip-shadow" aria-hidden="true"></span>
-          <span class="clip" aria-hidden="true"><span class="spring"></span></span>
-          <a class="card" href="/wubi-trainer/">
-            <div class="art wubi-art" aria-hidden="true">
-              <span class="hanzi">好</span>
-              <span class="code">vbg</span>
-            </div>
-            <div class="card-text">
-              <span class="card-kicker">experiment 02</span>
-              <h2>五笔打字练习</h2>
-              <p>用真实输入法跟打句子，慢慢把编码变成手指记忆。</p>
-            </div>
-          </a>
-        </article>
-
-        <article class="item">
-          <span class="clip-shadow" aria-hidden="true"></span>
-          <span class="clip" aria-hidden="true"><span class="spring"></span></span>
-          <div class="card empty">
-            <div class="art soon-art" aria-hidden="true">?</div>
-            <div class="card-text">
-              <span class="card-kicker">empty slot</span>
-              <h2>下一件小东西</h2>
-              <p>还没决定。也许是阅读工具，也许是一个更没用的小玩意。</p>
-            </div>
+    <section class="panel main" aria-label="main terminal">
+      <div class="main-tabs">
+        <div>main shell</div><div>projects</div><div>empty</div><div>empty</div>
+      </div>
+      <div class="terminal">
+        <div class="welcome">Welcome to FUNS-DECK v0.1.0 · small experiments mounted</div>
+        <div class="dim">boot sequence complete · route table loaded · click a module to enter</div>
+        <br />
+        <div><span class="path">~/funs</span> <span class="cmd">neofetch</span></div>
+        <div class="ascii">
+<pre aria-hidden="true">      .---.
+   .-(     )-.
+  /  .-   -.  \
+ |  /  \ /  \  |
+ |  \__/ \__/  |
+  \    ___    /
+   '-._____,-'
+      funs</pre>
+          <div class="sysinfo">
+            <span>OS</span><b>small experiments</b>
+            <span>HOST</span><b>funs.mclab.top</b>
+            <span>KERNEL</span><b>static html / css / js</b>
+            <span>PROJECTS</span><b>2 active, 2 empty slots</b>
+            <span>THEME</span><b>Control Deck</b>
+            <span>STATUS</span><b class="ok">ONLINE</b>
           </div>
-        </article>
+        </div>
 
-        <article class="item">
-          <span class="clip-shadow" aria-hidden="true"></span>
-          <span class="clip" aria-hidden="true"><span class="spring"></span></span>
-          <div class="card empty">
-            <div class="art soon-art" aria-hidden="true">＋</div>
-            <div class="card-text">
-              <span class="card-kicker">future</span>
-              <h2>留一个位置</h2>
-              <p>项目多了以后，这面墙会自然长出来，不需要一开始填满。</p>
-            </div>
+        <div><span class="path">~/funs</span> <span class="cmd">ls -la projects/</span></div>
+        <div class="launcher">
+          <a class="project" data-key="01" href="/ball-physics-simulation/">
+            <h2>ball-physics/</h2>
+            <p>弹来弹去的物理小实验，观察碰撞、重力和速度。</p>
+            <span class="line">cd ball-physics →</span>
+          </a>
+          <a class="project" data-key="02" href="/wubi-trainer/">
+            <h2>wubi-trainer/</h2>
+            <p>用真实输入法跟打句子，把五笔编码变成手指记忆。</p>
+            <span class="line">cd wubi-trainer →</span>
+          </a>
+          <div class="project" data-key="??">
+            <h2>reading-lab/</h2>
+            <p>晦涩经典书籍辅助阅读，仍在构思中。</p>
+            <span class="line">status: draft</span>
           </div>
-        </article>
+          <div class="project" data-key="++">
+            <h2>next-experiment/</h2>
+            <p>留给下一个突然冒出来的小想法。</p>
+            <span class="line">status: waiting</span>
+          </div>
+        </div>
+
+        <div class="prompt"><span class="path">~/funs</span><span>$</span><span class="cmd">open selected module</span><span class="cursor" aria-hidden="true"></span></div>
       </div>
     </section>
 
-    <p class="note">funs.mclab.top · made for small experiments</p>
+    <aside class="panel right" aria-label="network panel">
+      <div class="panel-title"><span>network</span><span>project graph</span></div>
+      <div class="panel-body">
+        <div class="kv">
+          <span>STATE</span><strong>ONLINE</strong>
+          <span>DOMAIN</span><strong>mclab.top</strong>
+          <span>DEPLOY</span><strong>VERCEL</strong>
+          <span>BRANCH</span><strong>funs-home</strong>
+        </div>
+        <div class="radar" aria-label="project radar">
+          <span class="node"></span><span class="node"></span><span class="node"></span>
+        </div>
+        <div class="traffic" aria-label="traffic chart">
+          <svg viewBox="0 0 280 140" preserveAspectRatio="none">
+            <polyline points="0,108 20,82 40,96 60,72 80,78 100,55 120,68 140,48 160,60 180,44 200,74 220,58 240,66 260,38 280,52" fill="none" stroke="rgba(169,248,255,.78)" stroke-width="2" />
+            <polyline points="0,92 20,104 40,88 60,98 80,84 100,92 120,77 140,86 160,80 180,96 200,82 220,90 240,70 260,76 280,68" fill="none" stroke="rgba(156,240,198,.58)" stroke-width="2" />
+          </svg>
+        </div>
+      </div>
+    </aside>
+
+    <section class="panel files" aria-label="filesystem panel">
+      <div class="panel-title"><span>filesystem</span><span>/home/funs/projects</span></div>
+      <div class="panel-body">
+        <a class="file" href="/ball-physics-simulation/"><span class="file-icon"></span><strong>ball-physics</strong><span>interactive simulation</span></a>
+        <a class="file" href="/wubi-trainer/"><span class="file-icon"></span><strong>wubi-trainer</strong><span>typing practice</span></a>
+        <div class="file"><span class="file-icon"></span><strong>style-lab</strong><span>design experiments</span></div>
+        <div class="file"><span class="file-icon"></span><strong>empty-slot</strong><span>reserved</span></div>
+      </div>
+    </section>
   </main>
+
+  <div class="shortcuts" aria-hidden="true"><span class="key">1 BALL</span><span class="key">2 WUBI</span><span class="key">H HELP</span></div>
+
+  <script>
+    const clock = document.getElementById('clock');
+    function tick() {
+      const now = new Date();
+      clock.textContent = now.toLocaleTimeString('zh-CN', { hour12: false });
+    }
+    tick();
+    setInterval(tick, 1000);
+
+    document.addEventListener('keydown', (event) => {
+      if (event.key === '1') location.href = '/ball-physics-simulation/';
+      if (event.key === '2') location.href = '/wubi-trainer/';
+    });
+  </script>
 </body>
 </html>
