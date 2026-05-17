@@ -118,8 +118,44 @@
     background: var(--text); color: #f9f5ee;
     font-weight: 700; font-size: 14px; cursor: pointer; white-space: nowrap;
   }
-  .page.practice-mode .bar .input-group button {
+  .page.practice-mode .bar .input-group button,
+  .page.follow-mode .bar .input-group button {
     display: none;
+  }
+  .follow-code {
+    display: none;
+    align-items: center;
+    gap: 8px;
+    min-width: 160px;
+  }
+  .page.follow-mode .follow-code {
+    display: flex;
+  }
+  .follow-code span {
+    min-width: 38px;
+    height: 42px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border: 1.5px solid var(--border);
+    border-radius: 10px;
+    background: var(--surface);
+    color: var(--text2);
+    font-family: "SF Mono","Consolas","Courier New",monospace;
+    font-size: 23px;
+    font-weight: 800;
+    text-transform: uppercase;
+  }
+  .follow-code span.done {
+    border-color: rgba(45,138,86,.35);
+    background: rgba(45,138,86,.08);
+    color: var(--green);
+  }
+  .follow-code span.current {
+    border-color: var(--accent);
+    background: #fef5e8;
+    color: var(--accent);
+    box-shadow: 0 0 0 3px var(--accent-dim);
   }
   .bar .hints {
     display: flex; gap: 5px;
@@ -349,6 +385,8 @@
     .mode-switch { order: -2; }
     .mode-btn { padding: 6px 10px; font-size: 11px; }
     .bar .big-char { font-size: 42px; min-width: 60px; }
+    .follow-code { gap: 5px; min-width: 0; }
+    .follow-code span { min-width: 30px; height: 32px; border-radius: 8px; font-size: 17px; }
     .bar .input-group input { font-size: 18px; padding: 8px 10px; }
     .bar .hints { display: none; }
     .top-stats { width: 100%; margin-left: 0; text-align: center; font-size: 11px; }
@@ -376,11 +414,13 @@
   <!-- ════ Practice bar ════ -->
   <div class="bar">
     <div class="mode-switch" aria-label="练习模式">
-      <button class="mode-btn active" data-mode="lookup" type="button">练习</button>
+      <button class="mode-btn active" data-mode="follow" type="button">跟打</button>
+      <button class="mode-btn" data-mode="lookup" type="button">查表</button>
       <button class="mode-btn" data-mode="blind" type="button">测验</button>
     </div>
     <div class="big-char" id="targetChar">字</div>
     <div class="decomp" id="decomp"></div>
+    <div class="follow-code" id="followCode" aria-label="跟打编码"></div>
     <div class="input-group">
       <input id="codeInput" placeholder="按键输入编码" autocomplete="off" autocapitalize="off" spellcheck="false" inputmode="none">
       <button id="submitBtn">确认</button>
@@ -471,7 +511,7 @@ const FALLBACK_CHARS = [
   {char:'民',code:'n'},{char:'了',code:'b'},{char:'发',code:'v'},{char:'以',code:'c'},{char:'经',code:'x'}
 ];
 
-let roots = [], chars = [], cur = null, hintIdx = 0, retry = false, mistake = false, locked = false, mode = localStorage.getItem('wubi_mode') || 'lookup';
+let roots = [], chars = [], cur = null, hintIdx = 0, retry = false, mistake = false, locked = false, mode = localStorage.getItem('wubi_mode') || 'follow';
 let s = (() => { try { return JSON.parse(localStorage.getItem(STATE_KEY))||{}; } catch(_) { return {}; } })();
 s.total = s.total||0; s.correct = s.correct||0; s.streak = s.streak||0;
 s.wrongMap = s.wrongMap||{}; s.history = s.history||[];
@@ -480,7 +520,7 @@ function save() { localStorage.setItem(STATE_KEY, JSON.stringify(s)); updateStat
 const $ = id => document.getElementById(id);
 const E = {
   page: $('page'), kb: $('keyboard'), tc: $('targetChar'), dec: $('decomp'),
-  inp: $('codeInput'), sub: $('submitBtn'), toast: $('toast'),
+  inp: $('codeInput'), sub: $('submitBtn'), fc: $('followCode'), toast: $('toast'),
   topStats: $('topStats'), progress: $('progressLine')
 };
 
@@ -490,11 +530,12 @@ function zoneClass(zone) { return ({横:'zone-heng', 竖:'zone-shu', 撇:'zone-p
 function applyMode(nextMode, shouldAdvance = false) {
   mode = nextMode;
   localStorage.setItem('wubi_mode', mode);
+  E.page.classList.toggle('follow-mode', mode === 'follow');
   E.page.classList.toggle('practice-mode', mode === 'lookup');
   E.page.classList.toggle('blind-mode', mode === 'blind');
   document.querySelectorAll('.mode-btn').forEach(btn => btn.classList.toggle('active', btn.dataset.mode === mode));
-  E.inp.readOnly = mode === 'lookup';
-  E.inp.placeholder = mode === 'lookup' ? '按键输入编码' : '输入编码';
+  E.inp.readOnly = mode === 'lookup' || mode === 'follow';
+  E.inp.placeholder = mode === 'blind' ? '输入编码' : '按键输入编码';
   if (shouldAdvance) next();
 }
 
@@ -526,6 +567,19 @@ function highlightKeys(code) {
   document.querySelectorAll('.kb-key').forEach(el => el.classList.toggle('hint', set.has(el.dataset.key)));
 }
 
+function renderFollowCode() {
+  if (!E.fc) return;
+  if (!cur || mode !== 'follow') {
+    E.fc.innerHTML = '';
+    return;
+  }
+  const typedLength = E.inp.value.length;
+  E.fc.innerHTML = cur.code.toLowerCase().split('').map((key, index) => {
+    const cls = index < typedLength ? 'done' : index === typedLength ? 'current' : '';
+    return `<span class="${cls}">${escapeHtml(key)}</span>`;
+  }).join('');
+}
+
 
 function updateStats() {
   const total = s.total || 0;
@@ -550,7 +604,7 @@ function next() {
   cur = pick(); hintIdx = 0; retry = false; mistake = false; locked = false;
   E.tc.textContent = cur.char; E.dec.innerHTML = '';
   E.inp.value = ''; E.inp.classList.remove('err'); E.sub.textContent = '确认';
-  highlightKeys(''); toast(''); updateStats(); E.inp.focus();
+  highlightKeys(mode === 'follow' ? cur.code[0] : ''); renderFollowCode(); toast(''); updateStats(); E.inp.focus();
 }
 function toast(t, cls) {
   E.toast.textContent = t; E.toast.className = `toast ${cls}` + (t ? ' show' : '');
@@ -575,7 +629,7 @@ function submit() {
     toast(`编码 ${ans}，请重打`,'bad'); save();
   }
 }
-function finishPractice() {
+function finishPractice(delay = 450) {
   if (!cur || locked) return;
   locked = true;
   const ans = cur.code.toLowerCase();
@@ -593,10 +647,10 @@ function finishPractice() {
     toast('正确！','ok');
   }
   save();
-  setTimeout(next, 450);
+  setTimeout(next, delay);
 }
 function handlePracticeKeydown(e) {
-  if (mode !== 'lookup') {
+  if (mode === 'blind') {
     if (e.key === 'Enter') submit();
     return;
   }
@@ -606,13 +660,16 @@ function handlePracticeKeydown(e) {
   if (e.key === 'Backspace' || e.key === 'Delete') {
     E.inp.value = E.inp.value.slice(0, -1);
     E.inp.classList.remove('err');
-    highlightKeys(E.inp.value);
+    const nextKey = mode === 'follow' && cur.code[E.inp.value.length] ? cur.code[E.inp.value.length] : E.inp.value;
+    highlightKeys(nextKey);
+    renderFollowCode();
     return;
   }
   if (e.key === 'Escape') {
     E.inp.value = '';
     E.inp.classList.remove('err');
-    highlightKeys('');
+    highlightKeys(mode === 'follow' ? cur.code[0] : '');
+    renderFollowCode();
     return;
   }
   if (!/^[a-zA-Z]$/.test(e.key)) return;
@@ -622,13 +679,18 @@ function handlePracticeKeydown(e) {
   if (key !== ans[pos]) {
     mistake = true;
     E.inp.classList.add('err');
-    toast('不对','bad');
+    toast(mode === 'follow' ? '不对，看上方编码' : '不对','bad');
     return;
   }
   E.inp.classList.remove('err');
   E.inp.value += key;
-  highlightKeys(E.inp.value);
-  if (E.inp.value.length >= ans.length) finishPractice();
+  if (mode === 'follow') {
+    highlightKeys(ans[E.inp.value.length] || ans);
+    renderFollowCode();
+  } else {
+    highlightKeys(E.inp.value);
+  }
+  if (E.inp.value.length >= ans.length) finishPractice(mode === 'follow' ? 2000 : 450);
 }
 function currentAnalysis() {
   return cur || null;
@@ -695,8 +757,8 @@ async function init() {
 
 E.sub.addEventListener('click', submit);
 E.inp.addEventListener('keydown', handlePracticeKeydown);
-E.inp.addEventListener('beforeinput', e => { if (mode === 'lookup') e.preventDefault(); });
-E.inp.addEventListener('compositionstart', e => { if (mode === 'lookup') e.preventDefault(); });
+E.inp.addEventListener('beforeinput', e => { if (mode === 'lookup' || mode === 'follow') e.preventDefault(); });
+E.inp.addEventListener('compositionstart', e => { if (mode === 'lookup' || mode === 'follow') e.preventDefault(); });
 $('hintDecomp').addEventListener('click', hintDecomp);
 $('hintKeys').addEventListener('click', hintKeys);
 $('hintCode').addEventListener('click', hintCode);
